@@ -14,6 +14,11 @@ export function RecentActivity({ atelierId }: { atelierId: string }) {
   useEffect(() => {
     const loadLogs = async () => {
       try {
+        if (!atelierId) {
+          setLoading(false)
+          return
+        }
+
         const { data, error } = await supabase
           .from('audit_logs')
           .select('*')
@@ -23,11 +28,13 @@ export function RecentActivity({ atelierId }: { atelierId: string }) {
 
         if (error) {
           console.error('Erreur chargement logs:', error)
+          setLogs([]) // Afficher une liste vide en cas d'erreur
         } else {
           setLogs(data || [])
         }
       } catch (err) {
         console.error('Erreur RecentActivity:', err)
+        setLogs([]) // Afficher une liste vide en cas d'erreur
       } finally {
         setLoading(false)
       }

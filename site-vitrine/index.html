@@ -38,7 +38,7 @@
 
         <div class="flex items-center gap-3">
             <a href="/inscription" class="px-6 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all transform hover:scale-105">Essai gratuit</a>
-            <a href="/connexion" class="px-4 py-2 text-white hover:text-blue-400 transition-colors font-medium">Connexion</a>
+            <a href="/auth/login" class="px-4 py-2 text-white hover:text-blue-400 transition-colors font-medium">Connexion</a>
         </div>
     </div>
 </header>
@@ -59,7 +59,7 @@
         </h1>
         <p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-8">Logiciel SaaS complet pour créer des devis, suivre vos projets, gérer votre stock et facturer vos clients. Professionnel, intuitif, puissant.</p>
         <div class="flex flex-col sm:flex-row gap-4">
-            <a href="/inscription" class="px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all transform hover:scale-105 shadow-lg shadow-blue-600/30">ESSAI GRATUIT 30 JOURS</a>
+            <a href="/auth/inscription" class="px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all transform hover:scale-105 shadow-lg shadow-blue-600/30">ESSAI GRATUIT 30 JOURS</a>
             <a href="/fonctionnalites" class="px-8 py-4 bg-white/10 backdrop-blur text-white font-bold rounded-lg hover:bg-white/20 transition-all border border-white/20">DÉCOUVRIR LES FONCTIONNALITÉS</a>
         </div>
         <p class="text-gray-500 text-sm mt-4">✅ Aucune carte bancaire requise • ✅ Essai complet • ✅ Support inclus</p>
@@ -272,7 +272,7 @@
                         <span class="text-gray-300 text-sm">Support prioritaire</span>
                     </li>
                 </ul>
-                <a href="/inscription?plan=pro" class="block w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-lg text-center hover:from-blue-500 hover:to-cyan-400 transition-all transform hover:scale-105">Commencer l'essai gratuit</a>
+                <a href="/auth/inscription?plan=pro" class="block w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-lg text-center hover:from-blue-500 hover:to-cyan-400 transition-all transform hover:scale-105">Commencer l'essai gratuit</a>
             </div>
         </div>
 
@@ -334,7 +334,7 @@
         <h2 class="text-3xl md:text-5xl font-black text-white mb-4">PRÊT À TRANSFORMER<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">VOTRE ATELIER ?</span></h2>
         <p class="text-gray-300 text-lg mb-8 max-w-2xl mx-auto">Rejoignez les ateliers qui font confiance à ThermoGestion. Essai gratuit 30 jours, aucune carte bancaire requise.</p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/inscription" class="px-8 py-4 bg-white text-gray-900 font-bold rounded-lg hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl">COMMENCER L'ESSAI GRATUIT →</a>
+            <a href="/auth/inscription" class="px-8 py-4 bg-white text-gray-900 font-bold rounded-lg hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl">COMMENCER L'ESSAI GRATUIT →</a>
             <a href="/contact" class="px-8 py-4 bg-transparent border-2 border-white text-white font-bold rounded-lg hover:bg-white/10 transition-all">DEMANDER UNE DÉMO</a>
         </div>
     </div>
@@ -343,10 +343,12 @@
 <!-- FOOTER -->
 <footer id="contact" class="bg-gray-950 border-t border-gray-800">
     <div class="max-w-7xl mx-auto px-4 py-12">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
             <div class="md:col-span-2">
                 <div class="flex items-center gap-2 mb-4">
-                    <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center"><span class="text-white font-black text-xl">TG</span></div>
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center">
+                        <img src="/logo-icon.svg" alt="TG" class="w-6 h-6" />
+                    </div>
                     <span class="text-white font-bold text-xl">Thermo<span class="text-blue-400">Gestion</span></span>
                 </div>
                 <p class="text-gray-400 text-sm mb-4 max-w-md">Logiciel SaaS professionnel pour ateliers de thermolaquage. Simplifiez votre gestion, optimisez votre production, facturez vos clients.</p>
@@ -371,16 +373,18 @@
                 <h4 class="text-white font-bold mb-4">Contact</h4>
                 <ul class="space-y-2 text-sm text-gray-400">
                     <li>📧 contact@thermogestion.fr</li>
-                    <li>📞 [TÉLÉPHONE]</li>
-                    <li>📍 [ADRESSE]</li>
+                    <li>📞 06 74 92 19 75</li>
+                    <li>📍 120 PLACE DES PALMIERS, 83150 BANDOL, France</li>
                 </ul>
-                <h4 class="text-white font-bold mb-4 mt-6">Légal</h4>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-4">Légal</h4>
                 <ul class="space-y-2 text-sm">
                     <li><a href="/cgu" class="text-gray-400 hover:text-blue-400 transition-colors">CGU</a></li>
                     <li><a href="/cgv" class="text-gray-400 hover:text-blue-400 transition-colors">CGV</a></li>
                     <li><a href="/confidentialite" class="text-gray-400 hover:text-blue-400 transition-colors">Confidentialité</a></li>
                     <li><a href="/mentions-legales" class="text-gray-400 hover:text-blue-400 transition-colors">Mentions légales</a></li>
-                    <li><a href="/status" class="text-gray-400 hover:text-blue-400 transition-colors">Status</a></li>
+                    <li><a href="/cookies" class="text-gray-400 hover:text-blue-400 transition-colors">Cookies</a></li>
                 </ul>
             </div>
         </div>

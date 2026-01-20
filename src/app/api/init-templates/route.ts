@@ -22,15 +22,17 @@ export async function POST(request: Request) {
       .eq('id', authUser.id)
       .single()
 
-    if (!userData || (userData.role !== 'owner' && userData.role !== 'admin')) {
+    if (!userData || ((userData as any).role !== 'owner' && (userData as any).role !== 'admin')) {
       return NextResponse.json({ error: 'Accès refusé' }, { status: 403 })
     }
+
+    const atelierId = (userData as any).atelier_id
 
     // Vérifier si des templates existent déjà pour cet atelier
     const { data: existingTemplates } = await supabase
       .from('devis_templates')
       .select('id')
-      .eq('atelier_id', userData.atelier_id)
+      .eq('atelier_id', atelierId)
       .limit(1)
 
     if (existingTemplates && existingTemplates.length > 0) {
@@ -41,8 +43,8 @@ export async function POST(request: Request) {
     }
 
     // Appeler la fonction SQL pour créer les templates par défaut
-    const { error } = await supabase.rpc('create_default_devis_templates', {
-      p_atelier_id: userData.atelier_id
+    const { error } = await (supabase.rpc as any)('create_default_devis_templates', {
+      p_atelier_id: atelierId
     })
 
     if (error) {
@@ -55,7 +57,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ 
       message: 'Templates créés avec succès',
-      atelier_id: userData.atelier_id
+      atelier_id: atelierId
     })
   } catch (error: any) {
     console.error('Erreur init templates:', error)

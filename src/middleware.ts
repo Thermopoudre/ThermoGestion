@@ -1,11 +1,9 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
+  let supabaseResponse = NextResponse.next({
+    request,
   })
 
   const supabase = createServerClient(
@@ -13,58 +11,36 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value
+        getAll() {
+          return request.cookies.getAll()
         },
-        set(name: string, value: string, options: CookieOptions) {
-          request.cookies.set({
-            name,
-            value,
-            ...options,
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+          supabaseResponse = NextResponse.next({
+            request,
           })
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          })
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          })
-        },
-        remove(name: string, options: CookieOptions) {
-          request.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          })
-          response.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          )
         },
       },
     }
   )
 
+  // IMPORTANT: Éviter toute logique entre createServerClient et
+  // supabase.auth.getUser(). Un simple appel getUser() est nécessaire
+  // pour rafraîchir la session si elle est expirée.
+
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Routes publiques
-  const publicRoutes = ['/auth/login', '/auth/inscription', '/auth/verification-email', '/', '/fonctionnalites', '/tarifs', '/contact']
-  const isPublicRoute = publicRoutes.some(route => request.nextUrl.pathname.startsWith(route))
-
   // Routes protégées (nécessitent authentification)
-  const protectedRoutes = ['/app']
-  const isProtectedRoute = protectedRoutes.some(route => request.nextUrl.pathname.startsWith(route))
+  const isProtectedRoute = request.nextUrl.pathname.startsWith('/app')
+  
+  // Routes d'auth (login/inscription)
+  const isAuthRoute = request.nextUrl.pathname.startsWith('/auth/login') || 
+                      request.nextUrl.pathname.startsWith('/auth/inscription')
 
   // Si route protégée et pas connecté -> rediriger vers login
   if (isProtectedRoute && !user) {
@@ -74,14 +50,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl)
   }
 
-  // Si connecté et sur login/inscription -> rediriger vers dashboard
-  if (user && (request.nextUrl.pathname.startsWith('/auth/login') || request.nextUrl.pathname.startsWith('/auth/inscription'))) {
-    const redirectUrl = request.nextUrl.clone()
-    redirectUrl.pathname = '/app/dashboard'
-    return NextResponse.redirect(redirectUrl)
-  }
+  // NE PAS rediriger automatiquement de login vers dashboard
+  // Cela évite les boucles de redirection si getUser() retourne des résultats 
+  // différents entre le middleware et les server components
+  // La page login gère elle-même la redirection si l'utilisateur est connecté
 
-  return response
+  return supabaseResponse
 }
 
 export const config = {

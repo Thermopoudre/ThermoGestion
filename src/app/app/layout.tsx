@@ -1,5 +1,6 @@
 import { createServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { PushNotificationButton } from '@/components/notifications/PushNotificationButton'
 
 export default async function AppLayout({
   children,
@@ -15,6 +16,11 @@ export default async function AppLayout({
   if (!user) {
     redirect('/auth/login')
   }
+
+  // Ne pas vérifier l'atelier ici pour éviter les boucles avec complete-profile
+  // La vérification de l'atelier se fait dans chaque page individuellement
+  // Note: complete-profile a son propre layout qui ne charge pas la navigation
+  // Note: complete-profile a son propre layout qui n'affiche pas la navigation
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -69,17 +75,38 @@ export default async function AppLayout({
                 >
                   Poudres
                 </a>
+                <a
+                  href="/app/series"
+                  className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                >
+                  Séries
+                </a>
+                <a
+                  href="/app/factures"
+                  className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                >
+                  Factures
+                </a>
+                <a
+                  href="/app/retouches"
+                  className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                >
+                  Retouches
+                </a>
               </div>
             </div>
 
             <div className="flex items-center gap-4">
+              <PushNotificationButton />
               <span className="text-sm text-gray-600 hidden md:inline">{user.email}</span>
-              <a
-                href="/auth/logout"
-                className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                Déconnexion
-              </a>
+              <form action="/auth/logout" method="POST" className="inline">
+                <button
+                  type="submit"
+                  className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  Déconnexion
+                </button>
+              </form>
             </div>
           </div>
         </div>

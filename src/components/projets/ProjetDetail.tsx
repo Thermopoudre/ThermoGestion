@@ -10,6 +10,10 @@ type Photo = Database['public']['Tables']['photos']['Row']
 type Client = Database['public']['Tables']['clients']['Row']
 type Poudre = Database['public']['Tables']['poudres']['Row']
 
+type Retouche = Database['public']['Tables']['retouches']['Row'] & {
+  defaut_types?: Database['public']['Tables']['defaut_types']['Row']
+}
+
 interface ProjetDetailProps {
   projet: Projet & {
     clients: Client | null
@@ -17,6 +21,7 @@ interface ProjetDetailProps {
     devis: { id: string; numero: string; total_ttc: number } | null
   }
   photos: Photo[]
+  retouches?: Retouche[]
   storageQuota: number
   storageUsed: number
   userId: string
@@ -42,7 +47,7 @@ const statusLabels: Record<string, string> = {
   annule: 'Annulé',
 }
 
-export function ProjetDetail({ projet, photos, storageQuota, storageUsed, userId }: ProjetDetailProps) {
+export function ProjetDetail({ projet, photos, retouches = [], storageQuota, storageUsed, userId }: ProjetDetailProps) {
   const router = useRouter()
   const supabase = createBrowserClient()
   const [uploading, setUploading] = useState(false)
@@ -192,7 +197,15 @@ export function ProjetDetail({ projet, photos, storageQuota, storageUsed, userId
     <div className="space-y-6">
       {/* Informations générales */}
       <div className="bg-white rounded-xl shadow-lg p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-6">Informations</h2>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-bold text-gray-900">Informations</h2>
+          <Link
+            href={`/app/projets/${projet.id}/retouches/new`}
+            className="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors text-sm"
+          >
+            Déclarer retouche
+          </Link>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">Statut</label>

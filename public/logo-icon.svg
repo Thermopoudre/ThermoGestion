@@ -1,0 +1,17 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Cercle de fond -->
+  <rect width="40" height="40" rx="8" fill="url(#iconGradient)" />
+  
+  <!-- Lettre T -->
+  <path d="M 12 10 L 12 18 L 15 18 L 15 26 L 25 26 L 25 18 L 28 18 L 28 10 Z" fill="white" />
+  
+  <!-- Lettre G simplifiée -->
+  <path d="M 20 14 Q 24 14 24 18 Q 24 22 20 22 L 17 22 L 17 26 Q 20 27 23 26 L 23 20 Q 23 16 20 16 Q 17 16 17 20 L 14 20 Q 14 15 20 14 Z" fill="white" opacity="0.9" />
+</svg>

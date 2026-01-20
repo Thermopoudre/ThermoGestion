@@ -37,20 +37,28 @@ Cordialement`
     setError(null)
 
     try {
-      // Pour MVP, on met juste à jour le statut
-      // Plus tard, on intégrera l'envoi email réel (OAuth Gmail/Outlook)
-      const { error: updateError } = await supabase
-        .from('devis')
-        .update({
-          status: 'envoye',
-        })
-        .eq('id', devis.id)
+      if (!devis.clients?.email) {
+        throw new Error('Email du client non disponible')
+      }
 
-      if (updateError) throw updateError
+      // Appeler l'API pour envoyer l'email
+      const response = await fetch(`/api/devis/${devis.id}/send-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messagePersonnalise: message || defaultMessage,
+        }),
+      })
 
-      // TODO: Envoyer email avec PDF en PJ
-      // Pour l'instant, on simule juste l'envoi
+      const data = await response.json()
 
+      if (!response.ok) {
+        throw new Error(data.error || 'Erreur lors de l\'envoi de l\'email')
+      }
+
+      // Succès
       router.push(`/app/devis/${devis.id}`)
       router.refresh()
     } catch (err: any) {
@@ -70,8 +78,8 @@ Cordialement`
               <strong>Destinataire :</strong> {devis.clients?.email || 'Email non disponible'}
             </p>
             <p className="text-sm text-blue-800 mt-2">
-              <strong>Note :</strong> L'envoi d'email réel sera disponible après configuration OAuth Gmail/Outlook.
-              Pour l'instant, le statut du devis sera mis à jour.
+              <strong>Note :</strong> Le devis sera envoyé par email avec le PDF en pièce jointe.
+              {devis.clients?.type === 'particulier' && ' Un lien de création de compte client sera inclus.'}
             </p>
           </div>
 

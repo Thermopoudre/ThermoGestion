@@ -7,6 +7,220 @@ Ce document permet de suivre toutes les modifications, ajouts, suppressions de f
 
 ## Historique des modifications
 
+### 20 janvier 2026 - Notifications Push + Avis Google + Webhooks Stripe
+
+**Fichiers créés :**
+- **Notifications Push** :
+  - `supabase/migrations/009_notifications_push.sql` : Tables push_subscriptions, push_notifications
+  - `src/lib/notifications/push.ts` : Utilitaires Web Push API
+  - `src/lib/notifications/triggers.ts` : Déclencheurs automatiques notifications
+  - `src/app/api/push/subscribe/route.ts` : API enregistrement abonnement
+  - `src/app/api/push/unsubscribe/route.ts` : API désabonnement
+  - `src/app/api/notifications/trigger/route.ts` : API déclenchement notifications
+  - `src/components/notifications/PushNotificationButton.tsx` : Bouton activation notifications
+  - `public/sw.js` : Service Worker pour notifications
+- **Avis Google** :
+  - `supabase/migrations/010_avis_google.sql` : Table avis_google, fonction get_projets_ready_for_avis
+  - `src/lib/google/avis.ts` : Utilitaires gestion avis Google
+  - `src/app/api/avis-google/process/route.ts` : Route cron job traitement avis
+- **Webhooks Stripe** :
+  - `src/app/api/webhooks/stripe/route.ts` : Route webhook Stripe pour mise à jour auto paiements
+
+**Fichiers modifiés :**
+- `src/app/app/layout.tsx` : Ajout bouton notifications push
+- `src/components/retouches/DeclarerRetoucheForm.tsx` : Ajout notification push lors déclaration
+- `TOKENS_API_REQUIS.md` : Ajout VAPID keys et Stripe webhook secret
+
+**Fonctionnalités ajoutées :**
+- ✅ Notifications push navigateur (Web Push API)
+- ✅ Abonnements utilisateurs (multi-devices)
+- ✅ Notifications automatiques (projet, devis, retouche, facture, statut)
+- ✅ Service Worker pour gestion notifications
+- ✅ Avis Google workflow J+3 (email automatique après récupération)
+- ✅ Relance automatique avis (J+Y configurable)
+- ✅ Webhooks Stripe (mise à jour auto statut paiement)
+- ✅ Création paiements automatique via webhook
+- ✅ Notifications push lors paiement facture
+
+**Décisions techniques :**
+- Web Push API (standard navigateur, pas besoin app mobile)
+- VAPID keys pour authentification push
+- Service Worker pour gestion notifications hors ligne
+- Cron job Vercel pour traitement avis Google (quotidien)
+- Webhook Stripe sécurisé avec signature
+
+### 20 janvier 2026 - Module Retouches/NC + Fichier Tokens API
+
+**Fichiers créés :**
+- **Retouches/NC** :
+  - `supabase/migrations/008_retouches_nc.sql` : Tables retouches, defaut_types, fonctions statistiques
+  - `src/app/app/retouches/page.tsx` : Liste retouches avec statistiques
+  - `src/app/app/retouches/[id]/page.tsx` : Détail retouche
+  - `src/app/app/retouches/stats/page.tsx` : Statistiques retouches
+  - `src/app/app/projets/[id]/retouches/new/page.tsx` : Déclaration retouche depuis projet
+  - `src/components/retouches/RetouchesList.tsx` : Composant liste
+  - `src/components/retouches/DeclarerRetoucheForm.tsx` : Formulaire déclaration
+  - `src/components/retouches/RetoucheDetail.tsx` : Composant détail
+  - `src/components/retouches/RetouchesStats.tsx` : Composant statistiques
+- **Documentation** :
+  - `TOKENS_API_REQUIS.md` : Fichier global récapitulatif de tous les tokens API nécessaires
+
+**Fichiers modifiés :**
+- `src/app/app/layout.tsx` : Ajout lien "Retouches" dans navigation
+- `src/app/app/projets/[id]/page.tsx` : Ajout récupération retouches du projet
+- `src/components/projets/ProjetDetail.tsx` : Ajout section retouches + bouton déclaration
+
+**Fonctionnalités ajoutées :**
+- ✅ Déclaration retouches/NC sur projets
+- ✅ Types de défauts paramétrables par atelier
+- ✅ Photos retouches (upload avec compression)
+- ✅ Suivi statuts (déclarée, en cours, résolue, annulée)
+- ✅ Statistiques retouches (taux NC, causes principales)
+- ✅ Fonctions SQL pour calculs statistiques
+- ✅ Intégration dans page projet (affichage retouches)
+
+**Décisions techniques :**
+- Types de défauts paramétrables (table defaut_types)
+- Photos retouches stockées dans bucket photos (type 'nc')
+- Fonctions SQL pour performance (calculate_nc_rate, get_main_nc_causes)
+- Statistiques calculées en temps réel (30 derniers jours par défaut)
+
+### 20 janvier 2026 - Module facturation complet
+
+**Fichiers créés :**
+- **Facturation** :
+  - `supabase/migrations/007_facturation_améliorations.sql` : Améliorations table factures, table paiements, numérotation auto
+  - `src/lib/facturation/types.ts` : Types TypeScript facturation
+  - `src/lib/facturation/numerotation.ts` : Utilitaires numérotation automatique
+  - `src/lib/facturation/pdf.ts` : Génération PDF factures
+  - `src/lib/facturation/exports.ts` : Exports CSV et FEC comptable
+  - `src/lib/stripe/payment-links.ts` : Création liens paiement Stripe
+  - `src/app/app/factures/page.tsx` : Liste factures
+  - `src/app/app/factures/new/page.tsx` : Création facture
+  - `src/app/app/factures/[id]/page.tsx` : Détail facture
+  - `src/app/app/factures/[id]/pdf/route.ts` : Génération PDF
+  - `src/components/factures/FacturesList.tsx` : Composant liste
+  - `src/components/factures/CreateFactureForm.tsx` : Formulaire création
+  - `src/components/factures/FactureDetail.tsx` : Composant détail
+  - `src/app/api/factures/generate-numero/route.ts` : API génération numéro
+  - `src/app/api/factures/[id]/mark-paid/route.ts` : API marquer payée
+  - `src/app/api/factures/[id]/payment-link/route.ts` : API création lien Stripe
+  - `src/app/api/factures/export/csv/route.ts` : Export CSV
+  - `src/app/api/factures/export/fec/route.ts` : Export FEC comptable
+
+**Fichiers modifiés :**
+- `src/app/app/layout.tsx` : Ajout lien "Factures" dans navigation
+- `package.json` : Ajout dépendance `stripe`
+
+**Fonctionnalités ajoutées :**
+- ✅ Création factures (acompte, solde, complète)
+- ✅ Numérotation automatique (format paramétrable)
+- ✅ Génération PDF factures
+- ✅ Intégration Stripe (liens de paiement)
+- ✅ Traçabilité paiements (table paiements)
+- ✅ Exports comptabilité (CSV, FEC XML)
+- ✅ Gestion statuts (brouillon, envoyée, payée, remboursée)
+
+**Décisions techniques :**
+- Numérotation via fonction SQL `generate_facture_numero()` pour atomicité
+- Format FEC simplifié (structure de base, à adapter selon plan comptable)
+- Stripe Payment Links (simple, pas besoin frontend Stripe)
+- Exports via routes API (téléchargement direct)
+
+### 20 janvier 2026 - Implémentation 3 étapes prioritaires (Email, Portail client, Séries)
+
+**Fichiers créés :**
+- **Email** :
+  - `supabase/migrations/005_email_config.sql` : Configuration email (OAuth tokens, queue)
+  - `src/lib/email/types.ts` : Types TypeScript email
+  - `src/lib/email/resend.ts` : Utilitaires Resend
+  - `src/lib/email/smtp.ts` : Utilitaires SMTP
+  - `src/lib/email/queue.ts` : Gestion queue emails
+  - `src/lib/email/sender.ts` : Service principal envoi
+  - `src/lib/email/templates.ts` : Génération templates
+  - `src/templates/email/devis-nouveau-client.html` : Template email nouveau client
+  - `src/templates/email/devis-client-existant.html` : Template email client existant
+  - `src/app/api/email/send/route.ts` : API envoi email
+  - `src/app/api/email/queue/process/route.ts` : API traitement queue
+  - `src/app/api/devis/[id]/send-email/route.ts` : API envoi devis
+- **Portail client** :
+  - `supabase/migrations/006_portail_client.sql` : Tables client_users et confirmations
+  - `src/app/client/middleware.ts` : Protection routes client
+  - `src/app/client/auth/login/page.tsx` : Connexion client
+  - `src/app/client/auth/inscription/page.tsx` : Inscription client
+  - `src/app/client/projets/page.tsx` : Liste projets client
+  - `src/app/client/projets/[id]/page.tsx` : Détail projet client
+  - `src/components/client/ProjetsClientList.tsx` : Composant liste projets
+  - `src/components/client/ProjetClientDetail.tsx` : Composant détail projet
+- **Séries** :
+  - `src/app/app/series/page.tsx` : Page séries (recommandations + existantes)
+  - `src/app/app/series/new/page.tsx` : Création série
+  - `src/app/app/series/[id]/page.tsx` : Détail série
+  - `src/components/series/SeriesRecommandees.tsx` : Vue recommandations
+  - `src/components/series/CreateSerieForm.tsx` : Formulaire création
+  - `src/components/series/SerieDetail.tsx` : Détail série avec actions
+
+**Fichiers modifiés :**
+- `src/components/devis/SendDevis.tsx` : Intégration envoi email réel
+- `src/app/app/layout.tsx` : Ajout lien "Séries" dans navigation
+- `package.json` : Ajout dépendances (resend, nodemailer, @types/nodemailer)
+
+**Fonctionnalités ajoutées :**
+- ✅ Envoi email réel avec Resend/SMTP
+- ✅ Queue d'envoi asynchrone
+- ✅ Templates emails HTML responsive
+- ✅ Portail client complet (authentification + vue projets)
+- ✅ Séries recommandées (regroupement automatique par poudre)
+- ✅ Création et gestion séries (batch)
+
+**Décisions techniques :**
+- Utilisation Resend pour Vercel Serverless (plus simple que Bull+Redis)
+- Queue dans Supabase (table email_queue) pour éviter dépendance Redis
+- Authentification client séparée (table client_users) pour isolation
+- Regroupement strict par poudre exacte (référence + finition + type + couches)
+
+### 20 janvier 2026 - Correction footer, création pages manquantes et logo
+
+**Fichiers créés :**
+- `public/logo.svg` : Logo complet ThermoGestion (200x200px) avec lettres TG stylisées et élément décoratif flamme
+- `public/logo-icon.svg` : Icône logo (40x40px) pour headers et footers
+- `src/components/site-vitrine/Footer.tsx` : Composant Footer réutilisable (non utilisé pour l'instant, pages HTML statiques)
+- `site-vitrine/contact.html` : Page contact complète avec formulaire et informations
+- `site-vitrine/temoignages.html` : Page témoignages avec 6 témoignages clients
+- `site-vitrine/aide.html` : Page centre d'aide avec documentation, FAQ, support
+- `src/app/contact/page.tsx` : Route Next.js pour page contact
+- `src/app/temoignages/page.tsx` : Route Next.js pour page témoignages
+- `src/app/aide/page.tsx` : Route Next.js pour page aide
+
+**Fichiers modifiés :**
+- `site-vitrine/index.html` : Remplacement logo texte par SVG, correction footer avec infos complètes
+- `site-vitrine/cgu.html` : Footer complet ajouté, logo SVG intégré
+- `site-vitrine/cgv.html` : Footer complet ajouté, logo SVG intégré
+- `site-vitrine/confidentialite.html` : Footer complet ajouté, logo SVG intégré
+- `site-vitrine/mentions-legales.html` : Footer complet ajouté, logo SVG intégré
+- `site-vitrine/cookies.html` : Footer complet ajouté, logo SVG intégré
+- `site-vitrine/fonctionnalites.html` : Logo SVG intégré
+- `site-vitrine/tarifs.html` : Logo SVG intégré
+
+**Problèmes résolus :**
+- ✅ Footer légal disparaissait sur certaines pages → Footer complet ajouté partout
+- ✅ Pages contact, témoignages et aide manquantes → Créées avec contenu complet
+- ✅ Logo manquant → Logo SVG professionnel créé (TG stylisé avec gradient bleu/cyan)
+
+**Fonctionnalités ajoutées :**
+- ✅ Logo SVG ThermoGestion (version complète et icône)
+- ✅ Page Contact avec formulaire et informations complètes
+- ✅ Page Témoignages avec 6 témoignages clients fictifs
+- ✅ Page Aide avec sections documentation, vidéos, FAQ, support, intégrations, changelog
+- ✅ Footer uniforme sur toutes les pages avec navigation, contact, liens légaux
+
+**Détails techniques :**
+- Logo SVG avec gradient bleu (#2563eb) vers cyan (#06b6d4)
+- Lettres TG stylisées avec élément décoratif flamme (représentant thermolaquage)
+- Footer responsive avec 4 colonnes (logo/description, navigation, contact, légal)
+- Toutes les pages légales ont maintenant le même footer complet
+- Logo intégré dans tous les headers via `<img src="/logo-icon.svg">`
+
 ### 20 janvier 2026 - Système de templates de devis personnalisables
 
 **Fichiers créés :**

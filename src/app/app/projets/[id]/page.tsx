@@ -65,6 +65,20 @@ export default async function ProjetDetailPage({ params }: { params: { id: strin
     .eq('projet_id', projet.id)
     .order('created_at', { ascending: false })
 
+  // Charger les retouches du projet
+  const { data: retouches } = await supabase
+    .from('retouches')
+    .select(`
+      *,
+      defaut_types (
+        id,
+        name
+      )
+    `)
+    .eq('projet_id', projet.id)
+    .eq('atelier_id', userData.atelier_id)
+    .order('created_at', { ascending: false })
+
   // Charger l'atelier pour quota
   const { data: atelier } = await supabase
     .from('ateliers')
@@ -103,6 +117,7 @@ export default async function ProjetDetailPage({ params }: { params: { id: strin
         <ProjetDetail
           projet={projet}
           photos={photos || []}
+          retouches={retouches || []}
           storageQuota={atelier?.storage_quota_gb || 20}
           storageUsed={Number(atelier?.storage_used_gb || 0)}
           userId={authUser.id}
