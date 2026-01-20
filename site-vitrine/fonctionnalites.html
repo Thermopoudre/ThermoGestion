@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fonctionnalités - ThermoGestion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes pulse-slow { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.4; } }
+        .animate-pulse-slow { animation: pulse-slow 4s ease-in-out infinite; }
+    </style>
+</head>
+<body class="bg-black text-white">
+
+<!-- HEADER -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-md border-b border-blue-600/30">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
+        <a href="/" class="flex items-center gap-2">
+            <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center">
+                <span class="text-white font-black text-xl">TG</span>
+            </div>
+            <span class="text-white font-bold text-xl">Thermo<span class="text-blue-400">Gestion</span></span>
+        </a>
+        <nav class="hidden md:flex items-center gap-1">
+            <a href="/" class="px-4 py-2 text-white hover:text-blue-400 transition-colors font-medium">Accueil</a>
+            <a href="/fonctionnalites" class="px-4 py-2 text-blue-400 font-medium border-b-2 border-blue-400">Fonctionnalités</a>
+            <a href="/tarifs" class="px-4 py-2 text-white hover:text-blue-400 transition-colors font-medium">Tarifs</a>
+            <a href="/temoignages" class="px-4 py-2 text-white hover:text-blue-400 transition-colors font-medium">Témoignages</a>
+            <a href="/aide" class="px-4 py-2 text-white hover:text-blue-400 transition-colors font-medium">Aide</a>
+            <a href="/contact" class="px-4 py-2 text-white hover:text-blue-400 transition-colors font-medium">Contact</a>
+        </nav>
+        <div class="flex items-center gap-3">
+            <a href="/inscription" class="px-6 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all">Essai gratuit</a>
+        </div>
+    </div>
+</header>
+
+<!-- HERO -->
+<section class="pt-32 pb-20 bg-gradient-to-br from-gray-900 via-black to-gray-800">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+        <span class="text-blue-500 font-semibold text-sm uppercase tracking-wider">Fonctionnalités complètes</span>
+        <h1 class="text-4xl md:text-6xl font-black text-white mt-4 mb-6">TOUTES LES FONCTIONNALITÉS<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-600">DE THERMOGESTION</span></h1>
+        <p class="text-xl text-gray-300 max-w-3xl mx-auto">Une solution complète pour gérer votre atelier de thermolaquage de A à Z</p>
+    </div>
+</section>
+
+<!-- FONCTIONNALITÉS DÉTAILLÉES -->
+<section class="py-20 bg-black">
+    <div class="max-w-7xl mx-auto px-4">
+        <!-- Devis -->
+        <div class="mb-20">
+            <div class="flex items-start gap-8 mb-12">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <svg class="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-3xl font-black text-white mb-4">Devis professionnels</h2>
+                    <p class="text-gray-300 text-lg mb-6">Créez des devis en quelques clics, personnalisez vos templates, envoyez par email avec signature électronique.</p>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Création rapide</h3>
+                            <p class="text-gray-400 text-sm">Dimensions, surface, poudre, couches, cuisson. Calcul automatique des coûts et marges.</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Templates personnalisables</h3>
+                            <p class="text-gray-400 text-sm">4-5 templates préconçus + éditeur visuel. Logo, couleurs, CGV, mise en page 100% customisable.</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Signature électronique</h3>
+                            <p class="text-gray-400 text-sm">Signature obligatoire avec horodatage. Client peut signer dans portail ou atelier signe puis scanne.</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Envoi automatique</h3>
+                            <p class="text-gray-400 text-sm">Email automatique avec PDF en PJ. Nouveau client : invitation création compte. Client existant : devis dans espace.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Projets -->
+        <div class="mb-20">
+            <div class="flex items-start gap-8 mb-12">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <svg class="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-3xl font-black text-white mb-4">Suivi projets complet</h2>
+                    <p class="text-gray-300 text-lg mb-6">Gérez vos projets étape par étape, ajoutez des photos, tracez la cuisson et les couches appliquées.</p>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Workflow configurable</h3>
+                            <p class="text-gray-400 text-sm">Étapes personnalisables par atelier. Validation étape par opérateur avec date/heure.</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Photos haute qualité</h3>
+                            <p class="text-gray-400 text-sm">Avant/après + annotations. Compression intelligente (stockage optimisé, affichage haute résolution). 20 GB inclus.</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Traçabilité complète</h3>
+                            <p class="text-gray-400 text-sm">Poudre utilisée, couches, cuisson (temp/durée), QC, rapport final PDF avec toutes les données.</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Contrôle qualité</h3>
+                            <p class="text-gray-400 text-sm">Checklist QC paramétrable. Gestion retouches/NC avec statistiques (taux, causes, délais induits).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock -->
+        <div class="mb-20">
+            <div class="flex items-start gap-8 mb-12">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <svg class="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-3xl font-black text-white mb-4">Gestion stock intelligent</h2>
+                    <p class="text-gray-300 text-lg mb-6">Stock théorique + pesées réelles, suggestions quotidiennes, inventaires partiels sans bloquer votre journée.</p>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Stock théorique</h3>
+                            <p class="text-gray-400 text-sm">Décrémentation automatique par projets/séries. Suivi consommation par poudre.</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Pesées réelles</h3>
+                            <p class="text-gray-400 text-sm">Poids brut - tare carton = stock réel. Historique des pesées, réconciliation théorie vs réel.</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Suggestions quotidiennes</h3>
+                            <p class="text-gray-400 text-sm">Liste courte de poudres à peser (3 références/jour). Basée sur usage récent + aléatoire contrôlé.</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Inventaire partiel</h3>
+                            <p class="text-gray-400 text-sm">Planification période intensive. Liste ciblée : poudres les plus utilisées + à risque.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Séries -->
+        <div class="mb-20">
+            <div class="flex items-start gap-8 mb-12">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <svg class="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-3xl font-black text-white mb-4">Regroupement séries</h2>
+                    <p class="text-gray-300 text-lg mb-6">Optimisez votre production en regroupant les pièces par poudre identique, avec suggestion optimisation four.</p>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Regroupement strict</h3>
+                            <p class="text-gray-400 text-sm">Même poudre exacte obligatoire : référence + finition + type + couches. Interdiction regroupement si différent.</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Optimisation four</h3>
+                            <p class="text-gray-400 text-sm">Configuration taille four. Suggestion optimisation pièces (contraintes crochet, marge, pièces non collées).</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Séries recommandées</h3>
+                            <p class="text-gray-400 text-sm">Vue automatique : pièces regroupables par poudre, urgence, estimation consommation.</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Étiquettes de série</h3>
+                            <p class="text-gray-400 text-sm">Impression étiquettes PDF pour identification série en atelier (QR code ou numéro).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CRM -->
+        <div class="mb-20">
+            <div class="flex items-start gap-8 mb-12">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <svg class="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-3xl font-black text-white mb-4">CRM clients</h2>
+                    <p class="text-gray-300 text-lg mb-6">Gérez vos clients, historique devis/projets, relances automatiques, import CSV avec détection doublons.</p>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Fiche client complète</h3>
+                            <p class="text-gray-400 text-sm">Coordonnées, type (pro/particulier), tags, notes. Historique devis, projets, factures, paiements.</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Détection doublons</h3>
+                            <p class="text-gray-400 text-sm">Email, téléphone, nom + prénom. Détection automatique avant création/import.</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Import CSV</h3>
+                            <p class="text-gray-400 text-sm">Import clients depuis Excel/CSV. Détection doublons automatique. Email invitation automatique aux clients importés.</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Relances automatiques</h3>
+                            <p class="text-gray-400 text-sm">Devis non signé : relance J+2, J+7 par email. Personnalisable par atelier.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Facturation -->
+        <div class="mb-20">
+            <div class="flex items-start gap-8 mb-12">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <svg class="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-3xl font-black text-white mb-4">Facturation & paiements</h2>
+                    <p class="text-gray-300 text-lg mb-6">Factures automatiques, paiements en ligne (Stripe), acompte/solde, exports comptabilité (FEC, CSV, Pennylane).</p>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Factures automatiques</h3>
+                            <p class="text-gray-400 text-sm">Numérotation auto (format paramétrable), TVA FR/EU, facturation électronique conforme.</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Paiements en ligne</h3>
+                            <p class="text-gray-400 text-sm">Stripe payment links (acompte/solde). Paiement atelier : saisie manuelle (CB/espèces/virement).</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Exports comptabilité</h3>
+                            <p class="text-gray-400 text-sm">CSV, FEC comptable (XML, archivage 10 ans), API Pennylane (synchronisation directe).</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Gestion acompte</h3>
+                            <p class="text-gray-400 text-sm">Acompte obligatoire/activable. Statuts : non payé / acompte payé / payé / remboursé.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Portail client -->
+        <div class="mb-20">
+            <div class="flex items-start gap-8 mb-12">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <svg class="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-3xl font-black text-white mb-4">Portail client</h2>
+                    <p class="text-gray-300 text-lg mb-6">Espace client dédié : suivi projets en temps réel, photos, documents, paiement en ligne.</p>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Suivi projets en temps réel</h3>
+                            <p class="text-gray-400 text-sm">Liste projets, détails (étapes, dates), photos haute qualité, documents (devis, facture, rapport).</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Paiement en ligne</h3>
+                            <p class="text-gray-400 text-sm">Paiement acompte/solde directement depuis le portail. Lien Stripe sécurisé.</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Signature électronique</h3>
+                            <p class="text-gray-400 text-sm">Client peut signer devis/facture directement dans le portail (dessin ou upload image).</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Avis Google automatique</h3>
+                            <p class="text-gray-400 text-sm">Email J+3 après récupération avec lien direct. API Google My Business pour tracking avis laissé.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reporting -->
+        <div class="mb-20">
+            <div class="flex items-start gap-8 mb-12">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <svg class="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h2 class="text-3xl font-black text-white mb-4">Dashboards & reporting</h2>
+                    <p class="text-gray-300 text-lg mb-6">KPIs en temps réel : CA, taux transformation, délais, retards, consommation poudres, NC.</p>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Devis</h3>
+                            <p class="text-gray-400 text-sm">Taux transformation, délais acceptation, panier moyen, nombre devis par période.</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Production</h3>
+                            <p class="text-gray-400 text-sm">Délais moyens (dépôt → livraison), retards (nombre, %), throughput, taux remplissage.</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Financier</h3>
+                            <p class="text-gray-400 text-sm">CA/mois, paiements, impayés, acomptes vs soldes, évolution CA (graphiques tendance).</p>
+                        </div>
+                        <div class="bg-gray-800/30 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Qualité & stock</h3>
+                            <p class="text-gray-400 text-sm">Taux NC/retouches, causes principales, top poudres utilisées, risques rupture stock.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module Jantes -->
+        <div class="mb-20 bg-gradient-to-r from-blue-900/20 to-cyan-900/20 rounded-2xl p-8 border border-blue-600/30">
+            <div class="flex items-start gap-8 mb-8">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <svg class="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <div class="inline-block px-3 py-1 bg-blue-600/30 border border-blue-600/50 rounded-full text-blue-400 text-xs font-medium mb-4">OPTION V2</div>
+                    <h2 class="text-3xl font-black text-white mb-4">Module ThermoGestion Jantes</h2>
+                    <p class="text-gray-300 text-lg mb-6">Gestion spécialisée pour rénovation de jantes : fiche jante, véhicules de prêt, calendrier, tarification pro/particulier.</p>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Fiche jante complète</h3>
+                            <p class="text-gray-400 text-sm">Marque/modèle/année véhicule, taille jante, état/dommages, photos avant/après, recette jante préremplie.</p>
+                        </div>
+                        <div class="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Véhicules de prêt</h3>
+                            <p class="text-gray-400 text-sm">Gestion parc, calendrier attribution (custom + sync Google/Outlook), état entrée/sortie, dépôt garantie.</p>
+                        </div>
+                        <div class="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Tarification adaptée</h3>
+                            <p class="text-gray-400 text-sm">Grilles prix distinctes pro/particulier, acompte recommandé, options (réparation, finition, vernis).</p>
+                        </div>
+                        <div class="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+                            <h3 class="text-white font-bold mb-2">✅ Base teintes OEM</h3>
+                            <p class="text-gray-400 text-sm">Connexion ThermoJantes : recherche teinte OEM par modèle voiture, mapping vers poudres.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="py-20 bg-gradient-to-r from-blue-900/50 to-cyan-900/50 relative overflow-hidden">
+    <div class="absolute inset-0 bg-black/50"></div>
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/30 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/30 rounded-full blur-3xl"></div>
+    <div class="relative z-10 max-w-4xl mx-auto px-4 text-center">
+        <h2 class="text-3xl md:text-5xl font-black text-white mb-4">PRÊT À DÉCOUVRIR<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">TOUTES LES FONCTIONNALITÉS ?</span></h2>
+        <p class="text-gray-300 text-lg mb-8 max-w-2xl mx-auto">Essai gratuit 30 jours en mode Pro complet. Aucune carte bancaire requise.</p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/inscription" class="px-8 py-4 bg-white text-gray-900 font-bold rounded-lg hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl">COMMENCER L'ESSAI GRATUIT →</a>
+            <a href="/contact" class="px-8 py-4 bg-transparent border-2 border-white text-white font-bold rounded-lg hover:bg-white/10 transition-all">DEMANDER UNE DÉMO</a>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-gray-950 border-t border-gray-800">
+    <div class="max-w-7xl mx-auto px-4 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="md:col-span-2">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center"><span class="text-white font-black text-xl">TG</span></div>
+                    <span class="text-white font-bold text-xl">Thermo<span class="text-blue-400">Gestion</span></span>
+                </div>
+                <p class="text-gray-400 text-sm mb-4 max-w-md">Logiciel SaaS professionnel pour ateliers de thermolaquage. Simplifiez votre gestion, optimisez votre production.</p>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-4">Navigation</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="/" class="text-gray-400 hover:text-blue-400 transition-colors">Accueil</a></li>
+                    <li><a href="/fonctionnalites" class="text-gray-400 hover:text-blue-400 transition-colors">Fonctionnalités</a></li>
+                    <li><a href="/tarifs" class="text-gray-400 hover:text-blue-400 transition-colors">Tarifs</a></li>
+                    <li><a href="/aide" class="text-gray-400 hover:text-blue-400 transition-colors">Aide</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-4">Contact</h4>
+                <ul class="space-y-2 text-sm text-gray-400">
+                    <li>📧 contact@thermogestion.fr</li>
+                    <li>📞 [TÉLÉPHONE]</li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-gray-800 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-gray-500 text-sm">© 2025 ThermoGestion. Tous droits réservés.</p>
+            <div class="flex gap-4 text-sm">
+                <a href="/cgu" class="text-gray-500 hover:text-gray-400 transition-colors">CGU</a>
+                <a href="/cgv" class="text-gray-500 hover:text-gray-400 transition-colors">CGV</a>
+                <a href="/confidentialite" class="text-gray-500 hover:text-gray-400 transition-colors">Confidentialité</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
