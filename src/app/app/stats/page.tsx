@@ -5,6 +5,7 @@ import { ChartCAMensuel } from '@/components/stats/ChartCAMensuel'
 import { TopClients } from '@/components/stats/TopClients'
 import { TopPoudresStats } from '@/components/stats/TopPoudresStats'
 import { PerformanceProjet } from '@/components/stats/PerformanceProjet'
+import { DevisConversionStats } from '@/components/stats/DevisConversionStats'
 
 export default async function StatsPage() {
   const supabase = await createServerClient()
@@ -58,10 +59,10 @@ export default async function StatsPage() {
       .select('id, reference, nom')
       .eq('atelier_id', atelierId),
     
-    // Devis de l'année
+    // Devis de l'année (avec données détaillées pour stats)
     supabase
       .from('devis')
-      .select('id, status, total_ttc, created_at')
+      .select('id, status, total_ht, total_ttc, created_at, signed_at, client_id')
       .eq('atelier_id', atelierId)
       .gte('created_at', startOfYear.toISOString()),
   ])
@@ -182,6 +183,22 @@ export default async function StatsPage() {
             date_depot: p.date_depot,
             date_promise: p.date_promise,
           }))}
+        />
+      </div>
+
+      {/* Stats conversion devis */}
+      <div className="mt-8">
+        <DevisConversionStats
+          devis={devis.map(d => ({
+            id: d.id,
+            status: d.status,
+            total_ht: Number(d.total_ht) || 0,
+            total_ttc: Number(d.total_ttc) || 0,
+            created_at: d.created_at,
+            signed_at: d.signed_at,
+            client_id: d.client_id,
+          }))}
+          clients={clients}
         />
       </div>
     </div>

@@ -115,18 +115,37 @@ export async function changeProjetStatus(
       (newStatus === 'pret' && clientFactureTrigger === 'pret') ||
       (newStatus === 'livre' && clientFactureTrigger === 'livre')
 
-    // Vérifier qu'une facture n'existe pas déjà pour ce projet
+    // Vérifier si le projet a déjà une facture d'acompte (montant_acompte > 0)
+    const hasAcompte = (projet.montant_acompte || 0) > 0
+    
+    // Vérifier qu'une facture de solde ou complete n'existe pas déjà
     if (shouldCreateFacture) {
       const { data: existingFacture } = await supabase
         .from('factures')
-        .select('id')
+        .select('id, type')
         .eq('projet_id', projetId)
+        .in('type', ['complete', 'solde'])
         .single()
 
       if (!existingFacture) {
-        const factureResult = await createAutoFacture(supabase, projet, client, userId)
+        // Créer facture de solde si acompte existe, sinon facture complète
+        const factureResult = await createAutoFacture(
+          supabase, 
+          projet, 
+          client, 
+          userId,
+          hasAcompte ? 'solde' : 'complete'
+        )
         result.factureCreated = factureResult.success
         result.factureId = factureResult.factureId
+        
+        // Mettre à jour la ref sur le projet si c'est une facture de solde
+        if (factureResult.success && hasAcompte) {
+          await supabase
+            .from('projets')
+            .update({ facture_solde_id: factureResult.factureId })
+            .eq('id', projetId)
+        }
       }
     }
 
@@ -237,12 +256,14 @@ async function decrementStock(
 
 /**
  * Crée automatiquement une facture pour un projet terminé
+ * @param factureType - 'complete' pour facture complète, 'solde' pour facture de solde (si acompte existe)
  */
 async function createAutoFacture(
   supabase: any,
   projet: any,
   client: Client,
-  userId: string
+  userId: string,
+  factureType: 'complete' | 'solde' = 'complete'
 ): Promise<{ success: boolean; factureId?: string; error?: string }> {
   try {
     // Générer le numéro de facture via la fonction SQL
@@ -285,15 +306,59 @@ async function createAutoFacture(
       totalTtc = totalHt * 1.2 // TVA 20%
     }
 
-    // Si toujours 0, mettre une valeur par défaut (à modifier manuellement)
-    if (totalHt === 0) {
-      totalHt = 0
-      totalTtc = 0
+    // Pour une facture de solde, soustraire l'acompte
+    let soldeHt = totalHt
+    let soldeTtc = totalTtc
+    let acompteAmount = 0
+    let devisNumero = devis?.numero
+    
+    if (factureType === 'solde') {
+      acompteAmount = projet.montant_acompte || 0
+      // Récupérer les infos de la facture d'acompte
+      if (projet.facture_acompte_id) {
+        const { data: factureAcompte } = await supabase
+          .from('factures')
+          .select('total_ttc, total_ht, devis_numero')
+          .eq('id', projet.facture_acompte_id)
+          .single()
+        
+        if (factureAcompte) {
+          acompteAmount = factureAcompte.total_ttc || acompteAmount
+          devisNumero = factureAcompte.devis_numero || devisNumero
+        }
+      }
+      
+      // Calculer le solde restant
+      const tvaRate = devis?.tva_rate || 20
+      const acompteHt = acompteAmount / (1 + tvaRate / 100)
+      soldeHt = totalHt - acompteHt
+      soldeTtc = totalTtc - acompteAmount
     }
+
+    // Si toujours 0, mettre une valeur par défaut
+    if (soldeHt < 0) soldeHt = 0
+    if (soldeTtc < 0) soldeTtc = 0
 
     // Date d'échéance : 30 jours par défaut
     const dueDate = new Date()
     dueDate.setDate(dueDate.getDate() + 30)
+
+    // Préparer les items pour la facture
+    let factureItems = items
+    let notes = `Facture générée automatiquement pour le projet ${projet.numero}`
+    
+    if (factureType === 'solde') {
+      factureItems = [{
+        designation: `Solde projet ${projet.numero}`,
+        description: devisNumero 
+          ? `Solde de commande - Devis ${devisNumero}\nAcompte déjà versé : ${new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(acompteAmount)} TTC`
+          : `Solde de commande - Projet ${projet.name}`,
+        quantite: 1,
+        prix_unitaire: soldeHt,
+        total_ht: soldeHt,
+      }]
+      notes = `Facture de solde pour le projet ${projet.numero}.\nMontant total : ${new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(totalTtc)} TTC\nAcompte versé : ${new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(acompteAmount)} TTC\nSolde dû : ${new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(soldeTtc)} TTC`
+    }
 
     // Créer la facture
     const { data: facture, error: factureError } = await supabase
@@ -302,18 +367,21 @@ async function createAutoFacture(
         atelier_id: projet.atelier_id,
         client_id: client.id,
         projet_id: projet.id,
+        devis_id: devis?.id,
+        devis_numero: devisNumero,
         numero,
-        type: 'complete',
-        items,
-        total_ht: totalHt,
-        total_ttc: totalTtc,
-        tva_rate: 20,
+        type: factureType,
+        items: factureItems,
+        total_ht: factureType === 'solde' ? soldeHt : totalHt,
+        total_ttc: factureType === 'solde' ? soldeTtc : totalTtc,
+        tva_rate: devis?.tva_rate || 20,
+        acompte_amount: factureType === 'solde' ? acompteAmount : null,
         status: 'brouillon',
         payment_status: 'unpaid',
         auto_created: true,
         created_by: userId,
         due_date: dueDate.toISOString().split('T')[0],
-        notes: `Facture générée automatiquement pour le projet ${projet.numero}`,
+        notes,
       })
       .select('id, numero')
       .single()
@@ -326,10 +394,13 @@ async function createAutoFacture(
     // Marquer le projet comme ayant eu sa facture créée
     await supabase
       .from('projets')
-      .update({ auto_facture_created_at: new Date().toISOString() })
+      .update({ 
+        auto_facture_created_at: new Date().toISOString(),
+        montant_facture: factureType === 'solde' ? soldeTtc : totalTtc,
+      })
       .eq('id', projet.id)
 
-    console.log(`Facture ${numero} créée automatiquement pour projet ${projet.numero}`)
+    console.log(`Facture ${factureType} ${numero} créée automatiquement pour projet ${projet.numero}`)
 
     return { success: true, factureId: facture.id }
 

@@ -15,12 +15,21 @@ interface ConvertDevisToProjetProps {
   userId: string
 }
 
+// Formater montant en euros
+const formatMoney = (amount: number) => {
+  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount)
+}
+
 export function ConvertDevisToProjet({ devis, poudres, atelierId, userId }: ConvertDevisToProjetProps) {
   const router = useRouter()
   const supabase = createBrowserClient()
   
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  
+  // Calculs financiers
+  const totalTtc = Number(devis.total_ttc) || 0
+  const totalHt = Number(devis.total_ht) || 0
   
   const [formData, setFormData] = useState({
     name: `Projet ${devis.numero}`,
@@ -37,7 +46,14 @@ export function ConvertDevisToProjet({ devis, poudres, atelierId, userId }: Conv
       { name: 'Contrôle qualité', order: 3 },
       { name: 'Prêt', order: 4 },
     ],
+    // Options de facturation
+    createAcompte: false,
+    pourcentageAcompte: 30,
   })
+  
+  // Calcul du montant d'acompte
+  const montantAcompteHt = formData.createAcompte ? (totalHt * formData.pourcentageAcompte / 100) : 0
+  const montantAcompteTtc = formData.createAcompte ? (totalTtc * formData.pourcentageAcompte / 100) : 0
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -78,13 +94,71 @@ export function ConvertDevisToProjet({ devis, poudres, atelierId, userId }: Conv
           date_promise: formData.date_promise || null,
           workflow_config: formData.workflow_config,
           current_step: 0,
-          pieces: devis.items, // Copier les items du devis
+          pieces: devis.items,
+          montant_total: totalTtc,
+          montant_acompte: formData.createAcompte ? montantAcompteTtc : 0,
           created_by: userId,
         })
         .select()
         .single()
 
       if (projetError) throw projetError
+
+      // Si création d'acompte demandée
+      let factureAcompteId = null
+      if (formData.createAcompte && montantAcompteHt > 0) {
+        // Générer numéro facture via API
+        const factureNumeroRes = await fetch('/api/factures/generate-numero', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ atelier_id: atelierId }),
+        })
+        const { numero: factureNumero } = await factureNumeroRes.json()
+        
+        // Calculer TVA acompte
+        const tvaRate = Number(devis.tva_rate) || 20
+        const tvaAcompte = montantAcompteTtc - montantAcompteHt
+        
+        // Créer la facture d'acompte
+        const { data: factureAcompte, error: factureError } = await supabase
+          .from('factures')
+          .insert({
+            atelier_id: atelierId,
+            client_id: devis.client_id,
+            projet_id: projet.id,
+            devis_id: devis.id,
+            devis_numero: devis.numero,
+            numero: factureNumero,
+            type: 'acompte',
+            status: 'brouillon',
+            payment_status: 'unpaid',
+            total_ht: montantAcompteHt,
+            total_ttc: montantAcompteTtc,
+            tva_rate: tvaRate,
+            pourcentage_acompte: formData.pourcentageAcompte,
+            items: [{
+              designation: `Acompte ${formData.pourcentageAcompte}% - ${devis.numero}`,
+              description: `Acompte sur devis ${devis.numero} - ${formData.name}`,
+              quantite: 1,
+              prix_unitaire: montantAcompteHt,
+              total_ht: montantAcompteHt,
+            }],
+            notes: `Facture d'acompte de ${formData.pourcentageAcompte}% sur le devis ${devis.numero}.\nMontant total du devis : ${formatMoney(totalTtc)} TTC.\nSolde restant : ${formatMoney(totalTtc - montantAcompteTtc)} TTC.`,
+            due_date: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // +15 jours
+            created_by: userId,
+          })
+          .select()
+          .single()
+          
+        if (factureError) throw factureError
+        factureAcompteId = factureAcompte.id
+        
+        // Mettre à jour le projet avec la ref facture acompte
+        await supabase
+          .from('projets')
+          .update({ facture_acompte_id: factureAcompteId })
+          .eq('id', projet.id)
+      }
 
       // Mettre à jour le devis (statut converted)
       const { error: devisError } = await supabase
@@ -101,7 +175,13 @@ export function ConvertDevisToProjet({ devis, poudres, atelierId, userId }: Conv
         action: 'convert',
         table_name: 'projets',
         record_id: projet.id,
-        new_data: { from_devis: devis.id, numero, name: formData.name },
+        new_data: { 
+          from_devis: devis.id, 
+          numero, 
+          name: formData.name,
+          facture_acompte_id: factureAcompteId,
+          montant_acompte: formData.createAcompte ? montantAcompteTtc : 0,
+        },
       })
 
       router.push(`/app/projets/${projet.id}`)
@@ -236,6 +316,94 @@ export function ConvertDevisToProjet({ devis, poudres, atelierId, userId }: Conv
               <strong>Workflow par défaut :</strong> Le projet utilisera un workflow standard avec 5 étapes.
               Vous pourrez le modifier après création.
             </p>
+          </div>
+
+          {/* Section Facturation Acompte */}
+          <div className="border-t border-gray-200 pt-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <span className="text-xl">💰</span>
+              Facturation
+            </h3>
+            
+            <div className="bg-gray-50 rounded-xl p-5 space-y-4">
+              {/* Récap montant devis */}
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-600">Montant total du devis :</span>
+                <span className="font-bold text-gray-900">{formatMoney(totalTtc)} TTC</span>
+              </div>
+              
+              {/* Option acompte */}
+              <label className="flex items-start gap-3 cursor-pointer p-3 rounded-lg hover:bg-white transition-colors">
+                <input
+                  type="checkbox"
+                  checked={formData.createAcompte}
+                  onChange={(e) => setFormData({ ...formData, createAcompte: e.target.checked })}
+                  className="mt-1 h-5 w-5 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                />
+                <div className="flex-1">
+                  <span className="font-medium text-gray-900">Créer une facture d'acompte</span>
+                  <p className="text-sm text-gray-500 mt-0.5">
+                    Une facture d'acompte sera générée automatiquement. La facture de solde sera créée à la fin du projet.
+                  </p>
+                </div>
+              </label>
+              
+              {/* Détails acompte si activé */}
+              {formData.createAcompte && (
+                <div className="ml-8 space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Pourcentage d'acompte
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="range"
+                        min="10"
+                        max="50"
+                        step="5"
+                        value={formData.pourcentageAcompte}
+                        onChange={(e) => setFormData({ ...formData, pourcentageAcompte: parseInt(e.target.value) })}
+                        className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                      />
+                      <div className="flex items-center gap-1 bg-orange-100 text-orange-700 px-3 py-1 rounded-lg font-bold min-w-[70px] justify-center">
+                        {formData.pourcentageAcompte}%
+                      </div>
+                    </div>
+                    <div className="flex justify-between text-xs text-gray-400 mt-1">
+                      <span>10%</span>
+                      <span>30%</span>
+                      <span>50%</span>
+                    </div>
+                  </div>
+                  
+                  {/* Aperçu des montants */}
+                  <div className="bg-white rounded-lg p-4 border border-gray-200">
+                    <div className="text-sm font-medium text-gray-600 mb-3">Aperçu de la facturation</div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Acompte ({formData.pourcentageAcompte}%) :</span>
+                        <span className="font-semibold text-orange-600">{formatMoney(montantAcompteTtc)} TTC</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Solde à facturer :</span>
+                        <span className="font-semibold text-gray-900">{formatMoney(totalTtc - montantAcompteTtc)} TTC</span>
+                      </div>
+                      <div className="border-t border-gray-200 pt-2 mt-2">
+                        <div className="flex justify-between text-sm font-medium">
+                          <span className="text-gray-900">Total :</span>
+                          <span className="text-gray-900">{formatMoney(totalTtc)} TTC</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-xs text-gray-500 flex items-start gap-2">
+                    <span className="text-blue-500">ℹ️</span>
+                    <span>La facture de solde sera automatiquement générée lorsque le projet passera au statut "Livré".</span>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="flex gap-4">
