@@ -1,14 +1,38 @@
-// Génération PDF factures (similaire aux devis)
-// Utilise les templates de devis comme base
+/**
+ * Génération PDF factures - CONFORME LÉGISLATION FRANÇAISE
+ * 
+ * Mentions obligatoires incluses :
+ * - Numéro de facture (unique, séquentiel)
+ * - Date d'émission
+ * - Date de prestation/livraison
+ * - Identité vendeur complète (nom, adresse, SIRET, TVA intra, RCS)
+ * - Identité client (nom, adresse, SIRET si pro)
+ * - Désignation, quantité, prix unitaire HT
+ * - Taux et montant TVA
+ * - Total HT et TTC
+ * - Date d'échéance
+ * - Conditions de paiement
+ * - Pénalités de retard
+ * - Indemnité forfaitaire de recouvrement (40€ pour pros)
+ * - Escompte (ou mention "pas d'escompte")
+ */
 
 import type { Database } from '@/types/database.types'
-import { generatePdfHtml } from '@/lib/devis-templates'
 
 type Facture = Database['public']['Tables']['factures']['Row'] & {
   clients?: Database['public']['Tables']['clients']['Row']
   projets?: Database['public']['Tables']['projets']['Row']
 }
-type Atelier = Database['public']['Tables']['ateliers']['Row']
+
+// Type étendu pour l'atelier avec mentions légales
+type AtelierLegal = Database['public']['Tables']['ateliers']['Row'] & {
+  tva_intra?: string | null
+  rcs?: string | null
+  forme_juridique?: string | null
+  capital_social?: string | null
+  iban?: string | null
+  bic?: string | null
+}
 
 interface FactureItem {
   id: string
@@ -21,183 +45,360 @@ interface FactureItem {
 }
 
 /**
- * Générer le HTML pour une facture PDF
+ * Générer le HTML pour une facture PDF - CONFORME FRANCE
  */
-export function generateFacturePdfHtml(facture: Facture, atelier?: Atelier): string {
+export function generateFacturePdfHtml(facture: Facture, atelier?: AtelierLegal): string {
   const items = (facture.items as FactureItem[]) || []
   const totalTva = Number(facture.total_ttc) - Number(facture.total_ht)
   const acompte = facture.acompte_amount ? Number(facture.acompte_amount) : 0
   const solde = Number(facture.total_ttc) - acompte
+  
+  // Date de prestation (utilise la date du projet ou la date de création)
+  const datePrestation = facture.projets?.date_livre 
+    || facture.projets?.date_depot 
+    || facture.created_at
+  
+  // Déterminer si client professionnel
+  const isClientPro = facture.clients?.type === 'professionnel'
 
   return `
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <title>Facture ${facture.numero}</title>
   <style>
     @media print {
       body { margin: 0; }
+      .page-break { page-break-before: always; }
     }
     body {
-      font-family: Arial, sans-serif;
-      font-size: 12px;
-      padding: 40px;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 11px;
+      line-height: 1.4;
+      padding: 30px 40px;
       max-width: 210mm;
       margin: 0 auto;
-      color: #374151;
+      color: #1f2937;
     }
-    h1, h2, h3 { color: #2563eb; }
+    h1, h2, h3 { color: #1e40af; margin: 0 0 8px 0; }
     .header {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 40px;
-      padding-bottom: 20px;
-      border-bottom: 2px solid #2563eb;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 3px solid #1e40af;
     }
-    .atelier-info { flex: 1; }
-    .facture-info { text-align: right; }
-    .facture-title {
-      font-size: 32px;
-      font-weight: bold;
-      color: #2563eb;
+    .atelier-info { 
+      flex: 1;
+      font-size: 10px;
+    }
+    .atelier-info h1 {
+      font-size: 20px;
       margin-bottom: 10px;
     }
+    .atelier-info p {
+      margin: 2px 0;
+      color: #4b5563;
+    }
+    .facture-info { 
+      text-align: right;
+      min-width: 200px;
+    }
+    .facture-title {
+      font-size: 28px;
+      font-weight: bold;
+      color: #1e40af;
+      margin-bottom: 12px;
+    }
+    .facture-info p {
+      margin: 4px 0;
+      font-size: 11px;
+    }
+    .deux-colonnes {
+      display: flex;
+      gap: 30px;
+      margin-bottom: 25px;
+    }
     .client-info {
+      flex: 1;
       background: #f3f4f6;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 30px;
+      padding: 15px;
+      border-radius: 6px;
+      border-left: 4px solid #1e40af;
+    }
+    .client-info h2 {
+      font-size: 12px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .client-info p {
+      margin: 3px 0;
+    }
+    .prestation-info {
+      flex: 1;
+      background: #eff6ff;
+      padding: 15px;
+      border-radius: 6px;
+      border-left: 4px solid #3b82f6;
+    }
+    .prestation-info h2 {
+      font-size: 12px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
     th, td {
-      padding: 12px;
+      padding: 10px 8px;
       text-align: left;
       border-bottom: 1px solid #e5e7eb;
     }
     th {
+      background: #1e40af;
+      color: white;
+      font-weight: 600;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    tbody tr:nth-child(even) {
       background: #f9fafb;
-      font-weight: bold;
-      color: #374151;
     }
-    .total-row {
-      font-weight: bold;
-      background: #eff6ff;
+    .total-section {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 20px;
     }
-    .total-ttc {
-      font-size: 20px;
-      color: #2563eb;
+    .total-table {
+      width: 280px;
+    }
+    .total-table td {
+      padding: 8px 12px;
+      border: none;
+    }
+    .total-table .label {
+      text-align: right;
+      color: #6b7280;
+    }
+    .total-table .value {
+      text-align: right;
+      font-weight: 600;
+    }
+    .total-table .total-ttc {
+      background: #1e40af;
+      color: white;
+      font-size: 14px;
+    }
+    .total-table .total-ttc .label,
+    .total-table .total-ttc .value {
+      color: white;
     }
     .acompte-section {
       background: #fef3c7;
-      padding: 15px;
-      border-radius: 8px;
-      margin-top: 20px;
+      padding: 12px 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      border-left: 4px solid #f59e0b;
     }
-    .footer {
-      margin-top: 40px;
-      padding-top: 20px;
-      border-top: 1px solid #e5e7eb;
-      font-size: 12px;
+    .conditions-section {
+      background: #f9fafb;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      font-size: 10px;
+    }
+    .conditions-section h3 {
+      font-size: 11px;
+      margin-bottom: 10px;
+      color: #374151;
+    }
+    .conditions-section p {
+      margin: 4px 0;
       color: #6b7280;
     }
-    ${facture.signature_url ? `
+    .conditions-section .important {
+      color: #dc2626;
+      font-weight: 600;
+    }
+    .paiement-section {
+      background: #ecfdf5;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      border-left: 4px solid #10b981;
+    }
+    .paiement-section h3 {
+      font-size: 11px;
+      margin-bottom: 10px;
+      color: #065f46;
+    }
+    .notes-section {
+      background: #fff7ed;
+      padding: 12px 15px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      border-left: 4px solid #f97316;
+    }
     .signature {
-      margin-top: 30px;
-      padding-top: 20px;
+      margin-top: 20px;
+      padding-top: 15px;
       border-top: 1px solid #e5e7eb;
     }
     .signature img {
-      max-width: 200px;
-      max-height: 100px;
+      max-width: 180px;
+      max-height: 80px;
     }
-    ` : ''}
+    .footer {
+      margin-top: 30px;
+      padding-top: 15px;
+      border-top: 2px solid #e5e7eb;
+      font-size: 9px;
+      color: #9ca3af;
+      text-align: center;
+    }
+    .footer p {
+      margin: 3px 0;
+    }
+    .mentions-legales {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #e5e7eb;
+      font-size: 8px;
+      color: #9ca3af;
+    }
   </style>
 </head>
 <body>
+  <!-- EN-TÊTE -->
   <div class="header">
     <div class="atelier-info">
       <h1>${atelier?.name || 'Atelier'}</h1>
       ${atelier?.address ? `<p>${atelier.address}</p>` : ''}
-      ${atelier?.phone ? `<p>Tel: ${atelier.phone}</p>` : ''}
-      ${atelier?.email ? `<p>Email: ${atelier.email}</p>` : ''}
-      ${atelier?.siret ? `<p>SIRET: ${atelier.siret}</p>` : ''}
+      ${atelier?.phone ? `<p>Tél : ${atelier.phone}</p>` : ''}
+      ${atelier?.email ? `<p>Email : ${atelier.email}</p>` : ''}
+      <p style="margin-top: 8px;">
+        ${atelier?.siret ? `<strong>SIRET :</strong> ${atelier.siret}` : ''}
+        ${atelier?.tva_intra ? ` • <strong>TVA Intra :</strong> ${atelier.tva_intra}` : ''}
+      </p>
+      ${atelier?.rcs ? `<p><strong>RCS :</strong> ${atelier.rcs}</p>` : ''}
+      ${atelier?.forme_juridique ? `<p>${atelier.forme_juridique}${atelier?.capital_social ? ` au capital de ${atelier.capital_social}` : ''}</p>` : ''}
     </div>
     <div class="facture-info">
       <div class="facture-title">FACTURE</div>
-      <p><strong>Numéro:</strong> ${facture.numero}</p>
-      <p><strong>Date:</strong> ${new Date(facture.created_at).toLocaleDateString('fr-FR')}</p>
-      ${facture.due_date ? `<p><strong>Échéance:</strong> ${new Date(facture.due_date).toLocaleDateString('fr-FR')}</p>` : ''}
+      <p><strong>N° :</strong> ${facture.numero}</p>
+      <p><strong>Date d'émission :</strong> ${new Date(facture.created_at).toLocaleDateString('fr-FR')}</p>
+      <p><strong>Date prestation :</strong> ${new Date(datePrestation).toLocaleDateString('fr-FR')}</p>
+      ${facture.due_date ? `<p><strong>Échéance :</strong> ${new Date(facture.due_date).toLocaleDateString('fr-FR')}</p>` : ''}
     </div>
   </div>
 
-  <div class="client-info">
-    <h2>Facturer à:</h2>
-    <p><strong>${facture.clients?.full_name || ''}</strong></p>
-    ${facture.clients?.address ? `<p>${facture.clients.address}</p>` : ''}
-    ${facture.clients?.phone ? `<p>Tel: ${facture.clients.phone}</p>` : ''}
-    ${facture.clients?.email ? `<p>Email: ${facture.clients.email}</p>` : ''}
-    ${facture.clients?.type === 'professionnel' && facture.clients?.siret ? `<p>SIRET: ${facture.clients.siret}</p>` : ''}
+  <!-- INFORMATIONS CLIENT ET PRESTATION -->
+  <div class="deux-colonnes">
+    <div class="client-info">
+      <h2>Client</h2>
+      <p><strong>${facture.clients?.full_name || ''}</strong></p>
+      ${facture.clients?.address ? `<p>${facture.clients.address}</p>` : ''}
+      ${facture.clients?.phone ? `<p>Tél : ${facture.clients.phone}</p>` : ''}
+      ${facture.clients?.email ? `<p>Email : ${facture.clients.email}</p>` : ''}
+      ${isClientPro && facture.clients?.siret ? `<p><strong>SIRET :</strong> ${facture.clients.siret}</p>` : ''}
+    </div>
+    <div class="prestation-info">
+      <h2>Référence</h2>
+      ${facture.projets?.numero ? `<p><strong>Projet :</strong> ${facture.projets.numero}</p>` : ''}
+      ${facture.projets?.name ? `<p>${facture.projets.name}</p>` : ''}
+      <p><strong>Type :</strong> ${facture.type === 'acompte' ? 'Facture d\'acompte' : facture.type === 'solde' ? 'Facture de solde' : 'Facture'}</p>
+    </div>
   </div>
 
+  <!-- TABLEAU DES PRESTATIONS -->
   <table>
     <thead>
       <tr>
-        <th>Désignation</th>
-        <th>Qté</th>
-        <th>Prix unitaire HT</th>
-        <th>TVA</th>
-        <th style="text-align: right;">Total HT</th>
+        <th style="width: 45%;">Désignation</th>
+        <th style="width: 10%; text-align: center;">Qté</th>
+        <th style="width: 15%; text-align: right;">P.U. HT</th>
+        <th style="width: 10%; text-align: center;">TVA</th>
+        <th style="width: 20%; text-align: right;">Total HT</th>
       </tr>
     </thead>
     <tbody>
-      ${items.map((item) => `
+      ${items.length > 0 ? items.map((item) => `
         <tr>
           <td>${item.designation || ''}</td>
-          <td>${item.quantite || 1}</td>
-          <td>${(item.prix_unitaire_ht || 0).toFixed(2)} €</td>
-          <td>${item.tva_rate || facture.tva_rate}%</td>
+          <td style="text-align: center;">${item.quantite || 1}</td>
+          <td style="text-align: right;">${(item.prix_unitaire_ht || 0).toFixed(2)} €</td>
+          <td style="text-align: center;">${item.tva_rate || facture.tva_rate}%</td>
           <td style="text-align: right;">${(item.total_ht || 0).toFixed(2)} €</td>
         </tr>
-      `).join('')}
+      `).join('') : `
+        <tr>
+          <td>Prestation de thermolaquage</td>
+          <td style="text-align: center;">1</td>
+          <td style="text-align: right;">${Number(facture.total_ht).toFixed(2)} €</td>
+          <td style="text-align: center;">${facture.tva_rate}%</td>
+          <td style="text-align: right;">${Number(facture.total_ht).toFixed(2)} €</td>
+        </tr>
+      `}
     </tbody>
-    <tfoot>
-      <tr class="total-row">
-        <td colspan="4" style="text-align: right;"><strong>Total HT</strong></td>
-        <td style="text-align: right;">${Number(facture.total_ht).toFixed(2)} €</td>
+  </table>
+
+  <!-- TOTAUX -->
+  <div class="total-section">
+    <table class="total-table">
+      <tr>
+        <td class="label">Total HT</td>
+        <td class="value">${Number(facture.total_ht).toFixed(2)} €</td>
       </tr>
-      <tr class="total-row">
-        <td colspan="4" style="text-align: right;"><strong>TVA (${facture.tva_rate}%)</strong></td>
-        <td style="text-align: right;">${totalTva.toFixed(2)} €</td>
+      <tr>
+        <td class="label">TVA (${facture.tva_rate}%)</td>
+        <td class="value">${totalTva.toFixed(2)} €</td>
       </tr>
       ${acompte > 0 ? `
-      <tr class="total-row">
-        <td colspan="4" style="text-align: right;"><strong>Acompte</strong></td>
-        <td style="text-align: right;">- ${acompte.toFixed(2)} €</td>
+      <tr>
+        <td class="label">Acompte versé</td>
+        <td class="value">- ${acompte.toFixed(2)} €</td>
       </tr>
       ` : ''}
-      <tr class="total-row total-ttc">
-        <td colspan="4" style="text-align: right;"><strong>${acompte > 0 ? 'Solde à payer' : 'Total TTC'}</strong></td>
-        <td style="text-align: right;">${(acompte > 0 ? solde : Number(facture.total_ttc)).toFixed(2)} €</td>
+      <tr class="total-ttc">
+        <td class="label">${acompte > 0 ? 'NET À PAYER' : 'TOTAL TTC'}</td>
+        <td class="value">${(acompte > 0 ? solde : Number(facture.total_ttc)).toFixed(2)} €</td>
       </tr>
-    </tfoot>
-  </table>
+    </table>
+  </div>
 
   ${acompte > 0 ? `
   <div class="acompte-section">
-    <p><strong>Note :</strong> Un acompte de ${acompte.toFixed(2)} € a déjà été réglé.</p>
-    <p>Le solde de ${solde.toFixed(2)} € reste à payer.</p>
+    <strong>Information :</strong> Un acompte de ${acompte.toFixed(2)} € a déjà été réglé. Le solde restant à payer est de <strong>${solde.toFixed(2)} €</strong>.
   </div>
   ` : ''}
 
+  <!-- CONDITIONS DE PAIEMENT -->
+  <div class="paiement-section">
+    <h3>💳 Modalités de règlement</h3>
+    <p><strong>Échéance :</strong> ${facture.due_date ? new Date(facture.due_date).toLocaleDateString('fr-FR') : 'À réception'}</p>
+    <p><strong>Modes de paiement acceptés :</strong> Virement bancaire, Carte bancaire, Chèque</p>
+    ${atelier?.iban ? `<p><strong>IBAN :</strong> ${atelier.iban}${atelier?.bic ? ` • <strong>BIC :</strong> ${atelier.bic}` : ''}</p>` : ''}
+  </div>
+
+  <!-- CONDITIONS LÉGALES OBLIGATOIRES -->
+  <div class="conditions-section">
+    <h3>📋 Conditions générales</h3>
+    <p><strong>Escompte :</strong> Aucun escompte accordé pour paiement anticipé.</p>
+    <p class="important"><strong>Pénalités de retard :</strong> En cas de retard de paiement, des pénalités seront exigibles au taux de 3 fois le taux d'intérêt légal en vigueur.</p>
+    ${isClientPro ? `<p class="important"><strong>Indemnité forfaitaire de recouvrement :</strong> En cas de retard de paiement, une indemnité forfaitaire de 40 € sera due de plein droit (art. L.441-10 et D.441-5 du Code de commerce).</p>` : ''}
+    <p>TVA acquittée sur les débits.</p>
+  </div>
+
   ${facture.notes ? `
-  <div class="notes" style="margin-top: 30px; padding: 15px; background: #f9fafb; border-radius: 8px;">
-    <p><strong>Notes :</strong></p>
-    <p>${facture.notes.replace(/\n/g, '<br>')}</p>
+  <div class="notes-section">
+    <strong>📝 Notes :</strong><br>
+    ${facture.notes.replace(/\n/g, '<br>')}
   </div>
   ` : ''}
 
@@ -205,13 +406,20 @@ export function generateFacturePdfHtml(facture: Facture, atelier?: Atelier): str
   <div class="signature">
     <p><strong>Signature électronique :</strong></p>
     <img src="${facture.signature_url}" alt="Signature" />
-    ${facture.signed_at ? `<p>Signé le ${new Date(facture.signed_at).toLocaleDateString('fr-FR')} à ${new Date(facture.signed_at).toLocaleTimeString('fr-FR')}</p>` : ''}
+    ${facture.signed_at ? `<p style="font-size: 9px; color: #6b7280;">Signé électroniquement le ${new Date(facture.signed_at).toLocaleDateString('fr-FR')} à ${new Date(facture.signed_at).toLocaleTimeString('fr-FR')}</p>` : ''}
   </div>
   ` : ''}
 
+  <!-- PIED DE PAGE -->
   <div class="footer">
-    <p>Facture générée le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}</p>
-    <p>Merci de votre confiance.</p>
+    <p>Facture émise le ${new Date().toLocaleDateString('fr-FR')} • ${facture.numero}</p>
+    <p>Merci de votre confiance !</p>
+    
+    <div class="mentions-legales">
+      ${atelier?.name || 'Atelier'} ${atelier?.forme_juridique ? `• ${atelier.forme_juridique}` : ''} ${atelier?.capital_social ? `au capital de ${atelier.capital_social}` : ''}<br>
+      ${atelier?.siret ? `SIRET : ${atelier.siret}` : ''} ${atelier?.tva_intra ? `• TVA Intracommunautaire : ${atelier.tva_intra}` : ''} ${atelier?.rcs ? `• ${atelier.rcs}` : ''}<br>
+      Document généré électroniquement et conforme à l'article 289 du Code Général des Impôts.
+    </div>
   </div>
 </body>
 </html>

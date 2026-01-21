@@ -97,7 +97,7 @@ export function RetoucheDetail({ retouche, atelierId, userId }: RetoucheDetailPr
                 Projet:{' '}
                 <Link
                   href={`/app/projets/${retouche.projet_id}`}
-                  className="text-blue-600 hover:text-blue-800 font-semibold"
+                  className="text-orange-500 hover:text-blue-800 font-semibold"
                 >
                   {retouche.projets.name} (#{retouche.projets.numero})
                 </Link>
@@ -231,7 +231,7 @@ export function RetoucheDetail({ retouche, atelierId, userId }: RetoucheDetailPr
       {/* Retour */}
       <Link
         href="/app/retouches"
-        className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
+        className="inline-flex items-center text-orange-500 hover:text-blue-700 font-medium"
       >
         ← Retour aux retouches
       </Link>

@@ -188,7 +188,7 @@ export function SeriesRecommandees({ projets, series, atelierId }: SeriesRecomma
 
                 <button
                   onClick={() => handleCreateSerie(groupe)}
-                  className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all"
+                  className="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all"
                 >
                   Créer une série
                 </button>

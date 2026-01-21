@@ -7,6 +7,92 @@ Ce document permet de suivre toutes les modifications, ajouts, suppressions de f
 
 ## Historique des modifications
 
+### 21 janvier 2026 - Charte graphique Thermolaquage complète (Site vitrine + Application)
+
+**Objectif :** Appliquer une identité visuelle unique "métier thermolaquage" sur le site vitrine ET l'application.
+
+**Site vitrine - Refonte complète :**
+- `site-vitrine/index.html` : Redesign complet page d'accueil
+  - Hero avec "Logiciel de gestion pour ateliers de thermolaquage"
+  - Workflow visuel 6 étapes (Réception → Préparation → Poudrage → Cuisson → Contrôle QC → Livraison)
+  - Fonctionnalités métier spécifiques (catalogue RAL, gestion fours, séries, QC, photos avant/après)
+  - Palette couleurs chaudes : gradient orange→rouge (from-orange-500 to-red-600)
+  - Icônes thématiques : 🔥 flamme omniprésente
+
+**Application - Charte graphique mise à jour :**
+- Navigation : Logo TG gradient orange/rouge + icône 🔥
+- Dashboard : Cartes KPI avec icône flamme pour projets
+- Boutons : Gradient `from-orange-500 to-red-600` partout
+- Mode sombre : Textes accent `text-orange-500` / `text-red-400`
+- Graphiques : Palette couleurs chaudes (orange, rouge, jaune, ambre)
+
+**URL déploiement :** https://thermogestion.vercel.app
+
+---
+
+### 21 janvier 2026 - Responsive + Menu mobile
+
+**Objectif :** Appliquer une identité visuelle unique "métier thermolaquage" avec palette orange/rouge évoquant la chaleur du four.
+
+**Fichiers modifiés :**
+- `tailwind.config.ts` : Nouvelle palette primary (orange), accent (rouge), heat (jaune)
+- `src/app/app/layout.tsx` : Navigation avec charte orange/rouge + icône 🔥
+- `src/components/navigation/MobileNav.tsx` : Menu mobile avec header gradient orange/rouge
+- `src/app/auth/login/page.tsx` : Page connexion style dark avec accents orange
+- `src/app/auth/inscription/page.tsx` : Page inscription style dark avec accents orange
+- `src/components/dashboard/KPICards.tsx` : Cartes KPI avec couleurs thermolaquage
+- `src/components/dashboard/ChartCA.tsx` : Graphique CA avec courbe orange
+- `src/components/dashboard/AlertsPanel.tsx` : Panneau alertes avec dark mode
+- `src/components/dashboard/TopPoudres.tsx` : Graphique poudres avec palette chaude
+- `src/app/app/dashboard/page.tsx` : Dashboard avec charte complète
+
+**Changements visuels :**
+- ✅ **Logo** : Icône 🔥 + gradient orange→rouge
+- ✅ **Boutons principaux** : `from-orange-500 to-red-600` (40+ fichiers mis à jour)
+- ✅ **Textes accent** : `text-orange-500` / `text-orange-400` (dark mode)
+- ✅ **Hover/Focus** : Orange au lieu de bleu
+- ✅ **Pages auth** : Style dark moderne avec effets lumineux
+- ✅ **Graphiques** : Palette couleurs chaudes (orange, rouge, jaune, ambre)
+
+**URL déploiement :** https://thermogestion.vercel.app
+
+---
+
+### 21 janvier 2026 - Automatisations complètes (Facture, Stock, Workflow)
+
+**Migrations Supabase appliquées :**
+- `011_add_missing_columns` : Colonnes factures (items, payment_status, auto_created, etc.)
+- `012_stock_mouvements_table` : Table traçabilité mouvements de stock
+- `013_facture_numero_function` : Fonction SQL numérotation automatique factures
+- `014_email_and_notifications` : Tables email_config, email_queue, push_subscriptions
+- `015_automatisation_tracking` : Colonnes auto_facture_created_at, auto_stock_decremented_at
+- `016_audit_logs` : Table journal d'audit complet
+- `017_poudres_stock_columns` : Colonnes stock_theorique_kg, stock_reel_kg sur poudres
+
+**Fichiers modifiés :**
+- `src/lib/automatisations/projet-status.ts` : Logique complète automatisations
+  - Création facture automatique quand projet → "Prêt" (selon préférence client)
+  - Décrémentation stock poudre quand projet → "En cuisson"
+  - Traçabilité mouvements de stock
+  - Journal d'audit des changements de statut
+- `src/app/api/projets/[id]/status/route.ts` : API changement statut avec automatisations
+- `src/components/clients/ClientForm.tsx` : Ajout champ `facture_trigger` (pret/livre/manuel)
+- `src/types/database.types.ts` : Ajout types colonnes automatisation
+
+**Automatisations fonctionnelles :**
+- ✅ **Facture automatique** : Création quand projet passe à "Prêt" ou "Livré" (selon `facture_trigger` client)
+- ✅ **Décrémentation stock** : Stock poudre décrémenté quand projet passe à "En cuisson" (0.5 kg par défaut)
+- ✅ **Mouvements de stock** : Traçabilité complète (type, quantité, avant/après, motif)
+- ✅ **Journal d'audit** : Tous les changements de statut sont tracés
+- ✅ **Protection double exécution** : Flags `auto_facture_created_at`, `auto_stock_decremented_at`
+
+**Tests effectués :**
+- ✅ Projet PROJ-2026-0003 : Facture FACT-2026-0001 créée automatiquement (509,76 € TTC)
+- ✅ Projet PROJ-2026-0002 : Stock IGP-9005-M décrémenté (15 kg → 14.5 kg)
+- ✅ Mouvement de stock enregistré avec motif "Cuisson projet PROJ-2026-0002"
+
+---
+
 ### 20 janvier 2026 - Notifications Push + Avis Google + Webhooks Stripe
 
 **Fichiers créés :**

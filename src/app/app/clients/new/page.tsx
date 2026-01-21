@@ -30,7 +30,7 @@ export default async function NewClientPage() {
         <div className="mb-8">
           <a
             href="/app/clients"
-            className="text-blue-600 hover:text-blue-700 text-sm font-medium mb-4 inline-block"
+            className="text-orange-500 hover:text-blue-700 text-sm font-medium mb-4 inline-block"
           >
             ← Retour à la liste
           </a>

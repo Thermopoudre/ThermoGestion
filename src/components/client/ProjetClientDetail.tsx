@@ -69,7 +69,7 @@ export function ProjetClientDetail({ projet, atelier }: ProjetClientDetailProps)
           {projet.devis && (
             <div>
               <p className="text-sm text-gray-600">Montant TTC</p>
-              <p className="font-bold text-blue-600 text-xl">
+              <p className="font-bold text-orange-500 text-xl">
                 {Number(projet.devis.total_ttc).toLocaleString('fr-FR', {
                   style: 'currency',
                   currency: 'EUR',
@@ -98,7 +98,7 @@ export function ProjetClientDetail({ projet, atelier }: ProjetClientDetailProps)
                     : 'Non signé'}
                 </p>
               </div>
-              <span className="text-blue-600">Télécharger PDF →</span>
+              <span className="text-orange-500">Télécharger PDF →</span>
             </Link>
           </div>
         </div>
@@ -194,7 +194,7 @@ export function ProjetClientDetail({ projet, atelier }: ProjetClientDetailProps)
             {atelier.email && (
               <p>
                 Email:{' '}
-                <a href={`mailto:${atelier.email}`} className="text-blue-600 hover:text-blue-700">
+                <a href={`mailto:${atelier.email}`} className="text-orange-500 hover:text-blue-700">
                   {atelier.email}
                 </a>
               </p>
@@ -206,7 +206,7 @@ export function ProjetClientDetail({ projet, atelier }: ProjetClientDetailProps)
       {/* Retour */}
       <Link
         href="/client/projets"
-        className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
+        className="inline-flex items-center text-orange-500 hover:text-blue-700 font-medium"
       >
         ← Retour à mes projets
       </Link>

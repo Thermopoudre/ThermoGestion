@@ -157,7 +157,7 @@ export function TemplatesList({ templates: initialTemplates }: TemplatesListProp
                 <button
                   onClick={() => handleSetDefault(template.id)}
                   disabled={loading === template.id}
-                  className="flex-1 text-sm font-medium text-blue-600 hover:text-blue-800 disabled:opacity-50"
+                  className="flex-1 text-sm font-medium text-orange-500 hover:text-blue-800 disabled:opacity-50"
                 >
                   {loading === template.id ? '...' : 'Définir par défaut'}
                 </button>

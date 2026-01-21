@@ -260,7 +260,7 @@ export function TemplateForm({ atelierId, userId, templateId, initialData, isSys
               id="show_logo"
               checked={formData.config.header.show_logo}
               onChange={(e) => updateConfig(['header', 'show_logo'], e.target.checked)}
-              className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
+              className="w-5 h-5 text-orange-500 rounded focus:ring-blue-500"
             />
             <label htmlFor="show_logo" className="text-sm font-medium text-gray-700">
               Afficher le logo
@@ -272,7 +272,7 @@ export function TemplateForm({ atelierId, userId, templateId, initialData, isSys
               id="show_atelier_info"
               checked={formData.config.header.show_atelier_info}
               onChange={(e) => updateConfig(['header', 'show_atelier_info'], e.target.checked)}
-              className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
+              className="w-5 h-5 text-orange-500 rounded focus:ring-blue-500"
             />
             <label htmlFor="show_atelier_info" className="text-sm font-medium text-gray-700">
               Afficher les informations de l'atelier
@@ -303,7 +303,7 @@ export function TemplateForm({ atelierId, userId, templateId, initialData, isSys
               id="show_client_info"
               checked={formData.config.body.show_client_info}
               onChange={(e) => updateConfig(['body', 'show_client_info'], e.target.checked)}
-              className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
+              className="w-5 h-5 text-orange-500 rounded focus:ring-blue-500"
             />
             <label htmlFor="show_client_info" className="text-sm font-medium text-gray-700">
               Afficher les informations client
@@ -334,7 +334,7 @@ export function TemplateForm({ atelierId, userId, templateId, initialData, isSys
               id="show_cgv"
               checked={formData.config.footer.show_cgv}
               onChange={(e) => updateConfig(['footer', 'show_cgv'], e.target.checked)}
-              className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
+              className="w-5 h-5 text-orange-500 rounded focus:ring-blue-500"
             />
             <label htmlFor="show_cgv" className="text-sm font-medium text-gray-700">
               Afficher les CGV
@@ -360,7 +360,7 @@ export function TemplateForm({ atelierId, userId, templateId, initialData, isSys
               id="show_signature"
               checked={formData.config.footer.show_signature}
               onChange={(e) => updateConfig(['footer', 'show_signature'], e.target.checked)}
-              className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
+              className="w-5 h-5 text-orange-500 rounded focus:ring-blue-500"
             />
             <label htmlFor="show_signature" className="text-sm font-medium text-gray-700">
               Afficher la signature électronique
@@ -384,7 +384,7 @@ export function TemplateForm({ atelierId, userId, templateId, initialData, isSys
         <button
           type="submit"
           disabled={loading}
-          className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? 'Enregistrement...' : templateId ? 'Mettre à jour' : 'Créer le template'}
         </button>

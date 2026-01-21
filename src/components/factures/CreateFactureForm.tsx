@@ -3,23 +3,37 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@/lib/supabase/client'
+import { QuickCreateClientModal } from '@/components/ui/QuickCreateClientModal'
 import type { FactureFormData, FactureItem } from '@/lib/facturation/types'
+
+interface ClientType {
+  id: string
+  full_name: string
+  email: string
+  type: string
+}
 
 interface CreateFactureFormProps {
   atelierId: string
-  clients: Array<{ id: string; full_name: string; email: string; type: string }>
+  clients: ClientType[]
   projets: Array<{ id: string; name: string; numero: string; total_ttc?: number }>
   projetInitial?: any
 }
 
 export function CreateFactureForm({
   atelierId,
-  clients,
+  clients: initialClients,
   projets,
   projetInitial,
 }: CreateFactureFormProps) {
   const router = useRouter()
   const supabase = createBrowserClient()
+  
+  // Liste dynamique des clients
+  const [clients, setClients] = useState<ClientType[]>(initialClients)
+  
+  // Modal de création rapide
+  const [showClientModal, setShowClientModal] = useState(false)
 
   const [formData, setFormData] = useState<Partial<FactureFormData>>({
     client_id: projetInitial?.client_id || '',
@@ -197,20 +211,31 @@ export function CreateFactureForm({
             <label htmlFor="client_id" className="block text-sm font-medium text-gray-700 mb-2">
               Client *
             </label>
-            <select
-              id="client_id"
-              value={formData.client_id}
-              onChange={(e) => setFormData({ ...formData, client_id: e.target.value, projet_id: '' })}
-              required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">Sélectionner un client</option>
-              {clients.map((client) => (
-                <option key={client.id} value={client.id}>
-                  {client.full_name} ({client.email})
-                </option>
-              ))}
-            </select>
+            <div className="flex gap-2">
+              <select
+                id="client_id"
+                value={formData.client_id}
+                onChange={(e) => setFormData({ ...formData, client_id: e.target.value, projet_id: '' })}
+                required
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">Sélectionner un client</option>
+                {clients.map((client) => (
+                  <option key={client.id} value={client.id}>
+                    {client.full_name} ({client.email})
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => setShowClientModal(true)}
+                className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center gap-1 text-sm font-medium whitespace-nowrap"
+                title="Créer un nouveau client"
+              >
+                <span>+</span>
+                <span className="hidden sm:inline">Nouveau</span>
+              </button>
+            </div>
           </div>
 
           <div>
@@ -300,7 +325,7 @@ export function CreateFactureForm({
             <button
               type="button"
               onClick={handleAddItem}
-              className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+              className="text-sm text-orange-500 hover:text-blue-700 font-medium"
             >
               + Ajouter un item
             </button>
@@ -399,7 +424,7 @@ export function CreateFactureForm({
                 ? 'Solde à payer'
                 : 'Total TTC'}
             </span>
-            <span className="text-2xl font-bold text-blue-600">
+            <span className="text-2xl font-bold text-orange-500">
               {(
                 formData.type === 'solde' && formData.acompte_amount
                   ? (formData.total_ttc || 0) - formData.acompte_amount
@@ -445,7 +470,7 @@ export function CreateFactureForm({
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Création...' : 'Créer la facture'}
           </button>
@@ -458,6 +483,22 @@ export function CreateFactureForm({
           </button>
         </div>
       </div>
+
+      {/* Modal de création rapide */}
+      <QuickCreateClientModal
+        isOpen={showClientModal}
+        onClose={() => setShowClientModal(false)}
+        atelierId={atelierId}
+        onClientCreated={(newClient) => {
+          setClients([...clients, { 
+            id: newClient.id, 
+            full_name: newClient.full_name, 
+            email: newClient.email, 
+            type: newClient.type 
+          }])
+          setFormData({ ...formData, client_id: newClient.id, projet_id: '' })
+        }}
+      />
     </form>
   )
 }

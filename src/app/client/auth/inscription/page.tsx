@@ -82,7 +82,7 @@ export default function ClientInscriptionPage() {
       <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-black text-gray-900 mb-2">
-            Thermo<span className="text-blue-600">Gestion</span>
+            Thermo<span className="text-orange-500">Gestion</span>
           </h1>
           <p className="text-gray-600">Créer votre compte client</p>
         </div>
@@ -144,7 +144,7 @@ export default function ClientInscriptionPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Création...' : 'Créer mon compte'}
           </button>
@@ -152,7 +152,7 @@ export default function ClientInscriptionPage() {
 
         <p className="mt-6 text-center text-sm text-gray-600">
           Déjà un compte ?{' '}
-          <a href="/client/auth/login" className="text-blue-600 hover:text-blue-700 font-medium">
+          <a href="/client/auth/login" className="text-orange-500 hover:text-blue-700 font-medium">
             Se connecter
           </a>
         </p>

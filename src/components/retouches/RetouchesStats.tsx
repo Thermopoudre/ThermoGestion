@@ -47,7 +47,7 @@ export function RetouchesStats({ stats, causes, atelierId }: RetouchesStatsProps
           </div>
           <div className="bg-white rounded-xl shadow-lg p-6">
             <p className="text-sm text-gray-600 mb-1">Total projets</p>
-            <p className="text-4xl font-bold text-blue-600">{stats.total_projets}</p>
+            <p className="text-4xl font-bold text-orange-500">{stats.total_projets}</p>
             <p className="text-xs text-gray-500 mt-2">Derniers 30 jours</p>
           </div>
         </div>
@@ -88,7 +88,7 @@ export function RetouchesStats({ stats, causes, atelierId }: RetouchesStatsProps
       {/* Retour */}
       <button
         onClick={() => router.back()}
-        className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
+        className="inline-flex items-center text-orange-500 hover:text-blue-700 font-medium"
       >
         ← Retour
       </button>

@@ -66,6 +66,7 @@ export default async function EditClientPage({ params }: { params: { id: string 
             siret: client.siret || undefined,
             tags: client.tags || undefined,
             notes: client.notes || undefined,
+            facture_trigger: (client.facture_trigger as 'pret' | 'livre') || 'pret',
           }}
         />
       </div>

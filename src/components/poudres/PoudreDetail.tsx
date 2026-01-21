@@ -109,7 +109,7 @@ export function PoudreDetail({ poudre }: PoudreDetailProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
             <label className="block text-sm font-medium text-gray-600 mb-2">Stock théorique</label>
-            <p className="text-3xl font-black text-blue-600">{stockTheorique.toFixed(2)} kg</p>
+            <p className="text-3xl font-black text-orange-500">{stockTheorique.toFixed(2)} kg</p>
           </div>
           <div className={`border rounded-lg p-6 ${stockReel !== null ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
             <label className="block text-sm font-medium text-gray-600 mb-2">Stock réel</label>
@@ -120,7 +120,7 @@ export function PoudreDetail({ poudre }: PoudreDetailProps) {
           <div>
             <Link
               href={`/app/poudres/${poudre.id}/stock`}
-              className="block w-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all text-center"
+              className="block w-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all text-center"
             >
               Gérer le stock
             </Link>

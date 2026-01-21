@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@/lib/supabase/client'
+import { QuickCreateDefautTypeModal } from '@/components/ui/QuickCreateDefautTypeModal'
 import type { Database } from '@/types/database.types'
 
 type Projet = Database['public']['Tables']['projets']['Row']
@@ -17,12 +18,18 @@ interface DeclarerRetoucheFormProps {
 
 export function DeclarerRetoucheForm({
   projet,
-  defautTypes,
+  defautTypes: initialDefautTypes,
   atelierId,
   userId,
 }: DeclarerRetoucheFormProps) {
   const router = useRouter()
   const supabase = createBrowserClient()
+
+  // Liste dynamique des types de défauts
+  const [defautTypes, setDefautTypes] = useState<DefautType[]>(initialDefautTypes)
+  
+  // Modal de création rapide
+  const [showDefautTypeModal, setShowDefautTypeModal] = useState(false)
 
   const [defautTypeId, setDefautTypeId] = useState('')
   const [description, setDescription] = useState('')
@@ -130,22 +137,33 @@ export function DeclarerRetoucheForm({
           <label htmlFor="defaut_type" className="block text-sm font-medium text-gray-700 mb-2">
             Type de défaut (optionnel)
           </label>
-          <select
-            id="defaut_type"
-            value={defautTypeId}
-            onChange={(e) => setDefautTypeId(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">Sélectionner un type</option>
-            {defautTypes.map((type) => (
-              <option key={type.id} value={type.id}>
-                {type.name} {type.category ? `(${type.category})` : ''}
-              </option>
-            ))}
-          </select>
+          <div className="flex gap-2">
+            <select
+              id="defaut_type"
+              value={defautTypeId}
+              onChange={(e) => setDefautTypeId(e.target.value)}
+              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">Sélectionner un type</option>
+              {defautTypes.map((type) => (
+                <option key={type.id} value={type.id}>
+                  {type.name} {type.category ? `(${type.category})` : ''}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={() => setShowDefautTypeModal(true)}
+              className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center gap-1 text-sm font-medium whitespace-nowrap"
+              title="Créer un nouveau type de défaut"
+            >
+              <span>+</span>
+              <span className="hidden sm:inline">Nouveau</span>
+            </button>
+          </div>
           {defautTypes.length === 0 && (
             <p className="mt-2 text-sm text-gray-500">
-              Aucun type de défaut configuré. Créez-en dans les paramètres.
+              Aucun type de défaut configuré. Cliquez sur "+ Nouveau" pour en créer un.
             </p>
           )}
         </div>
@@ -241,6 +259,17 @@ export function DeclarerRetoucheForm({
           </button>
         </div>
       </div>
+
+      {/* Modal de création rapide */}
+      <QuickCreateDefautTypeModal
+        isOpen={showDefautTypeModal}
+        onClose={() => setShowDefautTypeModal(false)}
+        atelierId={atelierId}
+        onDefautTypeCreated={(newDefautType) => {
+          setDefautTypes([...defautTypes, newDefautType])
+          setDefautTypeId(newDefautType.id)
+        }}
+      />
     </form>
   )
 }

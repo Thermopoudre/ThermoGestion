@@ -133,7 +133,7 @@ export function SerieDetail({ serie, projets }: SerieDetailProps) {
             <button
               onClick={handleLancerSerie}
               disabled={loading}
-              className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Lancer la série
             </button>
@@ -193,7 +193,7 @@ export function SerieDetail({ serie, projets }: SerieDetailProps) {
       {/* Retour */}
       <Link
         href="/app/series"
-        className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
+        className="inline-flex items-center text-orange-500 hover:text-blue-700 font-medium"
       >
         ← Retour aux séries
       </Link>

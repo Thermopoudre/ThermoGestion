@@ -177,7 +177,7 @@ export function StockPoudreDetail({ poudre, stock, atelierId }: StockPoudreDetai
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
             <label className="block text-sm font-medium text-gray-600 mb-2">Stock théorique</label>
-            <p className="text-3xl font-black text-blue-600">{stockTheorique.toFixed(2)} kg</p>
+            <p className="text-3xl font-black text-orange-500">{stockTheorique.toFixed(2)} kg</p>
             <p className="text-sm text-gray-600 mt-2">Décrementé par projets/séries</p>
           </div>
 
@@ -216,7 +216,7 @@ export function StockPoudreDetail({ poudre, stock, atelierId }: StockPoudreDetai
           <div className="flex gap-4">
             <button
               onClick={() => setPeseeMode(true)}
-              className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all"
+              className="bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all"
             >
               📏 Nouvelle pesée
             </button>
@@ -287,7 +287,7 @@ export function StockPoudreDetail({ poudre, stock, atelierId }: StockPoudreDetai
                 <button
                   type="submit"
                   disabled={loading}
-                  className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all disabled:opacity-50"
+                  className="bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all disabled:opacity-50"
                 >
                   {loading ? 'Enregistrement...' : 'Enregistrer pesée'}
                 </button>

@@ -44,7 +44,7 @@ export default async function NewDevisPage() {
         <div className="mb-8">
           <a
             href="/app/devis"
-            className="text-blue-600 hover:text-blue-700 text-sm font-medium mb-4 inline-block"
+            className="text-orange-500 hover:text-blue-700 text-sm font-medium mb-4 inline-block"
           >
             ← Retour à la liste
           </a>

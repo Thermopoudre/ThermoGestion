@@ -75,7 +75,7 @@ export default async function CompleteProfilePage() {
         <div className="space-y-3">
           <Link
             href="/auth/logout"
-            className="block w-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold py-3 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all text-center"
+            className="block w-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all text-center"
           >
             Se déconnecter
           </Link>

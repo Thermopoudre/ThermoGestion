@@ -125,6 +125,7 @@ export type Database = {
           atelier_id: string
           created_at: string
           email: string
+          facture_trigger: 'pret' | 'livre'
           full_name: string
           id: string
           notes: string | null
@@ -139,6 +140,7 @@ export type Database = {
           atelier_id: string
           created_at?: string
           email: string
+          facture_trigger?: 'pret' | 'livre'
           full_name: string
           id?: string
           notes?: string | null
@@ -153,6 +155,7 @@ export type Database = {
           atelier_id?: string
           created_at?: string
           email?: string
+          facture_trigger?: 'pret' | 'livre'
           full_name?: string
           id?: string
           notes?: string | null

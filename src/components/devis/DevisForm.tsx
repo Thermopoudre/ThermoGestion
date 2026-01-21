@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@/lib/supabase/client'
+import { QuickCreateClientModal } from '@/components/ui/QuickCreateClientModal'
+import { QuickCreatePoudreModal } from '@/components/ui/QuickCreatePoudreModal'
 import type { Database } from '@/types/database.types'
 
 type Client = Database['public']['Tables']['clients']['Row']
@@ -34,12 +36,21 @@ interface DevisFormProps {
   initialData?: any
 }
 
-export function DevisForm({ atelierId, userId, clients, poudres, devisId, initialData }: DevisFormProps) {
+export function DevisForm({ atelierId, userId, clients: initialClients, poudres: initialPoudres, devisId, initialData }: DevisFormProps) {
   const router = useRouter()
   const supabase = createBrowserClient()
   
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  
+  // Liste dynamique des clients et poudres (peut être mise à jour via création rapide)
+  const [clients, setClients] = useState<Client[]>(initialClients)
+  const [poudres, setPoudres] = useState<Poudre[]>(initialPoudres)
+  
+  // Modals de création rapide
+  const [showClientModal, setShowClientModal] = useState(false)
+  const [showPoudreModal, setShowPoudreModal] = useState(false)
+  const [currentItemIdForPoudre, setCurrentItemIdForPoudre] = useState<string | null>(null)
   
   // Paramètres de calcul (avec valeurs par défaut)
   const [params, setParams] = useState({
@@ -228,41 +239,54 @@ export function DevisForm({ atelierId, userId, clients, poudres, devisId, initia
     }
   }
 
+  const inputClasses = "w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors text-sm"
+
   return (
-    <div className="max-w-6xl mx-auto">
-      <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="max-w-6xl mx-auto px-4 sm:px-0">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+          <div className="bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-200 px-4 py-3 rounded-lg text-sm">
             {error}
           </div>
         )}
 
         {/* Informations générales */}
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Informations générales</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 transition-colors">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">Informations générales</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <div>
-              <label htmlFor="client_id" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="client_id" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Client *
               </label>
-              <select
-                id="client_id"
-                value={formData.client_id}
-                onChange={(e) => setFormData({ ...formData, client_id: e.target.value })}
-                required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">Sélectionner un client</option>
-                {clients.map(client => (
-                  <option key={client.id} value={client.id}>
-                    {client.full_name} ({client.email})
-                  </option>
-                ))}
-              </select>
+              <div className="flex gap-2">
+                <select
+                  id="client_id"
+                  value={formData.client_id}
+                  onChange={(e) => setFormData({ ...formData, client_id: e.target.value })}
+                  required
+                  className={`${inputClasses} flex-1`}
+                >
+                  <option value="">Sélectionner un client</option>
+                  {clients.map(client => (
+                    <option key={client.id} value={client.id}>
+                      {client.full_name} ({client.email})
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setShowClientModal(true)}
+                  className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center gap-1 text-sm font-medium whitespace-nowrap"
+                  title="Créer un nouveau client"
+                >
+                  <span>+</span>
+                  <span className="hidden sm:inline">Nouveau</span>
+                </button>
+              </div>
             </div>
 
             <div>
-              <label htmlFor="tva_rate" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="tva_rate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 TVA (%)
               </label>
               <input
@@ -271,139 +295,139 @@ export function DevisForm({ atelierId, userId, clients, poudres, devisId, initia
                 step="0.1"
                 value={params.tva_rate}
                 onChange={(e) => setParams({ ...params, tva_rate: parseFloat(e.target.value) || 20 })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className={inputClasses}
               />
             </div>
           </div>
         </div>
 
         {/* Paramètres de calcul */}
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Paramètres de calcul</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 transition-colors">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">Paramètres de calcul</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Prix poudre (€/kg)</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Prix poudre (€/kg)</label>
               <input
                 type="number"
                 step="0.01"
                 value={params.prix_poudre_kg}
                 onChange={(e) => setParams({ ...params, prix_poudre_kg: parseFloat(e.target.value) || 0 })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className={inputClasses}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Taux MO (€/h)</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Taux MO (€/h)</label>
               <input
                 type="number"
                 step="0.01"
                 value={params.taux_mo_heure}
                 onChange={(e) => setParams({ ...params, taux_mo_heure: parseFloat(e.target.value) || 0 })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className={inputClasses}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Marge poudre (%)</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Marge poudre (%)</label>
               <input
                 type="number"
                 step="0.1"
                 value={params.marge_poudre_pct}
                 onChange={(e) => setParams({ ...params, marge_poudre_pct: parseFloat(e.target.value) || 0 })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className={inputClasses}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Marge MO (%)</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Marge MO (%)</label>
               <input
                 type="number"
                 step="0.1"
                 value={params.marge_mo_pct}
                 onChange={(e) => setParams({ ...params, marge_mo_pct: parseFloat(e.target.value) || 0 })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className={inputClasses}
               />
             </div>
           </div>
         </div>
 
         {/* Items */}
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">Pièces / Items</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 transition-colors">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Pièces / Items</h2>
             <button
               type="button"
               onClick={addItem}
-              className="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+              className="w-full sm:w-auto bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm"
             >
               + Ajouter un item
             </button>
           </div>
 
           {formData.items.length === 0 ? (
-            <p className="text-gray-600 text-center py-8">Aucun item. Cliquez sur "Ajouter un item" pour commencer.</p>
+            <p className="text-gray-600 dark:text-gray-400 text-center py-8">Aucun item. Cliquez sur "Ajouter un item" pour commencer.</p>
           ) : (
             <div className="space-y-4">
               {formData.items.map((item, index) => (
-                <div key={item.id} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-bold text-gray-900">Item #{index + 1}</h3>
+                <div key={item.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 sm:p-4 bg-gray-50 dark:bg-gray-700/50">
+                  <div className="flex items-center justify-between mb-3 sm:mb-4">
+                    <h3 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">Item #{index + 1}</h3>
                     <button
                       type="button"
                       onClick={() => removeItem(item.id)}
-                      className="text-red-600 hover:text-red-800 text-sm font-medium"
+                      className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-sm font-medium"
                     >
                       Supprimer
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div className="md:col-span-3">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Désignation *</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
+                    <div className="col-span-2 sm:col-span-3">
+                      <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Désignation *</label>
                       <input
                         type="text"
                         value={item.designation}
                         onChange={(e) => updateItem(item.id, { designation: e.target.value })}
                         required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        className={inputClasses}
                         placeholder="Ex: Jante avant droite"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Longueur (mm) *</label>
+                      <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Long. (mm) *</label>
                       <input
                         type="number"
                         step="0.1"
                         value={item.longueur || ''}
                         onChange={(e) => updateItem(item.id, { longueur: parseFloat(e.target.value) || 0 })}
                         required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        className={inputClasses}
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Largeur (mm) *</label>
+                      <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Larg. (mm) *</label>
                       <input
                         type="number"
                         step="0.1"
                         value={item.largeur || ''}
                         onChange={(e) => updateItem(item.id, { largeur: parseFloat(e.target.value) || 0 })}
                         required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        className={inputClasses}
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Hauteur (mm) - Optionnel</label>
+                      <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Haut. (mm)</label>
                       <input
                         type="number"
                         step="0.1"
                         value={item.hauteur || ''}
                         onChange={(e) => updateItem(item.id, { hauteur: parseFloat(e.target.value) || undefined })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        className={inputClasses}
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Quantité *</label>
+                      <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quantité *</label>
                       <input
                         type="number"
                         step="1"
@@ -411,29 +435,42 @@ export function DevisForm({ atelierId, userId, clients, poudres, devisId, initia
                         value={item.quantite || 1}
                         onChange={(e) => updateItem(item.id, { quantite: parseInt(e.target.value) || 1 })}
                         required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        className={inputClasses}
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Poudre</label>
-                      <select
-                        value={item.poudre_id || ''}
-                        onChange={(e) => updateItem(item.id, { poudre_id: e.target.value || undefined })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                      >
-                        <option value="">Aucune</option>
-                        {poudres.map(poudre => (
-                          <option key={poudre.id} value={poudre.id}>
-                            {poudre.marque} {poudre.reference} - {poudre.finition}
-                            {poudre.ral && ` (RAL ${poudre.ral})`}
-                          </option>
-                        ))}
-                      </select>
+                    <div className="col-span-2 sm:col-span-1">
+                      <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Poudre</label>
+                      <div className="flex gap-1">
+                        <select
+                          value={item.poudre_id || ''}
+                          onChange={(e) => updateItem(item.id, { poudre_id: e.target.value || undefined })}
+                          className={`${inputClasses} flex-1`}
+                        >
+                          <option value="">Aucune</option>
+                          {poudres.map(poudre => (
+                            <option key={poudre.id} value={poudre.id}>
+                              {poudre.marque} {poudre.reference} - {poudre.finition}
+                              {poudre.ral && ` (RAL ${poudre.ral})`}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCurrentItemIdForPoudre(item.id)
+                            setShowPoudreModal(true)
+                          }}
+                          className="px-2 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm font-bold"
+                          title="Créer une nouvelle poudre"
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Couches *</label>
+                      <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Couches *</label>
                       <input
                         type="number"
                         step="1"
@@ -442,32 +479,32 @@ export function DevisForm({ atelierId, userId, clients, poudres, devisId, initia
                         value={item.couches || 1}
                         onChange={(e) => updateItem(item.id, { couches: parseInt(e.target.value) || 1 })}
                         required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        className={inputClasses}
                       />
                     </div>
                   </div>
 
                   {/* Résultats calcul */}
-                  <div className="mt-4 pt-4 border-t border-gray-300 grid grid-cols-2 md:grid-cols-5 gap-2 text-sm">
+                  <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-300 dark:border-gray-600 grid grid-cols-3 sm:grid-cols-5 gap-2 text-xs sm:text-sm">
                     <div>
-                      <span className="text-gray-600">Surface:</span>
-                      <p className="font-bold text-gray-900">{item.surface_m2.toFixed(2)} m²</p>
+                      <span className="text-gray-600 dark:text-gray-400 block">Surface</span>
+                      <p className="font-bold text-gray-900 dark:text-white">{item.surface_m2.toFixed(2)} m²</p>
                     </div>
                     <div>
-                      <span className="text-gray-600">Poudre:</span>
-                      <p className="font-bold text-gray-900">{item.cout_poudre.toFixed(2)} €</p>
+                      <span className="text-gray-600 dark:text-gray-400 block">Poudre</span>
+                      <p className="font-bold text-gray-900 dark:text-white">{item.cout_poudre.toFixed(2)} €</p>
                     </div>
                     <div>
-                      <span className="text-gray-600">M.O.:</span>
-                      <p className="font-bold text-gray-900">{item.cout_mo.toFixed(2)} €</p>
+                      <span className="text-gray-600 dark:text-gray-400 block">M.O.</span>
+                      <p className="font-bold text-gray-900 dark:text-white">{item.cout_mo.toFixed(2)} €</p>
                     </div>
-                    <div>
-                      <span className="text-gray-600">Consommables:</span>
-                      <p className="font-bold text-gray-900">{item.cout_consommables.toFixed(2)} €</p>
+                    <div className="hidden sm:block">
+                      <span className="text-gray-600 dark:text-gray-400 block">Conso.</span>
+                      <p className="font-bold text-gray-900 dark:text-white">{item.cout_consommables.toFixed(2)} €</p>
                     </div>
-                    <div>
-                      <span className="text-gray-600">Total HT:</span>
-                      <p className="font-bold text-blue-600">{item.total_ht.toFixed(2)} €</p>
+                    <div className="col-span-3 sm:col-span-1 mt-2 sm:mt-0 pt-2 sm:pt-0 border-t sm:border-0 border-gray-200 dark:border-gray-600">
+                      <span className="text-gray-600 dark:text-gray-400 block">Total HT</span>
+                      <p className="font-bold text-orange-500 dark:text-blue-400 text-base sm:text-sm">{item.total_ht.toFixed(2)} €</p>
                     </div>
                   </div>
                 </div>
@@ -477,18 +514,18 @@ export function DevisForm({ atelierId, userId, clients, poudres, devisId, initia
         </div>
 
         {/* Totaux */}
-        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Totaux</h2>
-          <div className="grid grid-cols-2 gap-6">
+        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/30 dark:to-cyan-900/30 border-2 border-blue-200 dark:border-blue-700 rounded-xl shadow-lg p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">Totaux</h2>
+          <div className="grid grid-cols-2 gap-4 sm:gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-2">Total HT</label>
-              <p className="text-3xl font-black text-gray-900">
+              <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1 sm:mb-2">Total HT</label>
+              <p className="text-xl sm:text-3xl font-black text-gray-900 dark:text-white">
                 {totalHt.toFixed(2)} €
               </p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-2">Total TTC (TVA {params.tva_rate}%)</label>
-              <p className="text-3xl font-black text-blue-600">
+              <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1 sm:mb-2">Total TTC ({params.tva_rate}%)</label>
+              <p className="text-xl sm:text-3xl font-black text-orange-500 dark:text-blue-400">
                 {totalTtc.toFixed(2)} €
               </p>
             </div>
@@ -496,8 +533,8 @@ export function DevisForm({ atelierId, userId, clients, poudres, devisId, initia
         </div>
 
         {/* Notes */}
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 transition-colors">
+          <label htmlFor="notes" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Notes (optionnel)
           </label>
           <textarea
@@ -505,28 +542,55 @@ export function DevisForm({ atelierId, userId, clients, poudres, devisId, initia
             value={formData.notes}
             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
             rows={4}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className={inputClasses}
             placeholder="Notes internes..."
           />
         </div>
 
         {/* Actions */}
-        <div className="flex gap-4">
-          <button
-            type="submit"
-            disabled={loading}
-            className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? 'Enregistrement...' : devisId ? 'Mettre à jour' : 'Enregistrer le devis'}
-          </button>
+        <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4">
           <a
             href="/app/devis"
-            className="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+            className="w-full sm:w-auto text-center px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
             Annuler
           </a>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full sm:flex-1 bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Enregistrement...' : devisId ? 'Mettre à jour' : 'Enregistrer le devis'}
+          </button>
         </div>
       </form>
+
+      {/* Modals de création rapide */}
+      <QuickCreateClientModal
+        isOpen={showClientModal}
+        onClose={() => setShowClientModal(false)}
+        atelierId={atelierId}
+        onClientCreated={(newClient) => {
+          setClients([...clients, newClient])
+          setFormData({ ...formData, client_id: newClient.id })
+        }}
+      />
+
+      <QuickCreatePoudreModal
+        isOpen={showPoudreModal}
+        onClose={() => {
+          setShowPoudreModal(false)
+          setCurrentItemIdForPoudre(null)
+        }}
+        atelierId={atelierId}
+        onPoudreCreated={(newPoudre) => {
+          setPoudres([...poudres, newPoudre])
+          // Si on a un item en cours, lui assigner la nouvelle poudre
+          if (currentItemIdForPoudre) {
+            updateItem(currentItemIdForPoudre, { poudre_id: newPoudre.id })
+          }
+        }}
+      />
     </div>
   )
 }

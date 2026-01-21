@@ -162,38 +162,31 @@ export function SignatureDevis({ devis, userId }: SignatureDevisProps) {
         ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/signatures/${signatureFileName}`
         : signature // Fallback sur data URL
 
-      // Mettre à jour le devis
-      const { error: updateError } = await supabase
-        .from('devis')
-        .update({
-          signed_at: new Date().toISOString(),
-          signed_by: userId,
-          signed_ip: ipAddress,
-          signature_data: {
-            method: signMethod,
-            url: signatureUrl,
-            timestamp: new Date().toISOString(),
-            user_agent: navigator.userAgent,
-          },
-          status: 'accepte', // Signature = acceptation
-        })
-        .eq('id', devis.id)
-
-      if (updateError) throw updateError
-
-      // Journal d'audit
-      await supabase.from('audit_logs').insert({
-        atelier_id: devis.atelier_id,
-        user_id: userId,
-        action: 'sign',
-        table_name: 'devis',
-        record_id: devis.id,
-        new_data: { signed_at: new Date().toISOString(), status: 'accepte' },
-        ip_address: ipAddress,
-        user_agent: navigator.userAgent,
+      // Appeler l'API pour signer le devis ET créer le projet automatiquement
+      const response = await fetch(`/api/devis/${devis.id}/sign`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          signature_url: signatureUrl,
+          signature_method: signMethod,
+          ip_address: ipAddress,
+        }),
       })
 
-      router.push(`/app/devis/${devis.id}`)
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erreur lors de la signature')
+      }
+
+      // Rediriger vers le projet si créé automatiquement
+      if (result.projetCreated && result.projetId) {
+        // Afficher un message de succès avant la redirection
+        alert(`✅ Devis signé avec succès !\n\n📁 Projet ${result.projetNumero} créé automatiquement.`)
+        router.push(`/app/projets/${result.projetId}`)
+      } else {
+        router.push(`/app/devis/${devis.id}`)
+      }
       router.refresh()
     } catch (err: any) {
       setError(err.message || 'Erreur lors de la signature')
@@ -325,7 +318,7 @@ export function SignatureDevis({ devis, userId }: SignatureDevisProps) {
           <button
             onClick={handleSubmit}
             disabled={loading || !signature}
-            className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Signature en cours...' : '✓ Signer le devis'}
           </button>

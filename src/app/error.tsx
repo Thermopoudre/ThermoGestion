@@ -25,7 +25,7 @@ export default function Error({
         <div className="flex gap-4 justify-center">
           <button
             onClick={reset}
-            className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all"
+            className="bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all"
           >
             Réessayer
           </button>

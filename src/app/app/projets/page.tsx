@@ -59,20 +59,20 @@ export default async function ProjetsPage({ searchParams }: { searchParams: { cl
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8 flex items-center justify-between">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+      <div className="container mx-auto px-4 py-6 sm:py-8">
+        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-black text-gray-900 mb-2">
+            <h1 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white mb-1 sm:mb-2">
               Projets
             </h1>
-            <p className="text-gray-600">
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
               Suivez vos projets de thermolaquage
             </p>
           </div>
           <a
             href="/app/projets/new"
-            className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all"
+            className="w-full sm:w-auto text-center bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-orange-400 hover:to-red-500 transition-all shadow-lg shadow-orange-500/30"
           >
             + Nouveau projet
           </a>

@@ -323,7 +323,7 @@ export function PoudreForm({ atelierId, poudreId, initialData }: PoudreFormProps
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Enregistrement...' : poudreId ? 'Mettre à jour' : 'Créer la poudre'}
           </button>

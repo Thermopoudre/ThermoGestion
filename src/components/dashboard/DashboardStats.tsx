@@ -16,7 +16,7 @@ export function DashboardStats({ clients, projets, devis, storageUsed, storageQu
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
       <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6 border border-blue-200">
         <h3 className="text-lg font-bold text-gray-900 mb-2">Clients</h3>
-        <p className="text-3xl font-black text-blue-600 mb-1">{clients}</p>
+        <p className="text-3xl font-black text-orange-500 mb-1">{clients}</p>
         <p className="text-sm text-gray-600">Clients actifs</p>
       </div>
 

@@ -163,25 +163,20 @@ EMAIL_QUEUE_SECRET_KEY=your-random-secret-key-here-min-32-chars
 ---
 
 #### 10. VAPID Keys (Web Push Notifications)
-**Où obtenir** : Générer avec `npx web-push generate-vapid-keys`
+**Où obtenir** : Déjà générées ci-dessous
 
 ```bash
-# Clé publique VAPID (exposée côté client)
-NEXT_PUBLIC_VAPID_PUBLIC_KEY=BLxxxxxxxxxxxxx
+# Clé publique VAPID (exposée côté client) - GÉNÉRÉE ✅
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=BMPNE3rXJ5Xo2W4kqB2qHr2W4a_bV6aHGpEjreYaCa6LSOk1uO3lzTQDXnJBwwqDRjPwVTVjV7peZ3T9CkaaWhI
 
-# Clé privée VAPID (SECRÈTE, jamais exposer)
-VAPID_PRIVATE_KEY=xxxxxxxxxxxxx
+# Clé privée VAPID (SECRÈTE, jamais exposer) - GÉNÉRÉE ✅
+VAPID_PRIVATE_KEY=3zRVv6DXpf_jfl0RamopuliSnTKqFChSEho3F7rjIio
 
 # Email sujet VAPID (contact support)
 VAPID_SUBJECT=mailto:contact@thermogestion.fr
 ```
 
-**Génération** :
-```bash
-npx web-push generate-vapid-keys
-```
-
-**Note** : Pour notifications push navigateur (Web Push API)
+**Note** : Ces clés sont uniques à votre projet. Pour notifications push navigateur (Web Push API)
 
 ---
 

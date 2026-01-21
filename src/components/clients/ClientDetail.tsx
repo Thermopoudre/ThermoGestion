@@ -81,7 +81,7 @@ export function ClientDetail({ client, projets, devis }: ClientDetailProps) {
           <h2 className="text-xl font-bold text-gray-900">Projets récents</h2>
           <Link
             href={`/app/projets?client=${client.id}`}
-            className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+            className="text-orange-500 hover:text-blue-700 text-sm font-medium"
           >
             Voir tous →
           </Link>
@@ -122,7 +122,7 @@ export function ClientDetail({ client, projets, devis }: ClientDetailProps) {
           <h2 className="text-xl font-bold text-gray-900">Devis récents</h2>
           <Link
             href={`/app/devis?client=${client.id}`}
-            className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+            className="text-orange-500 hover:text-blue-700 text-sm font-medium"
           >
             Voir tous →
           </Link>

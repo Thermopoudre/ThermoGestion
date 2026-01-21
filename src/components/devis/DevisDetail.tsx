@@ -164,7 +164,7 @@ export function DevisDetail({ devis, atelier }: DevisDetailProps) {
                 <td colSpan={5} className="px-4 py-3 text-lg font-black text-gray-900 text-right">
                   Total TTC
                 </td>
-                <td className="px-4 py-3 text-lg font-black text-blue-600 text-right">
+                <td className="px-4 py-3 text-lg font-black text-orange-500 text-right">
                   {Number(devis.total_ttc).toFixed(2)} €
                 </td>
               </tr>
@@ -187,7 +187,7 @@ export function DevisDetail({ devis, atelier }: DevisDetailProps) {
               </Link>
               <Link
                 href={`/app/devis/${devis.id}/send`}
-                className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all"
+                className="bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all"
               >
                 Envoyer au client
               </Link>

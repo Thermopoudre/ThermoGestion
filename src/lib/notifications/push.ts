@@ -6,15 +6,25 @@ import type { Database } from '@/types/database.types'
 
 type PushSubscription = Database['public']['Tables']['push_subscriptions']['Row']
 
-// Configuration Web Push (VAPID keys)
-// À générer avec: npx web-push generate-vapid-keys
-const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || ''
-const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || ''
-const VAPID_SUBJECT = process.env.VAPID_SUBJECT || 'mailto:contact@thermogestion.fr'
+// Configuration Web Push (VAPID keys) - Initialisation lazy
+let webPushConfigured = false
 
-// Configurer web-push
-if (VAPID_PRIVATE_KEY) {
-  webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY)
+function getWebPush() {
+  if (!webPushConfigured) {
+    const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
+    const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY
+    const VAPID_SUBJECT = process.env.VAPID_SUBJECT || 'mailto:contact@thermogestion.fr'
+
+    if (VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY) {
+      try {
+        webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY)
+        webPushConfigured = true
+      } catch (error) {
+        console.error('Erreur configuration VAPID:', error)
+      }
+    }
+  }
+  return webPushConfigured ? webpush : null
 }
 
 export interface PushNotificationPayload {
@@ -35,7 +45,9 @@ export async function sendPushNotification(
   payload: PushNotificationPayload
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    if (!VAPID_PRIVATE_KEY) {
+    const wp = getWebPush()
+    
+    if (!wp) {
       return { success: false, error: 'VAPID keys non configurées' }
     }
 
@@ -57,7 +69,7 @@ export async function sendPushNotification(
       requireInteraction: payload.requireInteraction || false,
     })
 
-    await webpush.sendNotification(pushSubscription, notificationPayload)
+    await wp.sendNotification(pushSubscription, notificationPayload)
 
     return { success: true }
   } catch (error: any) {

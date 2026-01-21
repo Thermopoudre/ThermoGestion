@@ -83,7 +83,7 @@ export function ProjetsClientList({ projets }: ProjetsClientListProps) {
             {projet.devis && (
               <p className="pt-2 border-t border-gray-200">
                 <span className="font-medium">Montant :</span>{' '}
-                <span className="text-blue-600 font-bold">
+                <span className="text-orange-500 font-bold">
                   {Number(projet.devis.total_ttc).toLocaleString('fr-FR', {
                     style: 'currency',
                     currency: 'EUR',
@@ -94,7 +94,7 @@ export function ProjetsClientList({ projets }: ProjetsClientListProps) {
           </div>
 
           <div className="mt-4 pt-4 border-t border-gray-200">
-            <span className="text-blue-600 text-sm font-medium hover:text-blue-700">
+            <span className="text-orange-500 text-sm font-medium hover:text-blue-700">
               Voir les détails →
             </span>
           </div>

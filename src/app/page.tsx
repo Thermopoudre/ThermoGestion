@@ -14,7 +14,7 @@ export default function Home() {
         <div class="container mx-auto px-4 py-16">
           <div class="max-w-4xl mx-auto text-center">
             <h1 class="text-5xl font-black text-gray-900 mb-6">
-              Thermo<span class="text-blue-600">Gestion</span>
+              Thermo<span class="text-orange-500">Gestion</span>
             </h1>
             <p class="text-xl text-gray-600 mb-8">
               Logiciel SaaS professionnel pour ateliers de thermolaquage

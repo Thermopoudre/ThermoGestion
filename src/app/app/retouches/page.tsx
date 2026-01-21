@@ -94,7 +94,7 @@ export default async function RetouchesPage() {
           </div>
           <div className="bg-white rounded-xl shadow-lg p-6">
             <p className="text-sm text-gray-600 mb-1">Total projets</p>
-            <p className="text-3xl font-bold text-blue-600">{stats[0].total_projets}</p>
+            <p className="text-3xl font-bold text-orange-500">{stats[0].total_projets}</p>
             <p className="text-xs text-gray-500 mt-1">Derniers 30 jours</p>
           </div>
         </div>

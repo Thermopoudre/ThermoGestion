@@ -153,7 +153,7 @@ export function PushNotificationButton() {
         <button
           onClick={subscribe}
           disabled={loading}
-          className="text-sm text-blue-600 hover:text-blue-800 disabled:opacity-50"
+          className="text-sm text-orange-500 hover:text-blue-800 disabled:opacity-50"
         >
           {loading ? 'Abonnement...' : 'Activer notifications'}
         </button>

@@ -87,7 +87,7 @@ export function RetouchesList({ retouches, atelierId }: RetouchesListProps) {
                 <td className="px-6 py-4 whitespace-nowrap">
                   <Link
                     href={`/app/projets/${retouche.projet_id}`}
-                    className="text-sm font-semibold text-blue-600 hover:text-blue-800"
+                    className="text-sm font-semibold text-orange-500 hover:text-blue-800"
                   >
                     {retouche.projets?.name || 'Projet'}
                   </Link>
@@ -116,7 +116,7 @@ export function RetouchesList({ retouches, atelierId }: RetouchesListProps) {
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <Link
                     href={`/app/retouches/${retouche.id}`}
-                    className="text-blue-600 hover:text-blue-900"
+                    className="text-orange-500 hover:text-blue-900"
                   >
                     Voir
                   </Link>

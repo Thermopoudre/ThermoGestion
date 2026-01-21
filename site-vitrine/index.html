@@ -3,339 +3,525 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="ThermoGestion - Logiciel de gestion professionnel pour ateliers de thermolaquage. Devis, projets, stock, facturation. Essai gratuit 30 jours.">
-    <title>ThermoGestion - Logiciel de gestion pour ateliers de thermolaquage</title>
+    <meta name="description" content="ThermoGestion - Logiciel de gestion conçu par et pour les ateliers de thermolaquage. Gérez vos poudres RAL, suivez cuissons et projets, facturez. Essai gratuit.">
+    <title>ThermoGestion - Le logiciel des pros du thermolaquage</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @keyframes pulse-slow { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.4; } }
         .animate-pulse-slow { animation: pulse-slow 4s ease-in-out infinite; }
-        .dropdown:hover .dropdown-menu { display: grid; }
         html { scroll-behavior: smooth; }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
-        .animate-float { animation: float 6s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+        @keyframes heat { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+        .animate-heat { background-size: 200% 200%; animation: heat 3s ease infinite; }
+        .workflow-line { background: linear-gradient(90deg, #3b82f6, #06b6d4, #10b981); }
     </style>
 </head>
 <body class="bg-black text-white">
 
 <!-- HEADER -->
-<header class="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-md border-b border-blue-600/30">
+<header class="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-md border-b border-orange-500/30">
     <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
         <a href="/" class="flex items-center gap-2">
-            <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center">
-                <span class="text-white font-black text-xl">TG</span>
+            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center">
+                <span class="text-white font-black text-lg sm:text-xl">🔥</span>
             </div>
-            <span class="text-white font-bold text-xl">Thermo<span class="text-blue-400">Gestion</span></span>
+            <span class="text-white font-bold text-lg sm:text-xl">Thermo<span class="text-orange-400">Gestion</span></span>
         </a>
         
-        <nav class="hidden md:flex items-center gap-1">
-            <a href="/" class="px-4 py-2 text-white hover:text-blue-400 transition-colors font-medium">Accueil</a>
-            <a href="/fonctionnalites" class="px-4 py-2 text-white hover:text-blue-400 transition-colors font-medium">Fonctionnalités</a>
-            <a href="/tarifs" class="px-4 py-2 text-white hover:text-blue-400 transition-colors font-medium">Tarifs</a>
-            <a href="/temoignages" class="px-4 py-2 text-white hover:text-blue-400 transition-colors font-medium">Témoignages</a>
-            <a href="/aide" class="px-4 py-2 text-white hover:text-blue-400 transition-colors font-medium">Aide</a>
-            <a href="/contact" class="px-4 py-2 text-white hover:text-blue-400 transition-colors font-medium">Contact</a>
+        <nav class="hidden lg:flex items-center gap-1">
+            <a href="/" class="px-4 py-2 text-white hover:text-orange-400 transition-colors font-medium">Accueil</a>
+            <a href="/fonctionnalites" class="px-4 py-2 text-white hover:text-orange-400 transition-colors font-medium">Fonctionnalités</a>
+            <a href="/tarifs" class="px-4 py-2 text-white hover:text-orange-400 transition-colors font-medium">Tarifs</a>
+            <a href="/temoignages" class="px-4 py-2 text-white hover:text-orange-400 transition-colors font-medium">Témoignages</a>
+            <a href="/aide" class="px-4 py-2 text-white hover:text-orange-400 transition-colors font-medium">Aide</a>
+            <a href="/contact" class="px-4 py-2 text-white hover:text-orange-400 transition-colors font-medium">Contact</a>
         </nav>
 
-        <div class="flex items-center gap-3">
-            <a href="/inscription" class="px-6 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all transform hover:scale-105">Essai gratuit</a>
-            <a href="/auth/login" class="px-4 py-2 text-white hover:text-blue-400 transition-colors font-medium">Connexion</a>
+        <div class="hidden sm:flex items-center gap-3">
+            <a href="/auth/inscription" class="px-4 sm:px-6 py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold rounded-lg hover:from-orange-400 hover:to-red-500 transition-all transform hover:scale-105 text-sm sm:text-base">Essai gratuit</a>
+            <a href="/auth/login" class="px-4 py-2 text-white hover:text-orange-400 transition-colors font-medium text-sm sm:text-base">Connexion</a>
         </div>
-    </div>
-</header>
 
-<!-- HERO -->
+        <!-- Mobile menu button -->
+        <button type="button" id="mobile-menu-btn" class="lg:hidden p-2 text-white hover:text-orange-400 focus:outline-none" onclick="toggleMobileMenu()">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+        </button>
+    </div>
+    
+    <!-- Mobile menu -->
+    <nav id="mobile-menu" class="hidden lg:hidden bg-gray-900/95 backdrop-blur-md border-t border-orange-500/30">
+        <div class="px-4 py-4 space-y-2">
+            <a href="/" class="block px-4 py-3 text-white hover:text-orange-400 transition-colors font-medium rounded-lg hover:bg-gray-800">Accueil</a>
+            <a href="/fonctionnalites" class="block px-4 py-3 text-white hover:text-orange-400 transition-colors font-medium rounded-lg hover:bg-gray-800">Fonctionnalités</a>
+            <a href="/tarifs" class="block px-4 py-3 text-white hover:text-orange-400 transition-colors font-medium rounded-lg hover:bg-gray-800">Tarifs</a>
+            <a href="/temoignages" class="block px-4 py-3 text-white hover:text-orange-400 transition-colors font-medium rounded-lg hover:bg-gray-800">Témoignages</a>
+            <a href="/aide" class="block px-4 py-3 text-white hover:text-orange-400 transition-colors font-medium rounded-lg hover:bg-gray-800">Aide</a>
+            <a href="/contact" class="block px-4 py-3 text-white hover:text-orange-400 transition-colors font-medium rounded-lg hover:bg-gray-800">Contact</a>
+            <div class="pt-4 border-t border-gray-700 space-y-2">
+                <a href="/auth/inscription" class="block text-center px-4 py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold rounded-lg hover:from-orange-400 hover:to-red-500 transition-all">Essai gratuit</a>
+                <a href="/auth/login" class="block text-center px-4 py-3 text-white hover:text-orange-400 transition-colors font-medium border border-gray-700 rounded-lg hover:bg-gray-800">Connexion</a>
+            </div>
+        </div>
+    </nav>
+</header>
+<script>
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    menu.classList.toggle('hidden');
+}
+</script>
+
+<!-- HERO - Focus THERMOLAQUAGE -->
 <section class="relative min-h-screen pt-16 overflow-hidden bg-gradient-to-br from-gray-900 via-black to-gray-800">
+    <!-- Effets de chaleur -->
     <div class="absolute inset-0">
-        <div class="absolute top-1/4 -left-20 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl animate-pulse-slow"></div>
-        <div class="absolute bottom-1/4 -right-20 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 2s;"></div>
+        <div class="absolute top-1/3 left-1/4 w-72 h-72 bg-orange-600/30 rounded-full blur-3xl animate-pulse-slow"></div>
+        <div class="absolute top-1/2 right-1/4 w-96 h-96 bg-red-600/20 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 1s;"></div>
+        <div class="absolute bottom-1/4 left-1/3 w-64 h-64 bg-yellow-500/20 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 2s;"></div>
     </div>
     <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50"></div>
     
     <div class="relative z-10 min-h-screen flex flex-col items-center justify-center text-center px-4">
-        <span class="inline-block px-4 py-1 bg-blue-600/20 border border-blue-600/50 rounded-full text-blue-400 text-sm font-medium mb-6">🚀 Solution professionnelle pour ateliers de thermolaquage</span>
-        <h1 class="text-5xl md:text-7xl font-black text-white mb-4 leading-tight">
-            GÉREZ VOTRE ATELIER<br>
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-600">AVEC SIMPLICITÉ</span>
+        <!-- Badge métier -->
+        <span class="inline-flex items-center gap-2 px-4 py-2 bg-orange-600/20 border border-orange-500/50 rounded-full text-orange-400 text-sm font-medium mb-6">
+            <span class="text-xl">🔥</span>
+            <span>Conçu par des thermolaqueurs, pour des thermolaqueurs</span>
+        </span>
+        
+        <h1 class="text-4xl sm:text-5xl md:text-7xl font-black text-white mb-4 leading-tight">
+            PILOTEZ VOTRE ATELIER DE<br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-red-500 to-yellow-500 animate-heat">THERMOLAQUAGE</span>
         </h1>
-        <p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-8">Logiciel SaaS complet pour créer des devis, suivre vos projets, gérer votre stock et facturer vos clients. Professionnel, intuitif, puissant.</p>
-        <div class="flex flex-col sm:flex-row gap-4">
-            <a href="/auth/inscription" class="px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all transform hover:scale-105 shadow-lg shadow-blue-600/30">ESSAI GRATUIT 30 JOURS</a>
-            <a href="/fonctionnalites" class="px-8 py-4 bg-white/10 backdrop-blur text-white font-bold rounded-lg hover:bg-white/20 transition-all border border-white/20">DÉCOUVRIR LES FONCTIONNALITÉS</a>
+        
+        <p class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-6">
+            <strong class="text-white">Cabine, four, stock poudres RAL, cuissons, contrôle qualité</strong> : gérez tout votre process de poudrage en un seul logiciel. 
+            Fini les fiches papier et les tableurs Excel.
+        </p>
+        
+        <!-- Tags métier -->
+        <div class="flex flex-wrap justify-center gap-2 mb-8 max-w-2xl">
+            <span class="px-3 py-1 bg-gray-800/80 border border-gray-700 rounded-full text-sm text-gray-300">🎨 Catalogue RAL</span>
+            <span class="px-3 py-1 bg-gray-800/80 border border-gray-700 rounded-full text-sm text-gray-300">🌡️ Suivi cuissons</span>
+            <span class="px-3 py-1 bg-gray-800/80 border border-gray-700 rounded-full text-sm text-gray-300">📦 Stock poudres</span>
+            <span class="px-3 py-1 bg-gray-800/80 border border-gray-700 rounded-full text-sm text-gray-300">📸 Photos avant/après</span>
+            <span class="px-3 py-1 bg-gray-800/80 border border-gray-700 rounded-full text-sm text-gray-300">✅ Contrôle QC</span>
+            <span class="px-3 py-1 bg-gray-800/80 border border-gray-700 rounded-full text-sm text-gray-300">📄 Devis PDF</span>
         </div>
-        <p class="text-gray-500 text-sm mt-4">✅ Aucune carte bancaire requise • ✅ Essai complet • ✅ Support inclus</p>
+        
+        <div class="flex flex-col sm:flex-row gap-4">
+            <a href="/auth/inscription" class="px-8 py-4 bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold rounded-lg hover:from-orange-400 hover:to-red-500 transition-all transform hover:scale-105 shadow-lg shadow-orange-600/30">
+                🚀 ESSAI GRATUIT 30 JOURS
+            </a>
+            <a href="/fonctionnalites" class="px-8 py-4 bg-white/10 backdrop-blur text-white font-bold rounded-lg hover:bg-white/20 transition-all border border-white/20">
+                VOIR LES FONCTIONNALITÉS
+            </a>
+        </div>
+        <p class="text-gray-500 text-sm mt-4">✅ Sans carte bancaire • ✅ Support technique inclus • ✅ Formation offerte</p>
     </div>
     
     <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <svg class="w-6 h-6 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+        <svg class="w-6 h-6 text-orange-400/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
     </div>
 </section>
 
-<!-- FONCTIONNALITÉS PRINCIPALES -->
-<section id="fonctionnalites" class="py-20 bg-gradient-to-b from-gray-900 to-black">
+<!-- WORKFLOW THERMOLAQUAGE -->
+<section class="py-16 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
     <div class="max-w-7xl mx-auto px-4">
         <div class="text-center mb-12">
-            <span class="text-blue-500 font-semibold text-sm uppercase tracking-wider">Fonctionnalités</span>
-            <h2 class="text-3xl md:text-5xl font-black text-white mt-2">TOUT CE DONT VOUS AVEZ <span class="text-blue-400">BESOIN</span></h2>
-            <p class="text-gray-400 mt-4 max-w-2xl mx-auto">Une solution complète pour gérer votre atelier de thermolaquage de A à Z</p>
+            <span class="text-orange-500 font-semibold text-sm uppercase tracking-wider">Le process complet</span>
+            <h2 class="text-3xl md:text-4xl font-black text-white mt-2">SUIVEZ VOS PIÈCES DE A À Z</h2>
+            <p class="text-gray-400 mt-4">Chaque étape du thermolaquage tracée dans le logiciel</p>
+        </div>
+        
+        <!-- Workflow visuel -->
+        <div class="relative">
+            <!-- Ligne de connexion -->
+            <div class="hidden md:block absolute top-1/2 left-0 right-0 h-1 workflow-line rounded-full transform -translate-y-1/2 opacity-30"></div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-6 gap-4 md:gap-2">
+                <!-- Étape 1: Réception -->
+                <div class="group text-center relative">
+                    <div class="w-16 h-16 mx-auto bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-lg shadow-blue-600/30 relative z-10">
+                        <span class="text-2xl">📥</span>
+                    </div>
+                    <h4 class="text-white font-bold text-sm mb-1">Réception</h4>
+                    <p class="text-gray-500 text-xs">Prise en charge pièces</p>
+                </div>
+                
+                <!-- Étape 2: Préparation -->
+                <div class="group text-center relative">
+                    <div class="w-16 h-16 mx-auto bg-gradient-to-br from-cyan-600 to-cyan-800 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-lg shadow-cyan-600/30 relative z-10">
+                        <span class="text-2xl">🔧</span>
+                    </div>
+                    <h4 class="text-white font-bold text-sm mb-1">Préparation</h4>
+                    <p class="text-gray-500 text-xs">Sablage, dégraissage</p>
+                </div>
+                
+                <!-- Étape 3: Poudrage -->
+                <div class="group text-center relative">
+                    <div class="w-16 h-16 mx-auto bg-gradient-to-br from-purple-600 to-purple-800 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-lg shadow-purple-600/30 relative z-10">
+                        <span class="text-2xl">🎨</span>
+                    </div>
+                    <h4 class="text-white font-bold text-sm mb-1">Poudrage</h4>
+                    <p class="text-gray-500 text-xs">Application poudre</p>
+                </div>
+                
+                <!-- Étape 4: Cuisson -->
+                <div class="group text-center relative">
+                    <div class="w-16 h-16 mx-auto bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-lg shadow-orange-500/30 relative z-10 animate-float">
+                        <span class="text-2xl">🔥</span>
+                    </div>
+                    <h4 class="text-white font-bold text-sm mb-1">Cuisson</h4>
+                    <p class="text-gray-500 text-xs">180-200°C au four</p>
+                </div>
+                
+                <!-- Étape 5: Contrôle QC -->
+                <div class="group text-center relative">
+                    <div class="w-16 h-16 mx-auto bg-gradient-to-br from-yellow-500 to-yellow-700 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-lg shadow-yellow-500/30 relative z-10">
+                        <span class="text-2xl">✅</span>
+                    </div>
+                    <h4 class="text-white font-bold text-sm mb-1">Contrôle QC</h4>
+                    <p class="text-gray-500 text-xs">Épaisseur, aspect</p>
+                </div>
+                
+                <!-- Étape 6: Livraison -->
+                <div class="group text-center relative">
+                    <div class="w-16 h-16 mx-auto bg-gradient-to-br from-green-500 to-green-700 rounded-2xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-lg shadow-green-500/30 relative z-10">
+                        <span class="text-2xl">🚚</span>
+                    </div>
+                    <h4 class="text-white font-bold text-sm mb-1">Livraison</h4>
+                    <p class="text-gray-500 text-xs">Client informé</p>
+                </div>
+            </div>
+        </div>
+        
+        <p class="text-center text-gray-400 text-sm mt-8">
+            💡 <strong class="text-white">Automatisation complète</strong> : notification client à chaque étape, photos avant/après, traçabilité poudre utilisée
+        </p>
+    </div>
+</section>
+
+<!-- STATS MÉTIER -->
+<section class="py-12 bg-black border-y border-orange-500/20">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+            <div class="text-center">
+                <div class="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">-40%</div>
+                <p class="text-gray-400 text-sm mt-2">de temps administratif</p>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">100%</div>
+                <p class="text-gray-400 text-sm mt-2">traçabilité poudres</p>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">2min</div>
+                <p class="text-gray-400 text-sm mt-2">pour créer un devis</p>
+            </div>
+            <div class="text-center">
+                <div class="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">0€</div>
+                <p class="text-gray-400 text-sm mt-2">formation incluse</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FONCTIONNALITÉS MÉTIER -->
+<section id="fonctionnalites" class="py-20 bg-gradient-to-b from-black to-gray-900">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-12">
+            <span class="text-orange-500 font-semibold text-sm uppercase tracking-wider">Fonctionnalités</span>
+            <h2 class="text-3xl md:text-5xl font-black text-white mt-2">CONÇU POUR LE <span class="text-orange-400">THERMOLAQUAGE</span></h2>
+            <p class="text-gray-400 mt-4 max-w-2xl mx-auto">Pas un logiciel générique : chaque fonctionnalité pensée pour votre métier</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Devis -->
-            <div class="group bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-blue-600/50 transition-all hover:scale-105">
-                <div class="w-14 h-14 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
+            <!-- Gestion Poudres -->
+            <div class="group bg-gradient-to-br from-orange-900/20 to-red-900/10 backdrop-blur-sm rounded-xl p-6 border border-orange-500/30 hover:border-orange-500/60 transition-all hover:scale-105">
+                <div class="w-14 h-14 bg-gradient-to-br from-orange-500/30 to-red-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <span class="text-3xl">🎨</span>
                 </div>
-                <h3 class="text-white font-bold text-lg mb-2">Devis professionnels</h3>
-                <p class="text-gray-400 text-sm">Créez des devis en quelques clics, personnalisez vos templates, envoyez par email avec signature électronique.</p>
+                <h3 class="text-white font-bold text-lg mb-2">Catalogue poudres RAL</h3>
+                <p class="text-gray-400 text-sm">Gérez toutes vos poudres : RAL, Pantone, époxy, polyester, métallisées. Stock théorique + pesées réelles, alertes rupture, traçabilité lot.</p>
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <span class="text-xs px-2 py-1 bg-orange-500/20 text-orange-300 rounded">RAL 9010</span>
+                    <span class="text-xs px-2 py-1 bg-orange-500/20 text-orange-300 rounded">RAL 7016</span>
+                    <span class="text-xs px-2 py-1 bg-orange-500/20 text-orange-300 rounded">+2000</span>
+                </div>
             </div>
 
-            <!-- Projets -->
-            <div class="group bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-blue-600/50 transition-all hover:scale-105">
-                <div class="w-14 h-14 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-                    </svg>
+            <!-- Suivi Cuissons -->
+            <div class="group bg-gradient-to-br from-orange-900/20 to-red-900/10 backdrop-blur-sm rounded-xl p-6 border border-orange-500/30 hover:border-orange-500/60 transition-all hover:scale-105">
+                <div class="w-14 h-14 bg-gradient-to-br from-orange-500/30 to-red-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <span class="text-3xl">🔥</span>
                 </div>
-                <h3 class="text-white font-bold text-lg mb-2">Suivi projets</h3>
-                <p class="text-gray-400 text-sm">Gérez vos projets étape par étape, ajoutez des photos, tracez la cuisson et les couches appliquées.</p>
+                <h3 class="text-white font-bold text-lg mb-2">Suivi cuissons & four</h3>
+                <p class="text-gray-400 text-sm">Tracez chaque cuisson : température, durée, pièces dans le four. Optimisez le remplissage avec le regroupement par poudre identique.</p>
+                <div class="mt-4 flex items-center gap-2">
+                    <span class="text-xs px-2 py-1 bg-red-500/20 text-red-300 rounded">180-200°C</span>
+                    <span class="text-xs px-2 py-1 bg-yellow-500/20 text-yellow-300 rounded">15-20 min</span>
+                </div>
             </div>
 
-            <!-- Stock -->
-            <div class="group bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-blue-600/50 transition-all hover:scale-105">
-                <div class="w-14 h-14 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                    </svg>
+            <!-- Regroupement Séries -->
+            <div class="group bg-gradient-to-br from-orange-900/20 to-red-900/10 backdrop-blur-sm rounded-xl p-6 border border-orange-500/30 hover:border-orange-500/60 transition-all hover:scale-105">
+                <div class="w-14 h-14 bg-gradient-to-br from-orange-500/30 to-red-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <span class="text-3xl">📦</span>
                 </div>
-                <h3 class="text-white font-bold text-lg mb-2">Gestion stock intelligent</h3>
-                <p class="text-gray-400 text-sm">Stock théorique + pesées réelles, suggestions quotidiennes, inventaires partiels sans bloquer votre journée.</p>
+                <h3 class="text-white font-bold text-lg mb-2">Séries & regroupement</h3>
+                <p class="text-gray-400 text-sm">Optimisez votre production : regroupez les pièces par poudre identique pour minimiser les changements de couleur et rentabiliser chaque fournée.</p>
+                <div class="mt-4 text-xs text-green-400">
+                    ✓ Suggestion automatique de regroupement
+                </div>
             </div>
 
-            <!-- Séries -->
-            <div class="group bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-blue-600/50 transition-all hover:scale-105">
-                <div class="w-14 h-14 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                    </svg>
+            <!-- Contrôle Qualité -->
+            <div class="group bg-gradient-to-br from-orange-900/20 to-red-900/10 backdrop-blur-sm rounded-xl p-6 border border-orange-500/30 hover:border-orange-500/60 transition-all hover:scale-105">
+                <div class="w-14 h-14 bg-gradient-to-br from-orange-500/30 to-red-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <span class="text-3xl">✅</span>
                 </div>
-                <h3 class="text-white font-bold text-lg mb-2">Regroupement séries</h3>
-                <p class="text-gray-400 text-sm">Optimisez votre production en regroupant les pièces par poudre identique, avec suggestion optimisation four.</p>
+                <h3 class="text-white font-bold text-lg mb-2">Contrôle qualité</h3>
+                <p class="text-gray-400 text-sm">Étape QC intégrée : vérification épaisseur (µm), aspect visuel, adhérence. Gestion des retouches et non-conformités avec statistiques.</p>
+                <div class="mt-4 flex items-center gap-2">
+                    <span class="text-xs px-2 py-1 bg-green-500/20 text-green-300 rounded">60-80 µm</span>
+                    <span class="text-xs px-2 py-1 bg-blue-500/20 text-blue-300 rounded">ISO 9001</span>
+                </div>
+            </div>
+
+            <!-- Photos Projets -->
+            <div class="group bg-gradient-to-br from-orange-900/20 to-red-900/10 backdrop-blur-sm rounded-xl p-6 border border-orange-500/30 hover:border-orange-500/60 transition-all hover:scale-105">
+                <div class="w-14 h-14 bg-gradient-to-br from-orange-500/30 to-red-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <span class="text-3xl">📸</span>
+                </div>
+                <h3 class="text-white font-bold text-lg mb-2">Photos avant/après</h3>
+                <p class="text-gray-400 text-sm">Documentez chaque projet : photos à la réception, après sablage, après poudrage. Preuve en cas de litige, satisfaction client garantie.</p>
+                <div class="mt-4 text-xs text-blue-400">
+                    ✓ Compression automatique • ✓ Stockage illimité
+                </div>
+            </div>
+
+            <!-- Devis Pro -->
+            <div class="group bg-gradient-to-br from-orange-900/20 to-red-900/10 backdrop-blur-sm rounded-xl p-6 border border-orange-500/30 hover:border-orange-500/60 transition-all hover:scale-105">
+                <div class="w-14 h-14 bg-gradient-to-br from-orange-500/30 to-red-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <span class="text-3xl">📄</span>
+                </div>
+                <h3 class="text-white font-bold text-lg mb-2">Devis thermolaquage</h3>
+                <p class="text-gray-400 text-sm">Créez des devis pros avec prix au m², au kg ou forfait. Templates personnalisables avec votre logo, signature électronique client.</p>
+                <div class="mt-4 text-xs text-purple-400">
+                    ✓ PDF professionnel • ✓ Signature en ligne
+                </div>
             </div>
 
             <!-- CRM -->
-            <div class="group bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-blue-600/50 transition-all hover:scale-105">
-                <div class="w-14 h-14 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                    </svg>
+            <div class="group bg-gradient-to-br from-gray-800/30 to-gray-900/20 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-orange-500/30 transition-all hover:scale-105">
+                <div class="w-14 h-14 bg-gradient-to-br from-gray-700/50 to-gray-800/50 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <span class="text-3xl">👥</span>
                 </div>
                 <h3 class="text-white font-bold text-lg mb-2">CRM clients</h3>
-                <p class="text-gray-400 text-sm">Gérez vos clients, historique devis/projets, relances automatiques, import CSV avec détection doublons.</p>
+                <p class="text-gray-400 text-sm">Gérez vos clients particuliers et professionnels : historique projets, préférences couleurs, conditions tarifaires, relances automatiques.</p>
             </div>
 
             <!-- Facturation -->
-            <div class="group bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-blue-600/50 transition-all hover:scale-105">
-                <div class="w-14 h-14 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z"/>
-                    </svg>
+            <div class="group bg-gradient-to-br from-gray-800/30 to-gray-900/20 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-orange-500/30 transition-all hover:scale-105">
+                <div class="w-14 h-14 bg-gradient-to-br from-gray-700/50 to-gray-800/50 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <span class="text-3xl">💰</span>
                 </div>
                 <h3 class="text-white font-bold text-lg mb-2">Facturation & paiements</h3>
-                <p class="text-gray-400 text-sm">Factures automatiques, paiements en ligne (Stripe), acompte/solde, exports comptabilité (FEC, CSV, Pennylane).</p>
+                <p class="text-gray-400 text-sm">Factures automatiques à la livraison, acompte/solde, paiement en ligne (CB, virement). Export comptabilité FEC/CSV.</p>
             </div>
 
             <!-- Portail client -->
-            <div class="group bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-blue-600/50 transition-all hover:scale-105">
-                <div class="w-14 h-14 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                    </svg>
+            <div class="group bg-gradient-to-br from-gray-800/30 to-gray-900/20 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-orange-500/30 transition-all hover:scale-105">
+                <div class="w-14 h-14 bg-gradient-to-br from-gray-700/50 to-gray-800/50 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <span class="text-3xl">🌐</span>
                 </div>
                 <h3 class="text-white font-bold text-lg mb-2">Portail client</h3>
-                <p class="text-gray-400 text-sm">Espace client dédié : suivi projets en temps réel, photos, documents, paiement en ligne.</p>
-            </div>
-
-            <!-- Reporting -->
-            <div class="group bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-blue-600/50 transition-all hover:scale-105">
-                <div class="w-14 h-14 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                    </svg>
-                </div>
-                <h3 class="text-white font-bold text-lg mb-2">Dashboards & reporting</h3>
-                <p class="text-gray-400 text-sm">KPIs en temps réel : CA, taux transformation, délais, retards, consommation poudres, NC.</p>
-            </div>
-
-            <!-- Mode atelier -->
-            <div class="group bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-blue-600/50 transition-all hover:scale-105">
-                <div class="w-14 h-14 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                    </svg>
-                </div>
-                <h3 class="text-white font-bold text-lg mb-2">Mode atelier</h3>
-                <p class="text-gray-400 text-sm">Interface tablette optimisée, scan QR codes, mode offline, synchronisation automatique.</p>
+                <p class="text-gray-400 text-sm">Vos clients suivent leurs projets en temps réel : statut, photos, documents. Ils signent les devis et payent en ligne.</p>
             </div>
         </div>
 
         <div class="text-center mt-12">
-            <a href="/fonctionnalites" class="px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all inline-block">Voir toutes les fonctionnalités →</a>
+            <a href="/fonctionnalites" class="px-8 py-4 bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold rounded-lg hover:from-orange-400 hover:to-red-500 transition-all inline-block">Toutes les fonctionnalités →</a>
+        </div>
+    </div>
+</section>
+
+<!-- POUR QUI -->
+<section class="py-20 bg-black">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-12">
+            <span class="text-orange-500 font-semibold text-sm uppercase tracking-wider">Pour qui ?</span>
+            <h2 class="text-3xl md:text-5xl font-black text-white mt-2">ADAPTÉ À <span class="text-orange-400">VOTRE ACTIVITÉ</span></h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Atelier général -->
+            <div class="bg-gray-800/30 rounded-2xl p-8 border border-gray-700 hover:border-orange-500/50 transition-all group">
+                <div class="text-5xl mb-4 group-hover:scale-110 transition-transform">🏭</div>
+                <h3 class="text-white font-bold text-xl mb-3">Atelier de thermolaquage</h3>
+                <p class="text-gray-400 text-sm mb-4">Sous-traitance industrielle, pièces métalliques diverses (serrurerie, mobilier, industrie...)</p>
+                <ul class="space-y-2 text-sm text-gray-300">
+                    <li>✓ Gestion multi-clients</li>
+                    <li>✓ Suivi par lot/commande</li>
+                    <li>✓ Optimisation four</li>
+                </ul>
+            </div>
+
+            <!-- Jantes -->
+            <div class="bg-gradient-to-br from-orange-900/20 to-red-900/10 rounded-2xl p-8 border border-orange-500/50 transition-all group relative overflow-hidden">
+                <div class="absolute top-4 right-4 px-3 py-1 bg-orange-500/20 text-orange-400 text-xs font-bold rounded-full">Module dédié</div>
+                <div class="text-5xl mb-4 group-hover:scale-110 transition-transform">🚗</div>
+                <h3 class="text-white font-bold text-xl mb-3">Rénovation jantes alu</h3>
+                <p class="text-gray-400 text-sm mb-4">Spécialiste rénovation jantes auto/moto avec process spécifique et tarification dédiée.</p>
+                <ul class="space-y-2 text-sm text-gray-300">
+                    <li>✓ Tarifs par diamètre</li>
+                    <li>✓ Photos avant/après</li>
+                    <li>✓ Suivi par véhicule</li>
+                </ul>
+            </div>
+
+            <!-- Serrurerie -->
+            <div class="bg-gray-800/30 rounded-2xl p-8 border border-gray-700 hover:border-orange-500/50 transition-all group">
+                <div class="text-5xl mb-4 group-hover:scale-110 transition-transform">🔩</div>
+                <h3 class="text-white font-bold text-xl mb-3">Serrurerie / Métallerie</h3>
+                <p class="text-gray-400 text-sm mb-4">Atelier intégré avec poudrage de vos propres fabrications (portails, garde-corps, mobilier...).</p>
+                <ul class="space-y-2 text-sm text-gray-300">
+                    <li>✓ Intégration process fab</li>
+                    <li>✓ Devis global</li>
+                    <li>✓ Stock poudres partagé</li>
+                </ul>
+            </div>
         </div>
     </div>
 </section>
 
 <!-- TARIFS -->
-<section id="tarifs" class="py-20 bg-black">
+<section id="tarifs" class="py-20 bg-gradient-to-b from-black to-gray-900">
     <div class="max-w-7xl mx-auto px-4">
         <div class="text-center mb-12">
-            <span class="text-blue-500 font-semibold text-sm uppercase tracking-wider">Tarifs</span>
-            <h2 class="text-3xl md:text-5xl font-black text-white mt-2">CHOISISSEZ VOTRE <span class="text-blue-400">PLAN</span></h2>
-            <p class="text-gray-400 mt-4">Essai gratuit 30 jours, aucune carte bancaire requise</p>
+            <span class="text-orange-500 font-semibold text-sm uppercase tracking-wider">Tarifs</span>
+            <h2 class="text-3xl md:text-5xl font-black text-white mt-2">CHOISISSEZ VOTRE <span class="text-orange-400">FORMULE</span></h2>
+            <p class="text-gray-400 mt-4">Essai gratuit 30 jours • Aucune carte bancaire requise</p>
         </div>
 
         <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             <!-- Plan Lite -->
-            <div class="bg-gray-800/30 backdrop-blur-sm rounded-2xl p-8 border border-gray-700 hover:border-blue-600/50 transition-all">
+            <div class="bg-gray-800/30 backdrop-blur-sm rounded-2xl p-8 border border-gray-700 hover:border-orange-500/30 transition-all">
                 <div class="mb-6">
-                    <h3 class="text-2xl font-black text-white mb-2">Plan Lite</h3>
+                    <h3 class="text-2xl font-black text-white mb-2">Plan Atelier</h3>
                     <div class="flex items-baseline gap-2">
                         <span class="text-4xl font-black text-white">XX€</span>
-                        <span class="text-gray-400">/mois</span>
+                        <span class="text-gray-400">/mois HT</span>
                     </div>
                     <p class="text-gray-400 text-sm mt-2">Fonctionnalités essentielles</p>
                 </div>
                 <ul class="space-y-3 mb-8">
                     <li class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                        <span class="text-gray-300 text-sm">Devis et projets</span>
+                        <span class="text-orange-400">✓</span>
+                        <span class="text-gray-300 text-sm">Catalogue poudres illimité</span>
                     </li>
                     <li class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                        <span class="text-gray-300 text-sm">CRM clients basique</span>
+                        <span class="text-orange-400">✓</span>
+                        <span class="text-gray-300 text-sm">Devis & factures</span>
                     </li>
                     <li class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                        <span class="text-gray-300 text-sm">Stock théorique</span>
+                        <span class="text-orange-400">✓</span>
+                        <span class="text-gray-300 text-sm">Suivi projets & cuissons</span>
                     </li>
                     <li class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                        <span class="text-gray-300 text-sm">Utilisateurs illimités</span>
+                        <span class="text-orange-400">✓</span>
+                        <span class="text-gray-300 text-sm">CRM clients</span>
                     </li>
                     <li class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                        <span class="text-gray-300 text-sm">20 GB storage photos</span>
+                        <span class="text-orange-400">✓</span>
+                        <span class="text-gray-300 text-sm">20 GB stockage photos</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-orange-400">✓</span>
+                        <span class="text-gray-300 text-sm">3 utilisateurs</span>
                     </li>
                 </ul>
-                <a href="/inscription?plan=lite" class="block w-full px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-lg text-center transition-all">Commencer l'essai gratuit</a>
+                <a href="/auth/inscription?plan=atelier" class="block w-full px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-lg text-center transition-all">Démarrer l'essai gratuit</a>
             </div>
 
             <!-- Plan Pro -->
-            <div class="bg-gradient-to-b from-blue-900/30 to-cyan-900/20 backdrop-blur-sm rounded-2xl p-8 border-2 border-blue-600/50 relative">
-                <div class="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-sm font-bold rounded-full">RECOMMANDÉ</div>
+            <div class="bg-gradient-to-b from-orange-900/30 to-red-900/20 backdrop-blur-sm rounded-2xl p-8 border-2 border-orange-500/50 relative">
+                <div class="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-orange-500 to-red-600 text-white text-sm font-bold rounded-full">🔥 RECOMMANDÉ</div>
                 <div class="mb-6">
                     <h3 class="text-2xl font-black text-white mb-2">Plan Pro</h3>
                     <div class="flex items-baseline gap-2">
                         <span class="text-4xl font-black text-white">XX€</span>
-                        <span class="text-gray-400">/mois</span>
+                        <span class="text-gray-400">/mois HT</span>
                     </div>
-                    <p class="text-gray-400 text-sm mt-2">Toutes les fonctionnalités avancées</p>
+                    <p class="text-gray-400 text-sm mt-2">Toutes les fonctionnalités</p>
                 </div>
                 <ul class="space-y-3 mb-8">
                     <li class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                        <span class="text-white text-sm font-medium">Tout le Plan Lite +</span>
+                        <span class="text-orange-400">✓</span>
+                        <span class="text-white text-sm font-medium">Tout le Plan Atelier +</span>
                     </li>
                     <li class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                        <span class="text-gray-300 text-sm">Stock intelligent + inventaires partiels</span>
+                        <span class="text-orange-400">✓</span>
+                        <span class="text-gray-300 text-sm">Stock intelligent + inventaires</span>
                     </li>
                     <li class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                        <span class="text-gray-300 text-sm">Portail client + notifications push</span>
+                        <span class="text-orange-400">✓</span>
+                        <span class="text-gray-300 text-sm">Regroupement séries / four</span>
                     </li>
                     <li class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                        <span class="text-gray-300 text-sm">Reporting avancé + KPIs</span>
+                        <span class="text-orange-400">✓</span>
+                        <span class="text-gray-300 text-sm">Portail client + notifications</span>
                     </li>
                     <li class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                        <span class="text-gray-300 text-sm">Intégrations (Pennylane, Google Calendar)</span>
+                        <span class="text-orange-400">✓</span>
+                        <span class="text-gray-300 text-sm">Contrôle qualité & retouches</span>
                     </li>
                     <li class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                        <span class="text-orange-400">✓</span>
                         <span class="text-gray-300 text-sm">Module Jantes (option)</span>
                     </li>
                     <li class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                        <span class="text-orange-400">✓</span>
+                        <span class="text-gray-300 text-sm">Utilisateurs illimités</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="text-orange-400">✓</span>
                         <span class="text-gray-300 text-sm">Support prioritaire</span>
                     </li>
                 </ul>
-                <a href="/auth/inscription?plan=pro" class="block w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold rounded-lg text-center hover:from-blue-500 hover:to-cyan-400 transition-all transform hover:scale-105">Commencer l'essai gratuit</a>
+                <a href="/auth/inscription?plan=pro" class="block w-full px-6 py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold rounded-lg text-center hover:from-orange-400 hover:to-red-500 transition-all transform hover:scale-105">Démarrer l'essai gratuit</a>
             </div>
         </div>
 
         <div class="text-center mt-8 text-gray-400 text-sm">
-            <p>✅ Tous les plans incluent un essai gratuit de 30 jours en mode Pro complet</p>
-            <p>✅ Aucune carte bancaire requise • ✅ Annulation à tout moment</p>
-        </div>
-    </div>
-</section>
-
-<!-- AVANTAGES -->
-<section class="py-20 bg-gradient-to-b from-black to-gray-900">
-    <div class="max-w-7xl mx-auto px-4">
-        <div class="text-center mb-12">
-            <span class="text-blue-500 font-semibold text-sm uppercase tracking-wider">Pourquoi ThermoGestion</span>
-            <h2 class="text-3xl md:text-5xl font-black text-white mt-2">LA SOLUTION <span class="text-blue-400">PROFESSIONNELLE</span></h2>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-blue-600/30 transition-all group">
-                <div class="w-14 h-14 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">⚡</div>
-                <h3 class="text-white font-bold text-lg mb-2">Rapide & intuitif</h3>
-                <p class="text-gray-400 text-sm">Créez des devis en face du client en quelques clics. Interface moderne et responsive.</p>
-            </div>
-            <div class="bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-blue-600/30 transition-all group">
-                <div class="w-14 h-14 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">🔒</div>
-                <h3 class="text-white font-bold text-lg mb-2">Sécurisé & fiable</h3>
-                <p class="text-gray-400 text-sm">SLA 99.9%, données chiffrées, sauvegardes quotidiennes, conformité RGPD complète.</p>
-            </div>
-            <div class="bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-blue-600/30 transition-all group">
-                <div class="w-14 h-14 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">📱</div>
-                <h3 class="text-white font-bold text-lg mb-2">Mode offline</h3>
-                <p class="text-gray-400 text-sm">Travaillez dans votre atelier même sans connexion. Synchronisation automatique dès le retour réseau.</p>
-            </div>
-            <div class="bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-blue-600/30 transition-all group">
-                <div class="w-14 h-14 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">🎨</div>
-                <h3 class="text-white font-bold text-lg mb-2">100% personnalisable</h3>
-                <p class="text-gray-400 text-sm">Templates devis personnalisables, workflows adaptables, intégrations multiples.</p>
-            </div>
-            <div class="bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-blue-600/30 transition-all group">
-                <div class="w-14 h-14 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">📊</div>
-                <h3 class="text-white font-bold text-lg mb-2">Reporting complet</h3>
-                <p class="text-gray-400 text-sm">Dashboards avec KPIs en temps réel : CA, délais, retards, consommation, NC.</p>
-            </div>
-            <div class="bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-blue-600/30 transition-all group">
-                <div class="w-14 h-14 bg-gradient-to-br from-blue-600/20 to-cyan-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">🚀</div>
-                <h3 class="text-white font-bold text-lg mb-2">Évolutif</h3>
-                <p class="text-gray-400 text-sm">Architecture moderne, mises à jour régulières, nouvelles fonctionnalités chaque mois.</p>
-            </div>
+            <p>✅ Essai gratuit 30 jours en mode Pro complet • ✅ Sans engagement • ✅ Formation offerte</p>
         </div>
     </div>
 </section>
 
 <!-- CTA -->
-<section class="py-20 bg-gradient-to-r from-blue-900/50 to-cyan-900/50 relative overflow-hidden">
+<section class="py-20 bg-gradient-to-r from-orange-900/50 to-red-900/50 relative overflow-hidden">
     <div class="absolute inset-0 bg-black/50"></div>
-    <div class="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/30 rounded-full blur-3xl"></div>
-    <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/30 rounded-full blur-3xl"></div>
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-orange-600/30 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-red-500/30 rounded-full blur-3xl"></div>
     <div class="relative z-10 max-w-4xl mx-auto px-4 text-center">
-        <h2 class="text-3xl md:text-5xl font-black text-white mb-4">PRÊT À TRANSFORMER<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">VOTRE ATELIER ?</span></h2>
-        <p class="text-gray-300 text-lg mb-8 max-w-2xl mx-auto">Rejoignez les ateliers qui font confiance à ThermoGestion. Essai gratuit 30 jours, aucune carte bancaire requise.</p>
+        <h2 class="text-3xl md:text-5xl font-black text-white mb-4">
+            PRÊT À DIGITALISER<br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-400">VOTRE ATELIER ?</span>
+        </h2>
+        <p class="text-gray-300 text-lg mb-8 max-w-2xl mx-auto">
+            Rejoignez les ateliers de thermolaquage qui ont choisi ThermoGestion. 
+            Essai gratuit 30 jours, formation incluse, support réactif.
+        </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/auth/inscription" class="px-8 py-4 bg-white text-gray-900 font-bold rounded-lg hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl">COMMENCER L'ESSAI GRATUIT →</a>
-            <a href="/contact" class="px-8 py-4 bg-transparent border-2 border-white text-white font-bold rounded-lg hover:bg-white/10 transition-all">DEMANDER UNE DÉMO</a>
+            <a href="/auth/inscription" class="px-8 py-4 bg-white text-gray-900 font-bold rounded-lg hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl">
+                🚀 ESSAI GRATUIT 30 JOURS
+            </a>
+            <a href="/contact" class="px-8 py-4 bg-transparent border-2 border-white text-white font-bold rounded-lg hover:bg-white/10 transition-all">
+                📞 DEMANDER UNE DÉMO
+            </a>
         </div>
     </div>
 </section>
@@ -346,27 +532,30 @@
         <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
             <div class="md:col-span-2">
                 <div class="flex items-center gap-2 mb-4">
-                    <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center">
-                        <img src="/logo-icon.svg" alt="TG" class="w-6 h-6" />
+                    <div class="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center">
+                        <span class="text-white text-xl">🔥</span>
                     </div>
-                    <span class="text-white font-bold text-xl">Thermo<span class="text-blue-400">Gestion</span></span>
+                    <span class="text-white font-bold text-xl">Thermo<span class="text-orange-400">Gestion</span></span>
                 </div>
-                <p class="text-gray-400 text-sm mb-4 max-w-md">Logiciel SaaS professionnel pour ateliers de thermolaquage. Simplifiez votre gestion, optimisez votre production, facturez vos clients.</p>
+                <p class="text-gray-400 text-sm mb-4 max-w-md">
+                    Logiciel de gestion conçu spécifiquement pour les ateliers de thermolaquage. 
+                    Gérez vos poudres, projets, cuissons et factures en toute simplicité.
+                </p>
                 <div class="flex gap-4">
-                    <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-blue-600 rounded-lg flex items-center justify-center transition-colors text-white">f</a>
-                    <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-blue-600 rounded-lg flex items-center justify-center transition-colors">in</a>
-                    <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-blue-600 rounded-lg flex items-center justify-center transition-colors">▶</a>
+                    <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-orange-600 rounded-lg flex items-center justify-center transition-colors text-white">f</a>
+                    <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-orange-600 rounded-lg flex items-center justify-center transition-colors text-white">in</a>
+                    <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-orange-600 rounded-lg flex items-center justify-center transition-colors text-white">▶</a>
                 </div>
             </div>
             <div>
                 <h4 class="text-white font-bold mb-4">Navigation</h4>
                 <ul class="space-y-2 text-sm">
-                    <li><a href="/" class="text-gray-400 hover:text-blue-400 transition-colors">Accueil</a></li>
-                    <li><a href="/fonctionnalites" class="text-gray-400 hover:text-blue-400 transition-colors">Fonctionnalités</a></li>
-                    <li><a href="/tarifs" class="text-gray-400 hover:text-blue-400 transition-colors">Tarifs</a></li>
-                    <li><a href="/temoignages" class="text-gray-400 hover:text-blue-400 transition-colors">Témoignages</a></li>
-                    <li><a href="/aide" class="text-gray-400 hover:text-blue-400 transition-colors">Aide</a></li>
-                    <li><a href="/contact" class="text-gray-400 hover:text-blue-400 transition-colors">Contact</a></li>
+                    <li><a href="/" class="text-gray-400 hover:text-orange-400 transition-colors">Accueil</a></li>
+                    <li><a href="/fonctionnalites" class="text-gray-400 hover:text-orange-400 transition-colors">Fonctionnalités</a></li>
+                    <li><a href="/tarifs" class="text-gray-400 hover:text-orange-400 transition-colors">Tarifs</a></li>
+                    <li><a href="/temoignages" class="text-gray-400 hover:text-orange-400 transition-colors">Témoignages</a></li>
+                    <li><a href="/aide" class="text-gray-400 hover:text-orange-400 transition-colors">Aide</a></li>
+                    <li><a href="/contact" class="text-gray-400 hover:text-orange-400 transition-colors">Contact</a></li>
                 </ul>
             </div>
             <div>
@@ -380,11 +569,11 @@
             <div>
                 <h4 class="text-white font-bold mb-4">Légal</h4>
                 <ul class="space-y-2 text-sm">
-                    <li><a href="/cgu" class="text-gray-400 hover:text-blue-400 transition-colors">CGU</a></li>
-                    <li><a href="/cgv" class="text-gray-400 hover:text-blue-400 transition-colors">CGV</a></li>
-                    <li><a href="/confidentialite" class="text-gray-400 hover:text-blue-400 transition-colors">Confidentialité</a></li>
-                    <li><a href="/mentions-legales" class="text-gray-400 hover:text-blue-400 transition-colors">Mentions légales</a></li>
-                    <li><a href="/cookies" class="text-gray-400 hover:text-blue-400 transition-colors">Cookies</a></li>
+                    <li><a href="/cgu" class="text-gray-400 hover:text-orange-400 transition-colors">CGU</a></li>
+                    <li><a href="/cgv" class="text-gray-400 hover:text-orange-400 transition-colors">CGV</a></li>
+                    <li><a href="/confidentialite" class="text-gray-400 hover:text-orange-400 transition-colors">Confidentialité</a></li>
+                    <li><a href="/mentions-legales" class="text-gray-400 hover:text-orange-400 transition-colors">Mentions légales</a></li>
+                    <li><a href="/cookies" class="text-gray-400 hover:text-orange-400 transition-colors">Cookies</a></li>
                 </ul>
             </div>
         </div>
