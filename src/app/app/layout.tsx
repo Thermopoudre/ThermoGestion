@@ -5,6 +5,7 @@ import { SearchButton } from '@/components/search/SearchButton'
 import { ThemeToggle } from '@/components/theme/ThemeToggle'
 import { MobileNav } from '@/components/navigation/MobileNav'
 import { NotificationBell } from '@/components/ui/NotificationBell'
+import { NavLink } from '@/components/navigation/NavLink'
 
 export default async function AppLayout({
   children,
@@ -43,33 +44,15 @@ export default async function AppLayout({
 
             {/* Navigation desktop */}
             <div className="hidden lg:flex items-center gap-4">
-              <a href="/app/dashboard" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
-                Dashboard
-              </a>
-              <a href="/app/clients" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
-                Clients
-              </a>
-              <a href="/app/projets" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
-                Projets
-              </a>
-              <a href="/app/devis" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
-                Devis
-              </a>
-              <a href="/app/poudres" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
-                🎨 Poudres
-              </a>
-              <a href="/app/series" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
-                Séries
-              </a>
-              <a href="/app/factures" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
-                Factures
-              </a>
-              <a href="/app/planning" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
-                📅
-              </a>
-              <a href="/app/stats" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
-                📊
-              </a>
+              <NavLink href="/app/dashboard">Dashboard</NavLink>
+              <NavLink href="/app/clients">Clients</NavLink>
+              <NavLink href="/app/projets">Projets</NavLink>
+              <NavLink href="/app/devis">Devis</NavLink>
+              <NavLink href="/app/poudres">🎨 Poudres</NavLink>
+              <NavLink href="/app/series">Séries</NavLink>
+              <NavLink href="/app/factures">Factures</NavLink>
+              <NavLink href="/app/planning">📅 Planning</NavLink>
+              <NavLink href="/app/stats">📊 Stats</NavLink>
             </div>
 
             {/* Actions */}

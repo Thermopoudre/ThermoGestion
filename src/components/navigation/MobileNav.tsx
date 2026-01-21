@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 
 interface MobileNavProps {
   userEmail: string
@@ -11,19 +13,25 @@ const navLinks = [
   { href: '/app/clients', label: 'Clients', icon: '👥' },
   { href: '/app/projets', label: 'Projets', icon: '🔧' },
   { href: '/app/devis', label: 'Devis', icon: '📝' },
-  { href: '/app/devis/templates', label: 'Templates', icon: '📋' },
   { href: '/app/poudres', label: 'Poudres', icon: '🎨' },
   { href: '/app/series', label: 'Séries', icon: '🔗' },
   { href: '/app/factures', label: 'Factures', icon: '💰' },
   { href: '/app/retouches', label: 'Retouches', icon: '✅' },
   { href: '/app/planning', label: 'Planning', icon: '📅' },
   { href: '/app/stats', label: 'Statistiques', icon: '📈' },
+  { href: '/app/equipe', label: 'Équipe', icon: '👥' },
   { href: '/app/activite', label: 'Activité', icon: '📜' },
   { href: '/app/parametres', label: 'Paramètres', icon: '⚙️' },
 ]
 
 export function MobileNav({ userEmail }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const pathname = usePathname()
+
+  const isActive = (href: string) => {
+    if (href === '/app/dashboard') return pathname === href || pathname === '/app'
+    return pathname.startsWith(href)
+  }
 
   return (
     <>
@@ -84,18 +92,26 @@ export function MobileNav({ userEmail }: MobileNavProps) {
         {/* Navigation */}
         <nav className="p-4 overflow-y-auto h-[calc(100%-180px)]">
           <ul className="space-y-1">
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <a
-                  href={link.href}
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-orange-900/30 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
-                >
-                  <span className="text-lg">{link.icon}</span>
-                  <span className="font-medium">{link.label}</span>
-                </a>
-              </li>
-            ))}
+            {navLinks.map((link) => {
+              const active = isActive(link.href)
+              return (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    onClick={() => setIsOpen(false)}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+                      active
+                        ? 'bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400 font-bold border-l-4 border-orange-500'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-orange-900/30 hover:text-orange-600 dark:hover:text-orange-400'
+                    }`}
+                  >
+                    <span className="text-lg">{link.icon}</span>
+                    <span className="font-medium">{link.label}</span>
+                    {active && <span className="ml-auto text-orange-500">●</span>}
+                  </Link>
+                </li>
+              )
+            })}
           </ul>
         </nav>
 
