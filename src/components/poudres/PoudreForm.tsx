@@ -13,6 +13,7 @@ interface PoudreFormProps {
     type?: string
     ral?: string
     finition?: string
+    prix_kg?: number
     densite?: number
     epaisseur_conseillee?: number
     consommation_m2?: number
@@ -36,6 +37,7 @@ export function PoudreForm({ atelierId, poudreId, initialData }: PoudreFormProps
     type: initialData?.type || '',
     ral: initialData?.ral || '',
     finition: initialData?.finition || 'mat',
+    prix_kg: initialData?.prix_kg?.toString() || '25',
     densite: initialData?.densite?.toString() || '',
     epaisseur_conseillee: initialData?.epaisseur_conseillee?.toString() || '',
     consommation_m2: initialData?.consommation_m2?.toString() || '',
@@ -58,6 +60,7 @@ export function PoudreForm({ atelierId, poudreId, initialData }: PoudreFormProps
         type: formData.type,
         ral: formData.ral || null,
         finition: formData.finition,
+        prix_kg: formData.prix_kg ? parseFloat(formData.prix_kg) : 25,
         densite: formData.densite ? parseFloat(formData.densite) : null,
         epaisseur_conseillee: formData.epaisseur_conseillee ? parseFloat(formData.epaisseur_conseillee) : null,
         consommation_m2: formData.consommation_m2 ? parseFloat(formData.consommation_m2) : null,
@@ -224,6 +227,24 @@ export function PoudreForm({ atelierId, poudreId, initialData }: PoudreFormProps
               <option value="thermopoudre">Thermopoudre</option>
               <option value="concurrent">Concurrent</option>
             </select>
+          </div>
+
+          <div>
+            <label htmlFor="prix_kg" className="block text-sm font-medium text-gray-700 mb-2">
+              💰 Prix (€/kg) *
+            </label>
+            <input
+              id="prix_kg"
+              type="number"
+              step="0.01"
+              min="0"
+              value={formData.prix_kg}
+              onChange={(e) => setFormData({ ...formData, prix_kg: e.target.value })}
+              required
+              className="w-full px-4 py-3 border border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-orange-50"
+              placeholder="25.00"
+            />
+            <p className="text-xs text-gray-500 mt-1">Prix utilisé pour les calculs de devis</p>
           </div>
 
           <div>

@@ -430,6 +430,7 @@ export type Database = {
           finition: string
           id: string
           marque: string
+          prix_kg: number | null
           ral: string | null
           reference: string
           source: string | null
@@ -447,6 +448,7 @@ export type Database = {
           finition: string
           id?: string
           marque: string
+          prix_kg?: number | null
           ral?: string | null
           reference: string
           source?: string | null
@@ -464,6 +466,7 @@ export type Database = {
           finition?: string
           id?: string
           marque?: string
+          prix_kg?: number | null
           ral?: string | null
           reference?: string
           source?: string | null

@@ -53,8 +53,8 @@ export function DevisForm({ atelierId, userId, clients: initialClients, poudres:
   const [currentItemIdForPoudre, setCurrentItemIdForPoudre] = useState<string | null>(null)
   
   // Paramètres de calcul (avec valeurs par défaut)
+  // Note: Le prix de la poudre est maintenant lié à chaque poudre individuellement
   const [params, setParams] = useState({
-    prix_poudre_kg: 25, // €/kg par défaut
     taux_mo_heure: 35, // €/h
     temps_mo_m2: 0.15, // heures/m²
     cout_consommables_m2: 2, // €/m²
@@ -85,9 +85,11 @@ export function DevisForm({ atelierId, userId, clients: initialClients, poudres:
   const calculateItemCosts = (item: DevisItem, poudre?: Poudre): Partial<DevisItem> => {
     const surface = calculateSurface(item.longueur, item.largeur, item.hauteur, item.quantite)
     
-    // Coût poudre (consommation * prix * marge)
+    // Coût poudre (consommation * prix de la poudre * marge)
+    // Le prix est maintenant lié à chaque poudre individuellement
     const consommationM2 = poudre?.consommation_m2 ? Number(poudre.consommation_m2) : 0.15 // kg/m² par défaut
-    const coutPoudreBrut = surface * consommationM2 * params.prix_poudre_kg
+    const prixPoudreKg = poudre?.prix_kg ? Number(poudre.prix_kg) : 25 // Prix de la poudre ou 25€/kg par défaut
+    const coutPoudreBrut = surface * consommationM2 * prixPoudreKg
     const coutPoudre = coutPoudreBrut * (1 + params.marge_poudre_pct / 100)
     
     // Coût main d'œuvre
@@ -304,17 +306,10 @@ export function DevisForm({ atelierId, userId, clients: initialClients, poudres:
         {/* Paramètres de calcul */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 transition-colors">
           <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">Paramètres de calcul</h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+            💡 Le prix de la poudre est défini sur chaque fiche poudre individuellement
+          </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-            <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Prix poudre (€/kg)</label>
-              <input
-                type="number"
-                step="0.01"
-                value={params.prix_poudre_kg}
-                onChange={(e) => setParams({ ...params, prix_poudre_kg: parseFloat(e.target.value) || 0 })}
-                className={inputClasses}
-              />
-            </div>
             <div>
               <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Taux MO (€/h)</label>
               <input
@@ -342,6 +337,16 @@ export function DevisForm({ atelierId, userId, clients: initialClients, poudres:
                 step="0.1"
                 value={params.marge_mo_pct}
                 onChange={(e) => setParams({ ...params, marge_mo_pct: parseFloat(e.target.value) || 0 })}
+                className={inputClasses}
+              />
+            </div>
+            <div>
+              <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Conso. (€/m²)</label>
+              <input
+                type="number"
+                step="0.01"
+                value={params.cout_consommables_m2}
+                onChange={(e) => setParams({ ...params, cout_consommables_m2: parseFloat(e.target.value) || 0 })}
                 className={inputClasses}
               />
             </div>
