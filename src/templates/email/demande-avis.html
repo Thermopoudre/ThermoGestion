@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Votre avis nous intéresse</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="100%" style="max-width: 500px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #f97316 0%, #dc2626 100%); padding: 30px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">
+                ⭐ Votre avis compte !
+              </h1>
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding: 40px 30px;">
+              <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+                Bonjour {{client_prenom}},
+              </p>
+              
+              <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+                Nous espérons que vous êtes satisfait(e) de notre prestation pour votre projet <strong>{{projet_description}}</strong>.
+              </p>
+
+              <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
+                Votre retour est précieux et nous aide à améliorer nos services. Seriez-vous disposé(e) à partager votre expérience sur Google ?
+              </p>
+
+              <!-- Stars visual -->
+              <div style="text-align: center; margin: 30px 0;">
+                <span style="font-size: 40px;">⭐⭐⭐⭐⭐</span>
+              </div>
+
+              <!-- CTA Button -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="padding: 20px 0;">
+                    <a href="{{lien_avis}}" 
+                       style="display: inline-block; background: linear-gradient(135deg, #f97316 0%, #dc2626 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);">
+                      Laisser un avis Google
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="color: #6b7280; font-size: 14px; line-height: 1.5; margin: 30px 0 0 0; text-align: center;">
+                Cela ne prend que 30 secondes et nous aide énormément ! 🙏
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f3f4f6; padding: 25px 30px; text-align: center;">
+              <p style="color: #6b7280; font-size: 14px; margin: 0 0 10px 0;">
+                Merci pour votre confiance,
+              </p>
+              <p style="color: #374151; font-size: 16px; font-weight: bold; margin: 0;">
+                L'équipe {{atelier_nom}}
+              </p>
+              {{#if atelier_phone}}
+              <p style="color: #6b7280; font-size: 13px; margin: 10px 0 0 0;">
+                📞 {{atelier_phone}}
+              </p>
+              {{/if}}
+            </td>
+          </tr>
+
+        </table>
+
+        <!-- Unsubscribe -->
+        <p style="color: #9ca3af; font-size: 11px; margin-top: 20px; text-align: center;">
+          Cet email a été envoyé automatiquement suite à la livraison de votre projet.<br>
+          <a href="{{lien_desinscription}}" style="color: #9ca3af;">Se désinscrire des demandes d'avis</a>
+        </p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
