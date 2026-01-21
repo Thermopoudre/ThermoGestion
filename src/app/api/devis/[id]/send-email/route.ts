@@ -54,6 +54,16 @@ export async function POST(
       .eq('atelier_id', userData.atelier_id)
       .single()
 
+    // Si pas de public_token, en générer un
+    if (devis && !devis.public_token) {
+      const token = Buffer.from(crypto.getRandomValues(new Uint8Array(24))).toString('base64url')
+      await supabase
+        .from('devis')
+        .update({ public_token: token })
+        .eq('id', params.id)
+      devis.public_token = token
+    }
+
     if (devisError || !devis) {
       return NextResponse.json({ error: 'Devis non trouvé' }, { status: 404 })
     }

@@ -3,81 +3,105 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Votre devis ThermoGestion</title>
+  <title>Votre devis - {{atelier_name}}</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f3f4f6;">
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f3f4f6;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f4f6; padding: 20px;">
     <tr>
       <td align="center">
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
           <!-- Header -->
           <tr>
-            <td style="background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%); padding: 40px 30px; text-align: center;">
+            <td style="background: linear-gradient(135deg, #f97316 0%, #dc2626 100%); padding: 40px 30px; text-align: center;">
               <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">
-                Thermo<span style="color: #93c5fd;">Gestion</span>
+                {{atelier_name}}
               </h1>
-              <p style="margin: 10px 0 0; color: #e0e7ff; font-size: 16px;">Votre devis professionnel</p>
+              <p style="margin: 10px 0 0; color: rgba(255,255,255,0.9); font-size: 16px;">Votre devis est prêt !</p>
             </td>
           </tr>
           
           <!-- Content -->
           <tr>
             <td style="padding: 40px 30px;">
-              <h2 style="margin: 0 0 20px; color: #1f2937; font-size: 24px;">Bonjour {{client_name}},</h2>
+              <h2 style="margin: 0 0 20px; color: #1f2937; font-size: 22px;">Bonjour {{client_name}},</h2>
               
               <p style="margin: 0 0 20px; color: #4b5563; font-size: 16px; line-height: 1.6;">
-                Nous avons le plaisir de vous transmettre votre devis <strong>#{{devis_numero}}</strong> pour un montant de <strong style="color: #2563eb;">{{montant_ttc}}</strong> TTC.
+                Nous avons le plaisir de vous transmettre votre devis <strong>#{{devis_numero}}</strong>.
               </p>
               
-              <p style="margin: 0 0 20px; color: #4b5563; font-size: 16px; line-height: 1.6;">
-                Ce devis est valable <strong>30 jours</strong> à compter de sa date d'émission.
-              </p>
-              
-              <div style="background-color: #eff6ff; border-left: 4px solid #2563eb; padding: 20px; margin: 30px 0; border-radius: 4px;">
-                <p style="margin: 0 0 10px; color: #1e40af; font-weight: bold; font-size: 16px;">
-                  🎁 Créez votre compte client
-                </p>
-                <p style="margin: 0; color: #1e3a8a; font-size: 14px; line-height: 1.6;">
-                  Pour suivre l'avancement de votre projet et accéder à tous vos documents, créez votre compte en cliquant sur le lien ci-dessous :
-                </p>
-                <p style="margin: 15px 0 0;">
-                  <a href="{{lien_creation_compte}}" style="display: inline-block; background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; font-size: 14px;">
-                    Créer mon compte client
-                  </a>
-                </p>
+              <!-- Montant Card -->
+              <div style="background: linear-gradient(135deg, #fff7ed 0%, #fef3e9 100%); border: 2px solid #fed7aa; border-radius: 12px; padding: 25px; margin: 25px 0; text-align: center;">
+                <p style="margin: 0 0 5px; color: #9a3412; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Montant total TTC</p>
+                <p style="margin: 0; color: #c2410c; font-size: 32px; font-weight: bold;">{{montant_ttc}}</p>
+                <p style="margin: 10px 0 0; color: #ea580c; font-size: 13px;">HT : {{montant_ht}}</p>
               </div>
               
-              <p style="margin: 30px 0 20px; color: #4b5563; font-size: 16px; line-height: 1.6;">
-                Le devis détaillé est disponible en pièce jointe de cet email.
+              <!-- CTA Principal - Voir et Signer -->
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="{{lien_devis_public}}" style="display: inline-block; background: linear-gradient(135deg, #f97316 0%, #dc2626 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 14px rgba(249, 115, 22, 0.4);">
+                  👁️ Voir et signer le devis
+                </a>
+              </div>
+              
+              <p style="margin: 0; color: #6b7280; font-size: 14px; text-align: center;">
+                Cliquez pour consulter le détail et signer électroniquement
               </p>
               
               {{message_personnalise}}
+              
+              <!-- Validité -->
+              <div style="background-color: #fef3c7; border-radius: 8px; padding: 15px; margin: 30px 0; text-align: center;">
+                <p style="margin: 0; color: #92400e; font-size: 14px;">
+                  ⏰ Ce devis est valable <strong>30 jours</strong> à compter de sa date d'émission
+                </p>
+              </div>
+              
+              <!-- Séparateur -->
+              <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+              
+              <!-- Option compte client -->
+              <div style="background-color: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 20px; border-radius: 0 8px 8px 0;">
+                <p style="margin: 0 0 10px; color: #0369a1; font-weight: bold; font-size: 15px;">
+                  💼 Vous avez plusieurs projets ?
+                </p>
+                <p style="margin: 0 0 15px; color: #0c4a6e; font-size: 14px; line-height: 1.6;">
+                  Créez un compte client pour suivre tous vos projets, accéder à vos factures et gérer vos devis en un seul endroit.
+                </p>
+                <a href="{{lien_creation_compte}}" style="display: inline-block; background-color: #0ea5e9; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; font-size: 13px;">
+                  Créer mon compte →
+                </a>
+              </div>
+              
+              <!-- PDF en pièce jointe -->
+              <p style="margin: 30px 0 0; color: #6b7280; font-size: 14px; text-align: center;">
+                📎 Le devis détaillé au format PDF est également en pièce jointe
+              </p>
             </td>
           </tr>
           
           <!-- Footer -->
           <tr>
-            <td style="background-color: #f9fafb; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
-              <p style="margin: 0 0 10px; color: #6b7280; font-size: 14px;">
-                <strong>{{atelier_name}}</strong>
+            <td style="background-color: #1f2937; padding: 30px; text-align: center;">
+              <p style="margin: 0 0 10px; color: #ffffff; font-size: 16px; font-weight: bold;">
+                {{atelier_name}}
               </p>
               {{#if atelier_address}}
-              <p style="margin: 0 0 10px; color: #6b7280; font-size: 14px;">
-                {{atelier_address}}
+              <p style="margin: 0 0 8px; color: #9ca3af; font-size: 13px;">
+                📍 {{atelier_address}}
               </p>
               {{/if}}
               {{#if atelier_phone}}
-              <p style="margin: 0 0 10px; color: #6b7280; font-size: 14px;">
-                Tél: {{atelier_phone}}
+              <p style="margin: 0 0 8px; color: #9ca3af; font-size: 13px;">
+                📞 {{atelier_phone}}
               </p>
               {{/if}}
               {{#if atelier_email}}
-              <p style="margin: 0; color: #6b7280; font-size: 14px;">
-                Email: <a href="mailto:{{atelier_email}}" style="color: #2563eb; text-decoration: none;">{{atelier_email}}</a>
+              <p style="margin: 0; color: #9ca3af; font-size: 13px;">
+                ✉️ <a href="mailto:{{atelier_email}}" style="color: #60a5fa; text-decoration: none;">{{atelier_email}}</a>
               </p>
               {{/if}}
-              <p style="margin: 20px 0 0; color: #9ca3af; font-size: 12px;">
-                Cet email a été envoyé automatiquement par ThermoGestion.
+              <p style="margin: 20px 0 0; color: #6b7280; font-size: 11px;">
+                Propulsé par ThermoGestion
               </p>
             </td>
           </tr>
