@@ -107,7 +107,6 @@ export function MobileNav({ userEmail }: MobileNavProps) {
                   >
                     <span className="text-lg">{link.icon}</span>
                     <span className="font-medium">{link.label}</span>
-                    {active && <span className="ml-auto text-orange-500">●</span>}
                   </Link>
                 </li>
               )

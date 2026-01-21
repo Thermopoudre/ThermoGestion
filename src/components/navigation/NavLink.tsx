@@ -33,7 +33,6 @@ export function NavLink({
       href={href}
       className={`${baseClass} ${isActive ? activeClassName : inactiveClass} ${className}`}
     >
-      {isActive && <span className="mr-1">•</span>}
       {children}
     </Link>
   )
