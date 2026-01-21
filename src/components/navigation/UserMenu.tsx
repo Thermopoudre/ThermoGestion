@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { NotificationBell } from '@/components/ui/NotificationBell'
 import { PushNotificationButton } from '@/components/notifications/PushNotificationButton'
 
 interface UserMenuProps {
@@ -55,15 +54,10 @@ export function UserMenu({ userEmail }: UserMenuProps) {
       {/* Menu déroulant */}
       {isOpen && (
         <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
-          {/* Header avec email et cloche */}
+          {/* Header avec email */}
           <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{userEmail}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Connecté</p>
-              </div>
-              <NotificationBell />
-            </div>
+            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{userEmail}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Connecté</p>
           </div>
 
           {/* Notifications push */}

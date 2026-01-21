@@ -5,6 +5,7 @@ import { ThemeToggle } from '@/components/theme/ThemeToggle'
 import { MobileNav } from '@/components/navigation/MobileNav'
 import { NavLink } from '@/components/navigation/NavLink'
 import { UserMenu } from '@/components/navigation/UserMenu'
+import { NotificationBell } from '@/components/ui/NotificationBell'
 
 export default async function AppLayout({
   children,
@@ -58,6 +59,7 @@ export default async function AppLayout({
             <div className="flex items-center gap-2 md:gap-3">
               <SearchButton />
               <ThemeToggle />
+              <NotificationBell />
               <UserMenu userEmail={user.email || ''} />
             </div>
           </div>
