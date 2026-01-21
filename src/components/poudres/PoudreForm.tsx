@@ -17,6 +17,7 @@ interface PoudreFormProps {
     densite?: number
     epaisseur_conseillee?: number
     consommation_m2?: number
+    rendement_m2_kg?: number
     temp_cuisson?: number
     duree_cuisson?: number
     source?: 'manual' | 'thermopoudre' | 'concurrent'
@@ -31,6 +32,15 @@ export function PoudreForm({ atelierId, poudreId, initialData }: PoudreFormProps
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   
+  // Calculer le rendement initial depuis la consommation si disponible
+  const getInitialRendement = () => {
+    if (initialData?.rendement_m2_kg) return initialData.rendement_m2_kg.toString()
+    if (initialData?.consommation_m2 && initialData.consommation_m2 > 0) {
+      return (1 / initialData.consommation_m2).toFixed(2)
+    }
+    return '6.67' // Valeur par défaut (~0.15 kg/m²)
+  }
+
   const [formData, setFormData] = useState({
     marque: initialData?.marque || '',
     reference: initialData?.reference || '',
@@ -38,14 +48,19 @@ export function PoudreForm({ atelierId, poudreId, initialData }: PoudreFormProps
     ral: initialData?.ral || '',
     finition: initialData?.finition || 'mat',
     prix_kg: initialData?.prix_kg?.toString() || '25',
+    rendement_m2_kg: getInitialRendement(),
     densite: initialData?.densite?.toString() || '',
     epaisseur_conseillee: initialData?.epaisseur_conseillee?.toString() || '',
-    consommation_m2: initialData?.consommation_m2?.toString() || '',
     temp_cuisson: initialData?.temp_cuisson?.toString() || '',
     duree_cuisson: initialData?.duree_cuisson?.toString() || '',
     source: initialData?.source || ('manual' as 'manual' | 'thermopoudre' | 'concurrent'),
     stock_initial_kg: initialData?.stock_initial_kg?.toString() || '0',
   })
+
+  // Calculer la consommation à partir du rendement
+  const calculatedConsommation = formData.rendement_m2_kg && parseFloat(formData.rendement_m2_kg) > 0
+    ? (1 / parseFloat(formData.rendement_m2_kg)).toFixed(3)
+    : '0.150'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -53,6 +68,10 @@ export function PoudreForm({ atelierId, poudreId, initialData }: PoudreFormProps
     setError(null)
 
     try {
+      // Calculer la consommation à partir du rendement
+      const rendement = formData.rendement_m2_kg ? parseFloat(formData.rendement_m2_kg) : 6.67
+      const consommation = rendement > 0 ? 1 / rendement : 0.15
+
       const poudreData = {
         atelier_id: atelierId,
         marque: formData.marque,
@@ -61,9 +80,10 @@ export function PoudreForm({ atelierId, poudreId, initialData }: PoudreFormProps
         ral: formData.ral || null,
         finition: formData.finition,
         prix_kg: formData.prix_kg ? parseFloat(formData.prix_kg) : 25,
+        rendement_m2_kg: rendement,
         densite: formData.densite ? parseFloat(formData.densite) : null,
         epaisseur_conseillee: formData.epaisseur_conseillee ? parseFloat(formData.epaisseur_conseillee) : null,
-        consommation_m2: formData.consommation_m2 ? parseFloat(formData.consommation_m2) : null,
+        consommation_m2: consommation, // Calculé automatiquement
         temp_cuisson: formData.temp_cuisson ? parseInt(formData.temp_cuisson) : null,
         duree_cuisson: formData.duree_cuisson ? parseInt(formData.duree_cuisson) : null,
         source: formData.source,
@@ -278,18 +298,23 @@ export function PoudreForm({ atelierId, poudreId, initialData }: PoudreFormProps
           </div>
 
           <div>
-            <label htmlFor="consommation_m2" className="block text-sm font-medium text-gray-700 mb-2">
-              Consommation (kg/m²)
+            <label htmlFor="rendement_m2_kg" className="block text-sm font-medium text-gray-700 mb-2">
+              📐 Rendement (m²/kg) *
             </label>
             <input
-              id="consommation_m2"
+              id="rendement_m2_kg"
               type="number"
               step="0.01"
-              value={formData.consommation_m2}
-              onChange={(e) => setFormData({ ...formData, consommation_m2: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="0.15"
+              min="0.1"
+              value={formData.rendement_m2_kg}
+              onChange={(e) => setFormData({ ...formData, rendement_m2_kg: e.target.value })}
+              required
+              className="w-full px-4 py-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-blue-50"
+              placeholder="6.67"
             />
+            <p className="text-xs text-gray-500 mt-1">
+              Surface couverte par kg = <strong>{calculatedConsommation} kg/m²</strong> de consommation
+            </p>
           </div>
 
           <div>

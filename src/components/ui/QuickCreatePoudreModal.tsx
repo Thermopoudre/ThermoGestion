@@ -26,6 +26,7 @@ export function QuickCreatePoudreModal({ isOpen, onClose, atelierId, onPoudreCre
     ral: '',
     finition: 'mat',
     prix_kg: '25',
+    rendement_m2_kg: '6.67', // ~0.15 kg/m²
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,6 +35,9 @@ export function QuickCreatePoudreModal({ isOpen, onClose, atelierId, onPoudreCre
     setError(null)
 
     try {
+      const rendement = parseFloat(formData.rendement_m2_kg) || 6.67
+      const consommation = rendement > 0 ? 1 / rendement : 0.15
+
       const { data: newPoudre, error: insertError } = await supabase
         .from('poudres')
         .insert({
@@ -44,6 +48,8 @@ export function QuickCreatePoudreModal({ isOpen, onClose, atelierId, onPoudreCre
           ral: formData.ral || null,
           finition: formData.finition,
           prix_kg: parseFloat(formData.prix_kg) || 25,
+          rendement_m2_kg: rendement,
+          consommation_m2: consommation,
           source: 'manual',
         })
         .select()
@@ -60,7 +66,7 @@ export function QuickCreatePoudreModal({ isOpen, onClose, atelierId, onPoudreCre
       })
 
       // Reset form
-      setFormData({ marque: '', reference: '', type: 'Polyester', ral: '', finition: 'mat', prix_kg: '25' })
+      setFormData({ marque: '', reference: '', type: 'Polyester', ral: '', finition: 'mat', prix_kg: '25', rendement_m2_kg: '6.67' })
       
       // Notify parent and close
       onPoudreCreated(newPoudre)
@@ -147,25 +153,25 @@ export function QuickCreatePoudreModal({ isOpen, onClose, atelierId, onPoudreCre
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="qc_finition" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Finition *
-            </label>
-            <select
-              id="qc_finition"
-              value={formData.finition}
-              onChange={(e) => setFormData({ ...formData, finition: e.target.value })}
-              className={inputClasses}
-            >
-              <option value="mat">Mat</option>
-              <option value="satin">Satin</option>
-              <option value="brillant">Brillant</option>
-              <option value="texture">Texture</option>
-              <option value="metallic">Métallique</option>
-            </select>
-          </div>
+        <div>
+          <label htmlFor="qc_finition" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Finition *
+          </label>
+          <select
+            id="qc_finition"
+            value={formData.finition}
+            onChange={(e) => setFormData({ ...formData, finition: e.target.value })}
+            className={inputClasses}
+          >
+            <option value="mat">Mat</option>
+            <option value="satin">Satin</option>
+            <option value="brillant">Brillant</option>
+            <option value="texture">Texture</option>
+            <option value="metallic">Métallique</option>
+          </select>
+        </div>
 
+        <div className="grid grid-cols-2 gap-4">
           <div>
             <label htmlFor="qc_prix_kg" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               💰 Prix (€/kg) *
@@ -181,6 +187,24 @@ export function QuickCreatePoudreModal({ isOpen, onClose, atelierId, onPoudreCre
               className="w-full px-4 py-3 border border-orange-300 dark:border-orange-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-orange-50 dark:bg-orange-900/20 text-gray-900 dark:text-white"
               placeholder="25.00"
             />
+          </div>
+
+          <div>
+            <label htmlFor="qc_rendement" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              📐 Rendement (m²/kg) *
+            </label>
+            <input
+              id="qc_rendement"
+              type="number"
+              step="0.01"
+              min="0.1"
+              value={formData.rendement_m2_kg}
+              onChange={(e) => setFormData({ ...formData, rendement_m2_kg: e.target.value })}
+              required
+              className="w-full px-4 py-3 border border-blue-300 dark:border-blue-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-blue-50 dark:bg-blue-900/20 text-gray-900 dark:text-white"
+              placeholder="6.67"
+            />
+            <p className="text-xs text-gray-500 mt-1">Surface couverte par kg</p>
           </div>
         </div>
 

@@ -4,6 +4,15 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@/lib/supabase/client'
 
+interface DevisSettings {
+  taux_mo_heure: number
+  temps_mo_m2: number
+  cout_consommables_m2: number
+  marge_poudre_pct: number
+  marge_mo_pct: number
+  tva_rate: number
+}
+
 interface AtelierSettingsFormProps {
   atelier: {
     id: string
@@ -18,6 +27,9 @@ interface AtelierSettingsFormProps {
     capital_social?: string | null
     iban?: string | null
     bic?: string | null
+    settings?: {
+      devis?: DevisSettings
+    } | null
   }
 }
 
@@ -29,6 +41,16 @@ export function AtelierSettingsForm({ atelier }: AtelierSettingsFormProps) {
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
   
+  // Paramètres par défaut pour les devis
+  const defaultDevisSettings: DevisSettings = {
+    taux_mo_heure: 35,
+    temps_mo_m2: 0.15,
+    cout_consommables_m2: 2,
+    marge_poudre_pct: 30,
+    marge_mo_pct: 50,
+    tva_rate: 20,
+  }
+
   const [formData, setFormData] = useState({
     name: atelier.name || '',
     address: atelier.address || '',
@@ -41,6 +63,11 @@ export function AtelierSettingsForm({ atelier }: AtelierSettingsFormProps) {
     capital_social: atelier.capital_social || '',
     iban: atelier.iban || '',
     bic: atelier.bic || '',
+  })
+
+  const [devisSettings, setDevisSettings] = useState<DevisSettings>({
+    ...defaultDevisSettings,
+    ...(atelier.settings?.devis || {}),
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -64,6 +91,10 @@ export function AtelierSettingsForm({ atelier }: AtelierSettingsFormProps) {
           capital_social: formData.capital_social || null,
           iban: formData.iban || null,
           bic: formData.bic || null,
+          settings: {
+            ...atelier.settings,
+            devis: devisSettings,
+          },
         })
         .eq('id', atelier.id)
 
@@ -283,6 +314,154 @@ export function AtelierSettingsForm({ atelier }: AtelierSettingsFormProps) {
               className={`${inputClasses} font-mono`}
               placeholder="BNPAFRPP"
             />
+          </div>
+        </div>
+      </div>
+
+      {/* Paramètres de calcul des devis */}
+      <div className={cardClasses}>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+          📊 Paramètres de calcul des devis
+        </h2>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+          Ces paramètres sont utilisés automatiquement pour calculer vos devis. Ils ne peuvent pas être modifiés lors de la création d'un devis.
+        </p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Section Main d'œuvre */}
+          <div className="md:col-span-3">
+            <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+              👷 Main d'œuvre
+            </h3>
+          </div>
+          
+          <div>
+            <label className={labelClasses}>
+              Taux horaire MO (€/h) *
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              value={devisSettings.taux_mo_heure}
+              onChange={(e) => setDevisSettings({ ...devisSettings, taux_mo_heure: parseFloat(e.target.value) || 0 })}
+              required
+              className={`${inputClasses} border-blue-300 bg-blue-50 dark:bg-blue-900/20`}
+            />
+            <p className={helpTextClasses}>Coût horaire de la main d'œuvre</p>
+          </div>
+
+          <div>
+            <label className={labelClasses}>
+              Temps MO par m² (h/m²)
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              value={devisSettings.temps_mo_m2}
+              onChange={(e) => setDevisSettings({ ...devisSettings, temps_mo_m2: parseFloat(e.target.value) || 0 })}
+              className={inputClasses}
+            />
+            <p className={helpTextClasses}>Temps moyen pour traiter 1m²</p>
+          </div>
+
+          <div>
+            <label className={labelClasses}>
+              Marge MO (%)
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              min="0"
+              max="200"
+              value={devisSettings.marge_mo_pct}
+              onChange={(e) => setDevisSettings({ ...devisSettings, marge_mo_pct: parseFloat(e.target.value) || 0 })}
+              className={`${inputClasses} border-green-300 bg-green-50 dark:bg-green-900/20`}
+            />
+            <p className={helpTextClasses}>Marge appliquée sur la MO</p>
+          </div>
+
+          {/* Section Poudre */}
+          <div className="md:col-span-3 mt-4">
+            <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+              🎨 Poudre
+            </h3>
+          </div>
+
+          <div>
+            <label className={labelClasses}>
+              Marge poudre (%)
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              min="0"
+              max="200"
+              value={devisSettings.marge_poudre_pct}
+              onChange={(e) => setDevisSettings({ ...devisSettings, marge_poudre_pct: parseFloat(e.target.value) || 0 })}
+              className={`${inputClasses} border-green-300 bg-green-50 dark:bg-green-900/20`}
+            />
+            <p className={helpTextClasses}>Marge appliquée sur la poudre</p>
+          </div>
+
+          <div>
+            <label className={labelClasses}>
+              Consommables (€/m²)
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              value={devisSettings.cout_consommables_m2}
+              onChange={(e) => setDevisSettings({ ...devisSettings, cout_consommables_m2: parseFloat(e.target.value) || 0 })}
+              className={inputClasses}
+            />
+            <p className={helpTextClasses}>Coût des consommables par m²</p>
+          </div>
+
+          <div>
+            <label className={labelClasses}>
+              TVA par défaut (%)
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              min="0"
+              max="30"
+              value={devisSettings.tva_rate}
+              onChange={(e) => setDevisSettings({ ...devisSettings, tva_rate: parseFloat(e.target.value) || 0 })}
+              className={inputClasses}
+            />
+            <p className={helpTextClasses}>Taux de TVA appliqué</p>
+          </div>
+        </div>
+
+        {/* Aperçu calcul */}
+        <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+          <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">💡 Exemple de calcul pour 1m²</h4>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div>
+              <span className="text-gray-500 dark:text-gray-400">MO brute:</span>
+              <p className="font-bold">{(devisSettings.taux_mo_heure * devisSettings.temps_mo_m2).toFixed(2)} €</p>
+            </div>
+            <div>
+              <span className="text-gray-500 dark:text-gray-400">MO + marge:</span>
+              <p className="font-bold text-blue-600">{(devisSettings.taux_mo_heure * devisSettings.temps_mo_m2 * (1 + devisSettings.marge_mo_pct / 100)).toFixed(2)} €</p>
+            </div>
+            <div>
+              <span className="text-gray-500 dark:text-gray-400">Consommables:</span>
+              <p className="font-bold">{devisSettings.cout_consommables_m2.toFixed(2)} €</p>
+            </div>
+            <div>
+              <span className="text-gray-500 dark:text-gray-400">Total HT/m² (hors poudre):</span>
+              <p className="font-bold text-orange-600">
+                {(
+                  devisSettings.taux_mo_heure * devisSettings.temps_mo_m2 * (1 + devisSettings.marge_mo_pct / 100) +
+                  devisSettings.cout_consommables_m2
+                ).toFixed(2)} €
+              </p>
+            </div>
           </div>
         </div>
       </div>

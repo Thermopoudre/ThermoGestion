@@ -10,6 +10,13 @@ import type { Database } from '@/types/database.types'
 type Client = Database['public']['Tables']['clients']['Row']
 type Poudre = Database['public']['Tables']['poudres']['Row']
 
+// Couche de poudre pour un item
+interface Couche {
+  id: string
+  poudre_id?: string
+  type: 'primaire' | 'base' | 'vernis' | 'autre'
+}
+
 interface DevisItem {
   id: string
   designation: string
@@ -18,13 +25,23 @@ interface DevisItem {
   hauteur?: number
   quantite: number
   surface_m2: number
-  poudre_id?: string
-  couches: number
-  cout_poudre: number
-  cout_mo: number
+  couches: Couche[] // Multi-couches avec poudres différentes
+  cout_poudre_revient: number // Coût de revient poudre
+  cout_poudre_vente: number // Coût de vente poudre (avec marge)
+  cout_mo_revient: number // Coût de revient MO
+  cout_mo_vente: number // Coût de vente MO (avec marge)
   cout_consommables: number
-  marge: number
-  total_ht: number
+  total_revient: number // Prix de revient total
+  total_ht: number // Prix de vente HT
+}
+
+interface AtelierSettings {
+  taux_mo_heure: number
+  temps_mo_m2: number
+  cout_consommables_m2: number
+  marge_poudre_pct: number
+  marge_mo_pct: number
+  tva_rate: number
 }
 
 interface DevisFormProps {
@@ -34,16 +51,34 @@ interface DevisFormProps {
   poudres: Poudre[]
   devisId?: string
   initialData?: any
+  atelierSettings?: AtelierSettings
 }
 
-export function DevisForm({ atelierId, userId, clients: initialClients, poudres: initialPoudres, devisId, initialData }: DevisFormProps) {
+const defaultSettings: AtelierSettings = {
+  taux_mo_heure: 35,
+  temps_mo_m2: 0.15,
+  cout_consommables_m2: 2,
+  marge_poudre_pct: 30,
+  marge_mo_pct: 50,
+  tva_rate: 20,
+}
+
+export function DevisForm({ 
+  atelierId, 
+  userId, 
+  clients: initialClients, 
+  poudres: initialPoudres, 
+  devisId, 
+  initialData,
+  atelierSettings 
+}: DevisFormProps) {
   const router = useRouter()
   const supabase = createBrowserClient()
   
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   
-  // Liste dynamique des clients et poudres (peut être mise à jour via création rapide)
+  // Liste dynamique des clients et poudres
   const [clients, setClients] = useState<Client[]>(initialClients)
   const [poudres, setPoudres] = useState<Poudre[]>(initialPoudres)
   
@@ -51,17 +86,15 @@ export function DevisForm({ atelierId, userId, clients: initialClients, poudres:
   const [showClientModal, setShowClientModal] = useState(false)
   const [showPoudreModal, setShowPoudreModal] = useState(false)
   const [currentItemIdForPoudre, setCurrentItemIdForPoudre] = useState<string | null>(null)
+  const [currentCoucheIdForPoudre, setCurrentCoucheIdForPoudre] = useState<string | null>(null)
   
-  // Paramètres de calcul (avec valeurs par défaut)
-  // Note: Le prix de la poudre est maintenant lié à chaque poudre individuellement
-  const [params, setParams] = useState({
-    taux_mo_heure: 35, // €/h
-    temps_mo_m2: 0.15, // heures/m²
-    cout_consommables_m2: 2, // €/m²
-    marge_poudre_pct: 30, // %
-    marge_mo_pct: 50, // %
-    marge_forfait: 0, // €
-    tva_rate: 20, // %
+  // Paramètres de calcul (depuis atelier - lecture seule)
+  const params = atelierSettings || defaultSettings
+  
+  // Système de remise
+  const [remise, setRemise] = useState({
+    type: 'pourcentage' as 'pourcentage' | 'montant',
+    valeur: 0,
   })
 
   const [formData, setFormData] = useState({
@@ -75,39 +108,61 @@ export function DevisForm({ atelierId, userId, clients: initialClients, poudres:
   const calculateSurface = (longueur: number, largeur: number, hauteur?: number, quantite: number = 1): number => {
     if (hauteur) {
       // Surface totale d'un parallélépipède
-      return quantite * 2 * (longueur * largeur + longueur * hauteur + largeur * hauteur) / 1000000 // conversion mm² -> m²
+      return quantite * 2 * (longueur * largeur + longueur * hauteur + largeur * hauteur) / 1000000
     }
     // Surface rectangle (2 faces)
-    return quantite * 2 * (longueur * largeur) / 1000000 // conversion mm² -> m²
+    return quantite * 2 * (longueur * largeur) / 1000000
   }
 
-  // Calculer coûts pour un item
-  const calculateItemCosts = (item: DevisItem, poudre?: Poudre): Partial<DevisItem> => {
+  // Calculer coûts pour un item avec multi-couches
+  const calculateItemCosts = (item: DevisItem): Partial<DevisItem> => {
     const surface = calculateSurface(item.longueur, item.largeur, item.hauteur, item.quantite)
     
-    // Coût poudre (consommation * prix de la poudre * marge)
-    // Le prix est maintenant lié à chaque poudre individuellement
-    const consommationM2 = poudre?.consommation_m2 ? Number(poudre.consommation_m2) : 0.15 // kg/m² par défaut
-    const prixPoudreKg = poudre?.prix_kg ? Number(poudre.prix_kg) : 25 // Prix de la poudre ou 25€/kg par défaut
-    const coutPoudreBrut = surface * consommationM2 * prixPoudreKg
-    const coutPoudre = coutPoudreBrut * (1 + params.marge_poudre_pct / 100)
+    // Calcul poudre pour toutes les couches
+    let coutPoudreRevient = 0
+    let coutPoudreVente = 0
     
-    // Coût main d'œuvre
-    const tempsMo = surface * params.temps_mo_m2
-    const coutMoBrut = tempsMo * params.taux_mo_heure
-    const coutMo = coutMoBrut * (1 + params.marge_mo_pct / 100)
+    item.couches.forEach(couche => {
+      const poudre = poudres.find(p => p.id === couche.poudre_id)
+      if (poudre) {
+        // Utiliser le rendement si disponible, sinon consommation, sinon défaut
+        let consommationM2 = 0.15
+        if (poudre.rendement_m2_kg && Number(poudre.rendement_m2_kg) > 0) {
+          consommationM2 = 1 / Number(poudre.rendement_m2_kg)
+        } else if (poudre.consommation_m2) {
+          consommationM2 = Number(poudre.consommation_m2)
+        }
+        
+        const prixPoudreKg = poudre.prix_kg ? Number(poudre.prix_kg) : 25
+        const coutCoucheRevient = surface * consommationM2 * prixPoudreKg
+        const coutCoucheVente = coutCoucheRevient * (1 + params.marge_poudre_pct / 100)
+        
+        coutPoudreRevient += coutCoucheRevient
+        coutPoudreVente += coutCoucheVente
+      }
+    })
+    
+    // Coût main d'œuvre (multiplié par nombre de couches)
+    const nbCouches = item.couches.length || 1
+    const tempsMo = surface * params.temps_mo_m2 * nbCouches
+    const coutMoRevient = tempsMo * params.taux_mo_heure
+    const coutMoVente = coutMoRevient * (1 + params.marge_mo_pct / 100)
     
     // Coût consommables
-    const coutConsommables = surface * params.cout_consommables_m2
+    const coutConsommables = surface * params.cout_consommables_m2 * nbCouches
     
-    // Total HT (avec marge forfait par item si besoin)
-    const totalHt = (coutPoudre + coutMo + coutConsommables) * item.couches + params.marge_forfait / (formData.items.length || 1)
+    // Totaux
+    const totalRevient = coutPoudreRevient + coutMoRevient + coutConsommables
+    const totalHt = coutPoudreVente + coutMoVente + coutConsommables
     
     return {
       surface_m2: surface,
-      cout_poudre: coutPoudre * item.couches,
-      cout_mo: coutMo * item.couches,
-      cout_consommables: coutConsommables * item.couches,
+      cout_poudre_revient: coutPoudreRevient,
+      cout_poudre_vente: coutPoudreVente,
+      cout_mo_revient: coutMoRevient,
+      cout_mo_vente: coutMoVente,
+      cout_consommables: coutConsommables,
+      total_revient: totalRevient,
       total_ht: totalHt,
     }
   }
@@ -122,11 +177,13 @@ export function DevisForm({ atelierId, userId, clients: initialClients, poudres:
       hauteur: undefined,
       quantite: 1,
       surface_m2: 0,
-      couches: 1,
-      cout_poudre: 0,
-      cout_mo: 0,
+      couches: [{ id: `couche-${Date.now()}`, type: 'base' }],
+      cout_poudre_revient: 0,
+      cout_poudre_vente: 0,
+      cout_mo_revient: 0,
+      cout_mo_vente: 0,
       cout_consommables: 0,
-      marge: 0,
+      total_revient: 0,
       total_ht: 0,
     }
     setFormData({ ...formData, items: [...formData.items, newItem] })
@@ -137,6 +194,52 @@ export function DevisForm({ atelierId, userId, clients: initialClients, poudres:
     setFormData({ ...formData, items: formData.items.filter(item => item.id !== itemId) })
   }
 
+  // Ajouter une couche à un item
+  const addCouche = (itemId: string) => {
+    const updatedItems = formData.items.map(item => {
+      if (item.id === itemId) {
+        const newCouche: Couche = {
+          id: `couche-${Date.now()}`,
+          type: 'autre',
+        }
+        const updatedItem = { ...item, couches: [...item.couches, newCouche] }
+        const costs = calculateItemCosts(updatedItem)
+        return { ...updatedItem, ...costs }
+      }
+      return item
+    })
+    setFormData({ ...formData, items: updatedItems })
+  }
+
+  // Supprimer une couche
+  const removeCouche = (itemId: string, coucheId: string) => {
+    const updatedItems = formData.items.map(item => {
+      if (item.id === itemId && item.couches.length > 1) {
+        const updatedItem = { ...item, couches: item.couches.filter(c => c.id !== coucheId) }
+        const costs = calculateItemCosts(updatedItem)
+        return { ...updatedItem, ...costs }
+      }
+      return item
+    })
+    setFormData({ ...formData, items: updatedItems })
+  }
+
+  // Mettre à jour une couche
+  const updateCouche = (itemId: string, coucheId: string, updates: Partial<Couche>) => {
+    const updatedItems = formData.items.map(item => {
+      if (item.id === itemId) {
+        const updatedCouches = item.couches.map(couche => 
+          couche.id === coucheId ? { ...couche, ...updates } : couche
+        )
+        const updatedItem = { ...item, couches: updatedCouches }
+        const costs = calculateItemCosts(updatedItem)
+        return { ...updatedItem, ...costs }
+      }
+      return item
+    })
+    setFormData({ ...formData, items: updatedItems })
+  }
+
   // Mettre à jour un item
   const updateItem = (itemId: string, updates: Partial<DevisItem>) => {
     const updatedItems = formData.items.map(item => {
@@ -144,10 +247,8 @@ export function DevisForm({ atelierId, userId, clients: initialClients, poudres:
         const updatedItem = { ...item, ...updates }
         // Recalculer si dimensions ou quantité changent
         if (updates.longueur !== undefined || updates.largeur !== undefined || 
-            updates.hauteur !== undefined || updates.quantite !== undefined || 
-            updates.couches !== undefined || updates.poudre_id !== undefined) {
-          const poudre = poudres.find(p => p.id === updatedItem.poudre_id)
-          const costs = calculateItemCosts(updatedItem, poudre)
+            updates.hauteur !== undefined || updates.quantite !== undefined) {
+          const costs = calculateItemCosts(updatedItem)
           return { ...updatedItem, ...costs }
         }
         return updatedItem
@@ -157,14 +258,28 @@ export function DevisForm({ atelierId, userId, clients: initialClients, poudres:
     setFormData({ ...formData, items: updatedItems })
   }
 
-  // Calculer totaux
+  // Calculer totaux avec remise
   const calculateTotals = () => {
-    const totalHt = formData.items.reduce((sum, item) => sum + item.total_ht, 0)
+    const totalRevient = formData.items.reduce((sum, item) => sum + item.total_revient, 0)
+    let totalHtBrut = formData.items.reduce((sum, item) => sum + item.total_ht, 0)
+    
+    // Appliquer la remise
+    let montantRemise = 0
+    if (remise.type === 'pourcentage' && remise.valeur > 0) {
+      montantRemise = totalHtBrut * (remise.valeur / 100)
+    } else if (remise.type === 'montant' && remise.valeur > 0) {
+      montantRemise = remise.valeur
+    }
+    
+    const totalHt = Math.max(0, totalHtBrut - montantRemise)
     const totalTtc = totalHt * (1 + params.tva_rate / 100)
-    return { totalHt, totalTtc }
+    const margeEuros = totalHt - totalRevient
+    const margePct = totalRevient > 0 ? (margeEuros / totalRevient) * 100 : 0
+    
+    return { totalRevient, totalHtBrut, montantRemise, totalHt, totalTtc, margeEuros, margePct }
   }
 
-  const { totalHt, totalTtc } = calculateTotals()
+  const totals = calculateTotals()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -195,7 +310,6 @@ export function DevisForm({ atelierId, userId, clients: initialClients, poudres:
           .limit(1)
           .single()
 
-        // Format: DEV-YYYY-NNNN
         const year = new Date().getFullYear()
         const lastNum = lastDevis?.numero 
           ? parseInt(lastDevis.numero.split('-')[2] || '0')
@@ -208,15 +322,17 @@ export function DevisForm({ atelierId, userId, clients: initialClients, poudres:
         client_id: formData.client_id,
         numero: numero || formData.numero,
         status: 'brouillon',
-        total_ht: totalHt,
-        total_ttc: totalTtc,
+        total_ht: totals.totalHt,
+        total_ttc: totals.totalTtc,
         tva_rate: params.tva_rate,
         items: formData.items,
+        remise: remise,
+        total_revient: totals.totalRevient,
+        marge_pct: totals.margePct,
         created_by: userId,
       }
 
       if (devisId) {
-        // Mise à jour
         const { error: updateError } = await supabase
           .from('devis')
           .update(devisData)
@@ -224,7 +340,6 @@ export function DevisForm({ atelierId, userId, clients: initialClients, poudres:
 
         if (updateError) throw updateError
       } else {
-        // Création
         const { error: insertError } = await supabase
           .from('devis')
           .insert(devisData)
@@ -242,6 +357,14 @@ export function DevisForm({ atelierId, userId, clients: initialClients, poudres:
   }
 
   const inputClasses = "w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors text-sm"
+  const readOnlyClasses = "w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed text-sm"
+
+  const typeCoucheLabels: Record<Couche['type'], string> = {
+    primaire: '🛡️ Primaire',
+    base: '🎨 Base/Couleur',
+    vernis: '✨ Vernis',
+    autre: '📦 Autre',
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-0">
@@ -288,72 +411,55 @@ export function DevisForm({ atelierId, userId, clients: initialClients, poudres:
             </div>
 
             <div>
-              <label htmlFor="tva_rate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 TVA (%)
               </label>
               <input
-                id="tva_rate"
                 type="number"
-                step="0.1"
                 value={params.tva_rate}
-                onChange={(e) => setParams({ ...params, tva_rate: parseFloat(e.target.value) || 20 })}
-                className={inputClasses}
+                readOnly
+                className={readOnlyClasses}
+                title="Configuré dans les paramètres atelier"
               />
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Défini dans Paramètres</p>
             </div>
           </div>
         </div>
 
-        {/* Paramètres de calcul */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 transition-colors">
-          <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">Paramètres de calcul</h2>
+        {/* Paramètres de calcul (lecture seule) */}
+        <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl shadow-lg p-4 sm:p-6 transition-colors border border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-700 dark:text-gray-300">Paramètres atelier</h2>
+            <span className="text-xs bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded">🔒 Lecture seule</span>
+          </div>
           <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
-            💡 Le prix de la poudre est défini sur chaque fiche poudre individuellement
+            Ces paramètres sont définis dans <a href="/app/parametres" className="text-blue-600 hover:underline">Paramètres Atelier</a>
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4">
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Taux MO (€/h)</label>
-              <input
-                type="number"
-                step="0.01"
-                value={params.taux_mo_heure}
-                onChange={(e) => setParams({ ...params, taux_mo_heure: parseFloat(e.target.value) || 0 })}
-                className={inputClasses}
-              />
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-500 mb-1">Taux MO</label>
+              <p className="text-sm font-bold text-gray-700 dark:text-gray-300">{params.taux_mo_heure} €/h</p>
             </div>
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Marge poudre (%)</label>
-              <input
-                type="number"
-                step="0.1"
-                value={params.marge_poudre_pct}
-                onChange={(e) => setParams({ ...params, marge_poudre_pct: parseFloat(e.target.value) || 0 })}
-                className={inputClasses}
-              />
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-500 mb-1">Temps/m²</label>
+              <p className="text-sm font-bold text-gray-700 dark:text-gray-300">{params.temps_mo_m2} h</p>
             </div>
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Marge MO (%)</label>
-              <input
-                type="number"
-                step="0.1"
-                value={params.marge_mo_pct}
-                onChange={(e) => setParams({ ...params, marge_mo_pct: parseFloat(e.target.value) || 0 })}
-                className={inputClasses}
-              />
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-500 mb-1">Marge poudre</label>
+              <p className="text-sm font-bold text-green-600 dark:text-green-400">{params.marge_poudre_pct}%</p>
             </div>
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Conso. (€/m²)</label>
-              <input
-                type="number"
-                step="0.01"
-                value={params.cout_consommables_m2}
-                onChange={(e) => setParams({ ...params, cout_consommables_m2: parseFloat(e.target.value) || 0 })}
-                className={inputClasses}
-              />
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-500 mb-1">Marge MO</label>
+              <p className="text-sm font-bold text-green-600 dark:text-green-400">{params.marge_mo_pct}%</p>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-500 mb-1">Conso.</label>
+              <p className="text-sm font-bold text-gray-700 dark:text-gray-300">{params.cout_consommables_m2} €/m²</p>
             </div>
           </div>
         </div>
 
-        {/* Items */}
+        {/* Items avec multi-couches */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 transition-colors">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
             <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Pièces / Items</h2>
@@ -383,8 +489,8 @@ export function DevisForm({ atelierId, userId, clients: initialClients, poudres:
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
-                    <div className="col-span-2 sm:col-span-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4 mb-4">
+                    <div className="col-span-2 sm:col-span-5">
                       <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Désignation *</label>
                       <input
                         type="text"
@@ -444,72 +550,100 @@ export function DevisForm({ atelierId, userId, clients: initialClients, poudres:
                       />
                     </div>
 
-                    <div className="col-span-2 sm:col-span-1">
-                      <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Poudre</label>
-                      <div className="flex gap-1">
-                        <select
-                          value={item.poudre_id || ''}
-                          onChange={(e) => updateItem(item.id, { poudre_id: e.target.value || undefined })}
-                          className={`${inputClasses} flex-1`}
-                        >
-                          <option value="">Aucune</option>
-                          {poudres.map(poudre => (
-                            <option key={poudre.id} value={poudre.id}>
-                              {poudre.marque} {poudre.reference} - {poudre.finition}
-                              {poudre.ral && ` (RAL ${poudre.ral})`}
-                            </option>
-                          ))}
-                        </select>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setCurrentItemIdForPoudre(item.id)
-                            setShowPoudreModal(true)
-                          }}
-                          className="px-2 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm font-bold"
-                          title="Créer une nouvelle poudre"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-
                     <div>
-                      <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Couches *</label>
-                      <input
-                        type="number"
-                        step="1"
-                        min="1"
-                        max="3"
-                        value={item.couches || 1}
-                        onChange={(e) => updateItem(item.id, { couches: parseInt(e.target.value) || 1 })}
-                        required
-                        className={inputClasses}
-                      />
+                      <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Surface</label>
+                      <p className="text-lg font-bold text-blue-600 dark:text-blue-400">{item.surface_m2.toFixed(3)} m²</p>
                     </div>
                   </div>
 
-                  {/* Résultats calcul */}
-                  <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-300 dark:border-gray-600 grid grid-cols-3 sm:grid-cols-5 gap-2 text-xs sm:text-sm">
+                  {/* Couches de poudre */}
+                  <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300">🎨 Couches de poudre ({item.couches.length})</h4>
+                      <button
+                        type="button"
+                        onClick={() => addCouche(item.id)}
+                        className="text-xs bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded transition-colors"
+                      >
+                        + Ajouter couche
+                      </button>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      {item.couches.map((couche, coucheIndex) => (
+                        <div key={couche.id} className="flex items-center gap-2 p-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
+                          <span className="text-xs font-bold text-gray-500 w-6">{coucheIndex + 1}.</span>
+                          
+                          <select
+                            value={couche.type}
+                            onChange={(e) => updateCouche(item.id, couche.id, { type: e.target.value as Couche['type'] })}
+                            className="text-xs px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                          >
+                            <option value="primaire">🛡️ Primaire</option>
+                            <option value="base">🎨 Base</option>
+                            <option value="vernis">✨ Vernis</option>
+                            <option value="autre">📦 Autre</option>
+                          </select>
+                          
+                          <select
+                            value={couche.poudre_id || ''}
+                            onChange={(e) => updateCouche(item.id, couche.id, { poudre_id: e.target.value || undefined })}
+                            className="flex-1 text-xs px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                          >
+                            <option value="">-- Sélectionner poudre --</option>
+                            {poudres.map(poudre => (
+                              <option key={poudre.id} value={poudre.id}>
+                                {poudre.marque} {poudre.reference} - {poudre.finition}
+                                {poudre.ral && ` (${poudre.ral})`}
+                                {poudre.prix_kg && ` - ${poudre.prix_kg}€/kg`}
+                              </option>
+                            ))}
+                          </select>
+                          
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setCurrentItemIdForPoudre(item.id)
+                              setCurrentCoucheIdForPoudre(couche.id)
+                              setShowPoudreModal(true)
+                            }}
+                            className="text-xs bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded transition-colors"
+                            title="Créer une nouvelle poudre"
+                          >
+                            +
+                          </button>
+                          
+                          {item.couches.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => removeCouche(item.id, couche.id)}
+                              className="text-red-500 hover:text-red-700 text-xs"
+                            >
+                              ✕
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Résultats calcul item */}
+                  <div className="mt-4 pt-4 border-t border-gray-300 dark:border-gray-600 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs sm:text-sm">
                     <div>
-                      <span className="text-gray-600 dark:text-gray-400 block">Surface</span>
-                      <p className="font-bold text-gray-900 dark:text-white">{item.surface_m2.toFixed(2)} m²</p>
+                      <span className="text-gray-500 dark:text-gray-400 block">Poudre (revient)</span>
+                      <p className="font-bold text-gray-600 dark:text-gray-400">{item.cout_poudre_revient.toFixed(2)} €</p>
                     </div>
                     <div>
-                      <span className="text-gray-600 dark:text-gray-400 block">Poudre</span>
-                      <p className="font-bold text-gray-900 dark:text-white">{item.cout_poudre.toFixed(2)} €</p>
+                      <span className="text-gray-500 dark:text-gray-400 block">MO (revient)</span>
+                      <p className="font-bold text-gray-600 dark:text-gray-400">{item.cout_mo_revient.toFixed(2)} €</p>
                     </div>
                     <div>
-                      <span className="text-gray-600 dark:text-gray-400 block">M.O.</span>
-                      <p className="font-bold text-gray-900 dark:text-white">{item.cout_mo.toFixed(2)} €</p>
+                      <span className="text-gray-500 dark:text-gray-400 block">Prix revient</span>
+                      <p className="font-bold text-gray-700 dark:text-gray-300">{item.total_revient.toFixed(2)} €</p>
                     </div>
-                    <div className="hidden sm:block">
-                      <span className="text-gray-600 dark:text-gray-400 block">Conso.</span>
-                      <p className="font-bold text-gray-900 dark:text-white">{item.cout_consommables.toFixed(2)} €</p>
-                    </div>
-                    <div className="col-span-3 sm:col-span-1 mt-2 sm:mt-0 pt-2 sm:pt-0 border-t sm:border-0 border-gray-200 dark:border-gray-600">
-                      <span className="text-gray-600 dark:text-gray-400 block">Total HT</span>
-                      <p className="font-bold text-orange-500 dark:text-blue-400 text-base sm:text-sm">{item.total_ht.toFixed(2)} €</p>
+                    <div className="bg-orange-50 dark:bg-orange-900/20 p-2 rounded">
+                      <span className="text-orange-600 dark:text-orange-400 block">Prix vente HT</span>
+                      <p className="font-bold text-orange-600 dark:text-orange-400 text-base">{item.total_ht.toFixed(2)} €</p>
                     </div>
                   </div>
                 </div>
@@ -518,23 +652,97 @@ export function DevisForm({ atelierId, userId, clients: initialClients, poudres:
           )}
         </div>
 
-        {/* Totaux */}
-        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/30 dark:to-cyan-900/30 border-2 border-blue-200 dark:border-blue-700 rounded-xl shadow-lg p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">Totaux</h2>
-          <div className="grid grid-cols-2 gap-4 sm:gap-6">
+        {/* Remise */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 transition-colors">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4">🏷️ Remise</h2>
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1 sm:mb-2">Total HT</label>
-              <p className="text-xl sm:text-3xl font-black text-gray-900 dark:text-white">
-                {totalHt.toFixed(2)} €
-              </p>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Type</label>
+              <select
+                value={remise.type}
+                onChange={(e) => setRemise({ ...remise, type: e.target.value as 'pourcentage' | 'montant' })}
+                className={inputClasses}
+              >
+                <option value="pourcentage">Pourcentage (%)</option>
+                <option value="montant">Montant fixe (€)</option>
+              </select>
             </div>
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1 sm:mb-2">Total TTC ({params.tva_rate}%)</label>
-              <p className="text-xl sm:text-3xl font-black text-orange-500 dark:text-blue-400">
-                {totalTtc.toFixed(2)} €
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {remise.type === 'pourcentage' ? 'Pourcentage' : 'Montant'}
+              </label>
+              <input
+                type="number"
+                step={remise.type === 'pourcentage' ? '0.1' : '0.01'}
+                min="0"
+                max={remise.type === 'pourcentage' ? '100' : undefined}
+                value={remise.valeur || ''}
+                onChange={(e) => setRemise({ ...remise, valeur: parseFloat(e.target.value) || 0 })}
+                className={inputClasses}
+                placeholder={remise.type === 'pourcentage' ? '10' : '50'}
+              />
+            </div>
+            {remise.valeur > 0 && (
+              <div className="text-sm">
+                <span className="text-gray-500">Remise appliquée: </span>
+                <span className="font-bold text-green-600">-{totals.montantRemise.toFixed(2)} €</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Totaux et Rentabilité */}
+        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/30 dark:to-cyan-900/30 border-2 border-blue-200 dark:border-blue-700 rounded-xl shadow-lg p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">📊 Synthèse et Rentabilité</h2>
+          
+          {/* Prix de revient */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 mb-6 p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg">
+            <div>
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Coût revient total</label>
+              <p className="text-lg font-bold text-gray-700 dark:text-gray-300">{totals.totalRevient.toFixed(2)} €</p>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Prix vente brut</label>
+              <p className="text-lg font-bold text-gray-700 dark:text-gray-300">{totals.totalHtBrut.toFixed(2)} €</p>
+            </div>
+            {remise.valeur > 0 && (
+              <div>
+                <label className="block text-xs font-medium text-green-600 dark:text-green-400 mb-1">Remise</label>
+                <p className="text-lg font-bold text-green-600 dark:text-green-400">-{totals.montantRemise.toFixed(2)} €</p>
+              </div>
+            )}
+            <div>
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Marge brute</label>
+              <p className={`text-lg font-bold ${totals.margeEuros >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {totals.margeEuros.toFixed(2)} € ({totals.margePct.toFixed(1)}%)
               </p>
             </div>
           </div>
+          
+          {/* Totaux finaux */}
+          <div className="grid grid-cols-2 gap-4 sm:gap-6">
+            <div className="p-4 bg-white dark:bg-gray-800 rounded-lg">
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Total HT</label>
+              <p className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white">
+                {totals.totalHt.toFixed(2)} €
+              </p>
+            </div>
+            <div className="p-4 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+              <label className="block text-sm font-medium text-orange-600 dark:text-orange-400 mb-2">Total TTC ({params.tva_rate}%)</label>
+              <p className="text-2xl sm:text-3xl font-black text-orange-600 dark:text-orange-400">
+                {totals.totalTtc.toFixed(2)} €
+              </p>
+            </div>
+          </div>
+          
+          {/* Alerte marge négative */}
+          {totals.margeEuros < 0 && (
+            <div className="mt-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-lg">
+              <p className="text-sm text-red-700 dark:text-red-300 font-medium">
+                ⚠️ Attention: La marge est négative ! Vérifiez vos prix ou ajustez les paramètres dans Paramètres Atelier.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Notes */}
@@ -586,13 +794,14 @@ export function DevisForm({ atelierId, userId, clients: initialClients, poudres:
         onClose={() => {
           setShowPoudreModal(false)
           setCurrentItemIdForPoudre(null)
+          setCurrentCoucheIdForPoudre(null)
         }}
         atelierId={atelierId}
         onPoudreCreated={(newPoudre) => {
           setPoudres([...poudres, newPoudre])
-          // Si on a un item en cours, lui assigner la nouvelle poudre
-          if (currentItemIdForPoudre) {
-            updateItem(currentItemIdForPoudre, { poudre_id: newPoudre.id })
+          // Si on a un item et une couche en cours, leur assigner la nouvelle poudre
+          if (currentItemIdForPoudre && currentCoucheIdForPoudre) {
+            updateCouche(currentItemIdForPoudre, currentCoucheIdForPoudre, { poudre_id: newPoudre.id })
           }
         }}
       />

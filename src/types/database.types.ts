@@ -433,6 +433,7 @@ export type Database = {
           prix_kg: number | null
           ral: string | null
           reference: string
+          rendement_m2_kg: number | null
           source: string | null
           temp_cuisson: number | null
           type: string
@@ -451,6 +452,7 @@ export type Database = {
           prix_kg?: number | null
           ral?: string | null
           reference: string
+          rendement_m2_kg?: number | null
           source?: string | null
           temp_cuisson?: number | null
           type: string
@@ -469,6 +471,7 @@ export type Database = {
           prix_kg?: number | null
           ral?: string | null
           reference?: string
+          rendement_m2_kg?: number | null
           source?: string | null
           temp_cuisson?: number | null
           type?: string

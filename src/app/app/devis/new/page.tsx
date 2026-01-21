@@ -13,7 +13,7 @@ export default async function NewDevisPage() {
     redirect('/auth/login')
   }
 
-  // Charger l'atelier de l'utilisateur
+  // Charger l'atelier de l'utilisateur avec ses settings
   const { data: userData } = await supabase
     .from('users')
     .select('atelier_id')
@@ -24,8 +24,8 @@ export default async function NewDevisPage() {
     redirect('/app/complete-profile')
   }
 
-  // Charger les clients et poudres pour les formulaires
-  const [clients, poudres] = await Promise.all([
+  // Charger les clients, poudres et settings atelier pour les formulaires
+  const [clients, poudres, atelier] = await Promise.all([
     supabase
       .from('clients')
       .select('id, full_name, email')
@@ -33,10 +33,25 @@ export default async function NewDevisPage() {
       .order('full_name', { ascending: true }),
     supabase
       .from('poudres')
-      .select('id, marque, reference, finition, ral')
+      .select('id, marque, reference, finition, ral, prix_kg, consommation_m2, rendement_m2_kg')
       .eq('atelier_id', userData.atelier_id)
       .order('marque', { ascending: true }),
+    supabase
+      .from('ateliers')
+      .select('settings')
+      .eq('id', userData.atelier_id)
+      .single(),
   ])
+
+  // Extraire les settings devis avec valeurs par défaut
+  const atelierSettings = atelier.data?.settings?.devis || {
+    taux_mo_heure: 35,
+    temps_mo_m2: 0.15,
+    cout_consommables_m2: 2,
+    marge_poudre_pct: 30,
+    marge_mo_pct: 50,
+    tva_rate: 20,
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -61,6 +76,7 @@ export default async function NewDevisPage() {
           userId={authUser.id}
           clients={clients.data || []}
           poudres={poudres.data || []}
+          atelierSettings={atelierSettings}
         />
       </div>
     </div>
