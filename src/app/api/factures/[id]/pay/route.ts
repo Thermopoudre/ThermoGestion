@@ -63,6 +63,14 @@ export async function POST(
     const atelier = facture.ateliers as any
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://thermogestion.vercel.app'
 
+    // Vérifier que l'atelier a connecté son compte Stripe
+    if (!atelier?.stripe_account_id) {
+      return NextResponse.json(
+        { error: 'L\'atelier n\'a pas encore configuré le paiement en ligne. Contactez-les.' },
+        { status: 400 }
+      )
+    }
+
     // Générer le token public pour la facture si pas déjà fait
     let publicToken = facture.public_token
     if (!publicToken) {
@@ -73,7 +81,8 @@ export async function POST(
         .eq('id', facture.id)
     }
 
-    // Créer la session Stripe Checkout
+    // Créer la session Stripe Checkout avec Stripe Connect
+    // Le paiement ira directement sur le compte de l'atelier
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card', 'sepa_debit'],
       mode: 'payment',
@@ -101,6 +110,9 @@ export async function POST(
       cancel_url: `${baseUrl}/paiement/cancel?facture=${facture.id}`,
       // Expire dans 30 minutes
       expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
+    }, {
+      // Stripe Connect: envoyer le paiement directement au compte de l'atelier
+      stripeAccount: atelier.stripe_account_id,
     })
 
     // Sauvegarder l'ID de session pour référence
