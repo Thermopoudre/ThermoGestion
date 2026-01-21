@@ -150,6 +150,29 @@ export function AtelierSettingsForm({ atelier }: AtelierSettingsFormProps) {
         </div>
       )}
 
+      {/* Accès rapide aux templates */}
+      <a
+        href="/app/parametres/templates"
+        className="block bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-6 hover:shadow-lg transition-all group"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-2xl shadow-lg">
+              🎨
+            </div>
+            <div>
+              <h3 className="font-bold text-gray-900 dark:text-white text-lg">Templates PDF</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Personnalisez le design de vos devis et factures
+              </p>
+            </div>
+          </div>
+          <div className="text-purple-500 group-hover:translate-x-2 transition-transform">
+            →
+          </div>
+        </div>
+      </a>
+
       {/* Informations générales */}
       <div className={cardClasses}>
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">

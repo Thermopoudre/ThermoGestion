@@ -1,9 +1,7 @@
 import { createServerClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
-import { generateTemplateHTML, type TemplateConfig, type DevisData } from '@/lib/devis-templates'
-
-// Route pour générer un PDF du devis
-// Utilise les templates personnalisables
+import { generatePDF, prepareDevisData } from '@/lib/pdf-templates/generator'
+import type { TemplateName } from '@/lib/pdf-templates'
 
 export async function GET(
   request: Request,
@@ -61,82 +59,19 @@ export async function GET(
       .eq('id', userData.atelier_id)
       .single()
 
-    // Charger le template (ou utiliser le template par défaut)
-    let templateConfig: TemplateConfig | null = null
+    // Récupérer le template choisi (depuis l'URL ou les paramètres atelier)
+    const url = new URL(request.url)
+    const templateParam = url.searchParams.get('template') as TemplateName | null
     
-    if (devis.template_id) {
-      const { data: template } = await supabase
-        .from('devis_templates')
-        .select('*')
-        .eq('id', devis.template_id)
-        .eq('atelier_id', userData.atelier_id)
-        .single()
-      
-      if (template && template.config) {
-        templateConfig = template.config as TemplateConfig
-      }
-    }
-    
-    // Si pas de template ou template non trouvé, utiliser le template par défaut
-    if (!templateConfig) {
-      const { data: defaultTemplate } = await supabase
-        .from('devis_templates')
-        .select('*')
-        .eq('atelier_id', userData.atelier_id)
-        .eq('is_default', true)
-        .single()
-      
-      if (defaultTemplate && defaultTemplate.config) {
-        templateConfig = defaultTemplate.config as TemplateConfig
-      } else {
-        // Template par défaut hardcodé si aucun template n'existe
-        templateConfig = {
-          header: {
-            show_logo: true,
-            show_atelier_info: true,
-            layout: 'left'
-          },
-          colors: {
-            primary: '#2563eb',
-            secondary: '#64748b',
-            accent: '#0ea5e9'
-          },
-          body: {
-            show_client_info: true,
-            table_style: 'striped',
-            column_widths: {}
-          },
-          footer: {
-            show_cgv: true,
-            cgv_text: 'Devis valable 30 jours. Conditions générales de vente disponibles sur demande.',
-            show_signature: true,
-            custom_text: ''
-          },
-          layout: {
-            page_size: 'A4',
-            margins: { top: 40, right: 40, bottom: 40, left: 40 },
-            font_family: 'Arial, sans-serif',
-            font_size: 12
-          }
-        }
-      }
-    }
+    // Template par défaut depuis les paramètres atelier ou 'industrial' (adapté au thermolaquage)
+    const defaultTemplate = (atelier?.settings?.pdf_template as TemplateName) || 'industrial'
+    const templateName: TemplateName = templateParam || defaultTemplate
 
-    // Préparer les données pour le template
-    const devisData: DevisData = {
-      numero: devis.numero,
-      created_at: devis.created_at,
-      total_ht: Number(devis.total_ht),
-      total_ttc: Number(devis.total_ttc),
-      tva_rate: Number(devis.tva_rate),
-      signed_at: devis.signed_at || undefined,
-      items: (devis.items as any) || [],
-      clients: devis.clients || undefined,
-      atelier: atelier || undefined
-    }
+    // Préparer les données
+    const templateData = prepareDevisData(devis, atelier, devis.clients)
 
-    // Générer le HTML avec le template
-    const html = generateTemplateHTML(templateConfig, devisData)
+    // Générer le HTML
+    const html = generatePDF(templateName, templateData)
 
     return new NextResponse(html, {
       headers: {
