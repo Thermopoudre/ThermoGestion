@@ -43,16 +43,16 @@ export default async function AppLayout({
             </div>
 
             {/* Navigation desktop */}
-            <div className="hidden lg:flex items-center gap-4">
+            <div className="hidden lg:flex items-center gap-5 ml-8">
               <NavLink href="/app/dashboard">Dashboard</NavLink>
               <NavLink href="/app/clients">Clients</NavLink>
               <NavLink href="/app/projets">Projets</NavLink>
               <NavLink href="/app/devis">Devis</NavLink>
-              <NavLink href="/app/poudres">🎨 Poudres</NavLink>
+              <NavLink href="/app/poudres">Poudres</NavLink>
               <NavLink href="/app/series">Séries</NavLink>
               <NavLink href="/app/factures">Factures</NavLink>
-              <NavLink href="/app/planning">📅 Planning</NavLink>
-              <NavLink href="/app/stats">📊 Stats</NavLink>
+              <NavLink href="/app/planning">Planning</NavLink>
+              <NavLink href="/app/stats">Stats</NavLink>
             </div>
 
             {/* Actions */}

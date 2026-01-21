@@ -9,19 +9,19 @@ interface MobileNavProps {
 }
 
 const navLinks = [
-  { href: '/app/dashboard', label: 'Tableau de bord', icon: '📊' },
-  { href: '/app/clients', label: 'Clients', icon: '👥' },
-  { href: '/app/projets', label: 'Projets', icon: '🔧' },
-  { href: '/app/devis', label: 'Devis', icon: '📝' },
-  { href: '/app/poudres', label: 'Poudres', icon: '🎨' },
-  { href: '/app/series', label: 'Séries', icon: '🔗' },
-  { href: '/app/factures', label: 'Factures', icon: '💰' },
-  { href: '/app/retouches', label: 'Retouches', icon: '✅' },
-  { href: '/app/planning', label: 'Planning', icon: '📅' },
-  { href: '/app/stats', label: 'Statistiques', icon: '📈' },
-  { href: '/app/equipe', label: 'Équipe', icon: '👥' },
-  { href: '/app/activite', label: 'Activité', icon: '📜' },
-  { href: '/app/parametres', label: 'Paramètres', icon: '⚙️' },
+  { href: '/app/dashboard', label: 'Dashboard' },
+  { href: '/app/clients', label: 'Clients' },
+  { href: '/app/projets', label: 'Projets' },
+  { href: '/app/devis', label: 'Devis' },
+  { href: '/app/poudres', label: 'Poudres' },
+  { href: '/app/series', label: 'Séries' },
+  { href: '/app/factures', label: 'Factures' },
+  { href: '/app/retouches', label: 'Retouches' },
+  { href: '/app/planning', label: 'Planning' },
+  { href: '/app/stats', label: 'Statistiques' },
+  { href: '/app/equipe', label: 'Équipe' },
+  { href: '/app/activite', label: 'Activité' },
+  { href: '/app/parametres', label: 'Paramètres' },
 ]
 
 export function MobileNav({ userEmail }: MobileNavProps) {
@@ -99,13 +99,12 @@ export function MobileNav({ userEmail }: MobileNavProps) {
                   <Link
                     href={link.href}
                     onClick={() => setIsOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+                    className={`block px-3 py-2.5 rounded-lg transition-colors ${
                       active
                         ? 'bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400 font-bold border-l-4 border-orange-500'
                         : 'text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-orange-900/30 hover:text-orange-600 dark:hover:text-orange-400'
                     }`}
                   >
-                    <span className="text-lg">{link.icon}</span>
                     <span className="font-medium">{link.label}</span>
                   </Link>
                 </li>
