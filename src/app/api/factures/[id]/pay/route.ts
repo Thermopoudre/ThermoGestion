@@ -2,10 +2,13 @@ import { createServerClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 
-// Initialiser Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2023-10-16',
-})
+// Initialiser Stripe seulement si la clé est disponible
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY
+const stripe = stripeSecretKey 
+  ? new Stripe(stripeSecretKey, {
+      apiVersion: '2023-10-16' as any,
+    })
+  : null
 
 // Créer une session de paiement Stripe pour une facture
 export async function POST(
@@ -13,6 +16,14 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Vérifier que Stripe est configuré
+    if (!stripe) {
+      return NextResponse.json(
+        { error: 'Paiement en ligne non configuré. Contactez l\'atelier.' },
+        { status: 503 }
+      )
+    }
+
     const supabase = await createServerClient()
 
     // Récupérer la facture avec client et atelier
