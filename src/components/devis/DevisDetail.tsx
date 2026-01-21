@@ -16,6 +16,12 @@ interface DevisDetailProps {
   atelier: Atelier | null
 }
 
+interface Couche {
+  id: string
+  type: string
+  poudre_id?: string
+}
+
 interface DevisItem {
   designation: string
   longueur: number
@@ -23,10 +29,15 @@ interface DevisItem {
   hauteur?: number
   quantite: number
   surface_m2: number
-  couches: number
+  couches: Couche[] | number // Support ancien et nouveau format
   cout_poudre: number
+  cout_poudre_revient?: number
+  cout_poudre_vente?: number
   cout_mo: number
+  cout_mo_revient?: number
+  cout_mo_vente?: number
   cout_consommables: number
+  total_revient?: number
   total_ht: number
 }
 
@@ -164,10 +175,12 @@ export function DevisDetail({ devis, atelier }: DevisDetailProps) {
                     {item.hauteur && ` × ${item.hauteur}`} mm
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-600">{item.quantite}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{item.surface_m2.toFixed(2)} m²</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{item.couches}</td>
+                  <td className="px-4 py-3 text-sm text-gray-600">{item.surface_m2?.toFixed(2) || '0.00'} m²</td>
+                  <td className="px-4 py-3 text-sm text-gray-600">
+                    {Array.isArray(item.couches) ? item.couches.length : (item.couches || 1)}
+                  </td>
                   <td className="px-4 py-3 text-sm font-medium text-gray-900 text-right">
-                    {item.total_ht.toFixed(2)} €
+                    {(item.total_ht || 0).toFixed(2)} €
                   </td>
                 </tr>
               ))}
