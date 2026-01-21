@@ -107,44 +107,74 @@ export async function POST(request: Request) {
 
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
+        let facture = null
 
-        // Si c'est un Payment Link
-        if (session.payment_link) {
-          const { data: facture } = await supabase
+        // Chercher la facture par metadata (nouveau flow)
+        if (session.metadata?.facture_id) {
+          const { data } = await supabase
+            .from('factures')
+            .select('*, ateliers(id)')
+            .eq('id', session.metadata.facture_id)
+            .single()
+          facture = data
+        }
+        // Ou par Payment Link (ancien flow)
+        else if (session.payment_link) {
+          const { data } = await supabase
             .from('factures')
             .select('*, ateliers(id)')
             .eq('stripe_payment_link_id', session.payment_link)
             .single()
+          facture = data
+        }
+        // Ou par client_reference_id
+        else if (session.client_reference_id) {
+          const { data } = await supabase
+            .from('factures')
+            .select('*, ateliers(id)')
+            .eq('id', session.client_reference_id)
+            .single()
+          facture = data
+        }
 
-          if (facture && session.payment_status === 'paid') {
-            // Mettre à jour le statut
-            await supabase
-              .from('factures')
-              .update({
-                status: 'payee',
-                payment_status: 'paid',
-                paid_at: new Date().toISOString(),
-                stripe_payment_intent_id: session.payment_intent as string,
-              })
-              .eq('id', facture.id)
-
-            // Créer l'enregistrement de paiement
-            await supabase.from('paiements').insert({
-              atelier_id: facture.atelier_id,
-              facture_id: facture.id,
-              client_id: facture.client_id,
-              type: 'complete',
-              amount: Number(facture.total_ttc),
-              payment_method: 'stripe',
-              stripe_payment_intent_id: session.payment_intent as string,
-              status: 'completed',
+        if (facture && session.payment_status === 'paid') {
+          // Mettre à jour le statut
+          await supabase
+            .from('factures')
+            .update({
+              status: 'payee',
+              payment_status: 'paid',
               paid_at: new Date().toISOString(),
+              stripe_payment_intent_id: session.payment_intent as string,
             })
+            .eq('id', facture.id)
 
-            // Notifier
-            if (facture.ateliers) {
-              await notifyFacturePaid(facture.atelier_id, facture)
-            }
+          // Créer l'enregistrement de paiement
+          await supabase.from('paiements').insert({
+            atelier_id: facture.atelier_id,
+            facture_id: facture.id,
+            client_id: facture.client_id,
+            type: 'complete',
+            amount: Number(facture.total_ttc),
+            payment_method: 'stripe',
+            stripe_payment_intent_id: session.payment_intent as string,
+            status: 'completed',
+            paid_at: new Date().toISOString(),
+          })
+
+          // Créer une alerte pour l'atelier
+          await supabase.from('alertes').insert({
+            atelier_id: facture.atelier_id,
+            type: 'paiement_recu',
+            titre: `💰 Paiement reçu - ${facture.numero}`,
+            message: `La facture ${facture.numero} a été payée en ligne (${Number(facture.total_ttc).toFixed(2)} €)`,
+            lien: `/app/factures/${facture.id}`,
+            data: { facture_id: facture.id, montant: facture.total_ttc },
+          })
+
+          // Notifier
+          if (facture.ateliers) {
+            await notifyFacturePaid(facture.atelier_id, facture)
           }
         }
         break
