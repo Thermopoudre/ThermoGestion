@@ -1,5 +1,6 @@
 // Template Classic - Design professionnel et épuré
 import type { TemplateData } from './index'
+import type { CustomColors } from './generator'
 
 const formatMoney = (amount: number): string => {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount)
@@ -15,9 +16,21 @@ const getCouchesDisplay = (couches: number | Array<{ type: string }> | undefined
   return couches.toString()
 }
 
-export function generateClassicTemplate(data: TemplateData): string {
+// Couleurs par défaut du template
+const DEFAULT_COLORS = {
+  primary: '#1e3a5f',
+  accent: '#3b82f6',
+}
+
+export function generateClassicTemplate(data: TemplateData, customColors?: CustomColors): string {
   const isDevis = data.type === 'devis'
   const title = isDevis ? 'DEVIS' : 'FACTURE'
+  
+  // Utiliser les couleurs personnalisées ou les couleurs par défaut
+  const colors = {
+    primary: customColors?.primary || DEFAULT_COLORS.primary,
+    accent: customColors?.accent || DEFAULT_COLORS.accent,
+  }
   
   return `
 <!DOCTYPE html>
@@ -32,31 +45,37 @@ export function generateClassicTemplate(data: TemplateData): string {
     
     @page {
       size: A4;
-      margin: 0;
+      margin: 15mm 15mm 20mm 15mm;
     }
     
     @media print {
       body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      html, body { height: 297mm; width: 210mm; }
+    }
+    
+    html, body {
+      width: 210mm;
+      min-height: 297mm;
     }
     
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 11px;
+      font-size: 10pt;
       line-height: 1.5;
       color: #1f2937;
       background: white;
-      padding: 40px;
-      max-width: 210mm;
+      padding: 15mm;
       margin: 0 auto;
+      box-sizing: border-box;
     }
     
     .header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 40px;
-      padding-bottom: 25px;
-      border-bottom: 3px solid #1e3a5f;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 3px solid ${colors.primary};
     }
     
     .logo-section {
@@ -64,9 +83,9 @@ export function generateClassicTemplate(data: TemplateData): string {
     }
     
     .company-name {
-      font-size: 24px;
+      font-size: 20pt;
       font-weight: 700;
-      color: #1e3a5f;
+      color: ${colors.primary};
       margin-bottom: 8px;
     }
     
@@ -81,16 +100,16 @@ export function generateClassicTemplate(data: TemplateData): string {
     }
     
     .document-type {
-      font-size: 32px;
+      font-size: 24pt;
       font-weight: 700;
-      color: #1e3a5f;
+      color: ${colors.primary};
       letter-spacing: 2px;
       margin-bottom: 10px;
     }
     
     .document-number {
-      font-size: 14px;
-      color: #3b82f6;
+      font-size: 12pt;
+      color: ${colors.accent};
       font-weight: 600;
       margin-bottom: 5px;
     }
@@ -109,18 +128,18 @@ export function generateClassicTemplate(data: TemplateData): string {
     .party-box {
       flex: 1;
       background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-      border-radius: 10px;
-      padding: 20px;
-      border-left: 4px solid #1e3a5f;
+      border-radius: 8px;
+      padding: 15px;
+      border-left: 4px solid ${colors.primary};
     }
     
     .party-label {
-      font-size: 9px;
+      font-size: 8pt;
       font-weight: 600;
-      color: #1e3a5f;
+      color: ${colors.primary};
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
     
     .party-name {
@@ -147,11 +166,11 @@ export function generateClassicTemplate(data: TemplateData): string {
     }
     
     .items-table th {
-      background: #1e3a5f;
+      background: ${colors.primary};
       color: white;
-      padding: 14px 12px;
+      padding: 12px 10px;
       text-align: left;
-      font-size: 10px;
+      font-size: 8pt;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -178,7 +197,7 @@ export function generateClassicTemplate(data: TemplateData): string {
     .items-table td:last-child {
       text-align: right;
       font-weight: 600;
-      color: #1e3a5f;
+      color: ${colors.primary};
     }
     
     .item-designation {
@@ -220,11 +239,11 @@ export function generateClassicTemplate(data: TemplateData): string {
     }
     
     .total-row.grand-total {
-      font-size: 16px;
+      font-size: 14pt;
       font-weight: 700;
-      color: #1e3a5f;
+      color: ${colors.primary};
       padding-top: 12px;
-      border-top: 2px solid #1e3a5f;
+      border-top: 2px solid ${colors.primary};
       margin-top: 8px;
     }
     

@@ -1,6 +1,6 @@
 import { createServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { TemplateSelector } from '@/components/settings/TemplateSelector'
+import { TemplateCustomizer } from '@/components/settings/TemplateCustomizer'
 
 export default async function TemplatesPage() {
   const supabase = await createServerClient()
@@ -29,7 +29,18 @@ export default async function TemplatesPage() {
     .eq('id', userData.atelier_id)
     .single()
 
-  const currentTemplate = atelier?.settings?.pdf_template || 'industrial'
+  const settings = atelier?.settings || {}
+  
+  const initialSettings = {
+    template: settings.pdf_template || 'industrial',
+    primaryColor: settings.pdf_primary_color || '#dc2626',
+    accentColor: settings.pdf_accent_color || '#f97316',
+    showLogo: settings.pdf_show_logo !== false,
+    fontFamily: settings.pdf_font_family || 'inter',
+    cgvText: settings.pdf_cgv_text || 'Devis valable 30 jours. Paiement à réception de facture.',
+    paymentTerms: settings.pdf_payment_terms || '30 jours',
+    footerText: settings.pdf_footer_text || '',
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -37,21 +48,22 @@ export default async function TemplatesPage() {
         <div className="mb-8">
           <a
             href="/app/parametres"
-            className="text-blue-600 hover:text-blue-700 text-sm font-medium mb-4 inline-block"
+            className="text-orange-600 hover:text-orange-700 text-sm font-medium mb-4 inline-flex items-center gap-1"
           >
             ← Retour aux paramètres
           </a>
           <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-2">
-            🎨 Templates PDF
+            Personnalisation des PDF
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Choisissez le design de vos devis et factures
+            Personnalisez l'apparence de vos devis et factures (format A4)
           </p>
         </div>
 
-        <TemplateSelector 
+        <TemplateCustomizer 
           atelierId={userData.atelier_id} 
-          currentTemplate={currentTemplate}
+          initialSettings={initialSettings}
+          atelierLogo={atelier?.logo}
         />
       </div>
     </div>

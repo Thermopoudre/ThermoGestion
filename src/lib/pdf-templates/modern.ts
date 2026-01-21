@@ -1,5 +1,6 @@
 // Template Modern - Design contemporain et épuré
 import type { TemplateData } from './index'
+import type { CustomColors } from './generator'
 
 const formatMoney = (amount: number): string => {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount)
@@ -15,9 +16,21 @@ const getCouchesDisplay = (couches: number | Array<{ type: string }> | undefined
   return couches.toString()
 }
 
-export function generateModernTemplate(data: TemplateData): string {
+// Couleurs par défaut du template
+const DEFAULT_COLORS = {
+  primary: '#0f172a',
+  accent: '#06b6d4',
+}
+
+export function generateModernTemplate(data: TemplateData, customColors?: CustomColors): string {
   const isDevis = data.type === 'devis'
   const title = isDevis ? 'DEVIS' : 'FACTURE'
+  
+  // Utiliser les couleurs personnalisées ou les couleurs par défaut
+  const colors = {
+    primary: customColors?.primary || DEFAULT_COLORS.primary,
+    accent: customColors?.accent || DEFAULT_COLORS.accent,
+  }
   
   return `
 <!DOCTYPE html>

@@ -1,5 +1,6 @@
 // Template Premium - Design haut de gamme élégant
 import type { TemplateData } from './index'
+import type { CustomColors } from './generator'
 
 const formatMoney = (amount: number): string => {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount)
@@ -15,9 +16,21 @@ const getCouchesDisplay = (couches: number | Array<{ type: string }> | undefined
   return couches.toString()
 }
 
-export function generatePremiumTemplate(data: TemplateData): string {
+// Couleurs par défaut du template
+const DEFAULT_COLORS = {
+  primary: '#1f2937',
+  accent: '#d4af37',
+}
+
+export function generatePremiumTemplate(data: TemplateData, customColors?: CustomColors): string {
   const isDevis = data.type === 'devis'
   const title = isDevis ? 'Devis' : 'Facture'
+  
+  // Utiliser les couleurs personnalisées ou les couleurs par défaut
+  const colors = {
+    primary: customColors?.primary || DEFAULT_COLORS.primary,
+    accent: customColors?.accent || DEFAULT_COLORS.accent,
+  }
   
   return `
 <!DOCTYPE html>

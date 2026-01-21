@@ -7,18 +7,27 @@ import { generateModernTemplate } from './modern'
 import { generateIndustrialTemplate } from './industrial'
 import { generatePremiumTemplate } from './premium'
 
-export function generatePDF(templateName: TemplateName, data: TemplateData): string {
+export interface CustomColors {
+  primary?: string
+  accent?: string
+}
+
+export function generatePDF(
+  templateName: TemplateName, 
+  data: TemplateData,
+  customColors?: CustomColors
+): string {
   switch (templateName) {
     case 'classic':
-      return generateClassicTemplate(data)
+      return generateClassicTemplate(data, customColors)
     case 'modern':
-      return generateModernTemplate(data)
+      return generateModernTemplate(data, customColors)
     case 'industrial':
-      return generateIndustrialTemplate(data)
+      return generateIndustrialTemplate(data, customColors)
     case 'premium':
-      return generatePremiumTemplate(data)
+      return generatePremiumTemplate(data, customColors)
     default:
-      return generateClassicTemplate(data)
+      return generateClassicTemplate(data, customColors)
   }
 }
 

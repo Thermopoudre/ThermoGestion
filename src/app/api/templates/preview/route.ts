@@ -63,6 +63,8 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const templateName = (searchParams.get('template') || 'classic') as TemplateName
+    const primaryColor = searchParams.get('primaryColor') || undefined
+    const accentColor = searchParams.get('accentColor') || undefined
 
     // Valider le nom du template
     const validTemplates: TemplateName[] = ['classic', 'modern', 'industrial', 'premium']
@@ -70,8 +72,14 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Template invalide' }, { status: 400 })
     }
 
+    // Options de personnalisation
+    const customColors = primaryColor || accentColor ? {
+      primary: primaryColor,
+      accent: accentColor,
+    } : undefined
+
     // Générer le HTML avec les données de démo
-    const html = generatePDF(templateName, DEMO_DATA)
+    const html = generatePDF(templateName, DEMO_DATA, customColors)
 
     return new NextResponse(html, {
       headers: {

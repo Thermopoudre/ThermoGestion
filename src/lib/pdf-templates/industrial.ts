@@ -1,5 +1,6 @@
 // Template Industrial - Conçu pour ateliers de thermolaquage
 import type { TemplateData } from './index'
+import type { CustomColors } from './generator'
 
 const formatMoney = (amount: number): string => {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount)
@@ -15,9 +16,21 @@ const getCouchesDisplay = (couches: number | Array<{ type: string }> | undefined
   return couches.toString()
 }
 
-export function generateIndustrialTemplate(data: TemplateData): string {
+// Couleurs par défaut du template
+const DEFAULT_COLORS = {
+  primary: '#dc2626',
+  accent: '#f97316',
+}
+
+export function generateIndustrialTemplate(data: TemplateData, customColors?: CustomColors): string {
   const isDevis = data.type === 'devis'
   const title = isDevis ? 'DEVIS' : 'FACTURE'
+  
+  // Utiliser les couleurs personnalisées ou les couleurs par défaut
+  const colors = {
+    primary: customColors?.primary || DEFAULT_COLORS.primary,
+    accent: customColors?.accent || DEFAULT_COLORS.accent,
+  }
   
   return `
 <!DOCTYPE html>
@@ -30,23 +43,35 @@ export function generateIndustrialTemplate(data: TemplateData): string {
     
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
-    @page { size: A4; margin: 0; }
+    @page { 
+      size: A4; 
+      margin: 15mm 15mm 20mm 15mm;
+    }
     
     @media print {
       body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      html, body { height: 297mm; width: 210mm; }
+    }
+    
+    html, body {
+      width: 210mm;
+      min-height: 297mm;
     }
     
     body {
       font-family: 'Roboto', sans-serif;
-      font-size: 11px;
+      font-size: 10pt;
       line-height: 1.5;
       color: #1f2937;
       background: white;
+      margin: 0;
     }
     
     .page {
       position: relative;
       min-height: 297mm;
+      width: 210mm;
+      box-sizing: border-box;
     }
     
     /* Bande diagonale décorative */
@@ -54,15 +79,15 @@ export function generateIndustrialTemplate(data: TemplateData): string {
       position: absolute;
       top: 0;
       right: 0;
-      width: 200px;
-      height: 200px;
-      background: linear-gradient(135deg, #dc2626 0%, #f97316 100%);
+      width: 150px;
+      height: 150px;
+      background: linear-gradient(135deg, ${colors.primary} 0%, ${colors.accent} 100%);
       clip-path: polygon(100% 0, 0 0, 100% 100%);
       opacity: 0.1;
     }
     
     .content {
-      padding: 40px;
+      padding: 15mm;
       position: relative;
     }
     
@@ -71,28 +96,28 @@ export function generateIndustrialTemplate(data: TemplateData): string {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 35px;
-      padding-bottom: 25px;
-      border-bottom: 4px solid #dc2626;
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 4px solid ${colors.primary};
     }
     
     .company {
       display: flex;
       align-items: flex-start;
-      gap: 15px;
+      gap: 12px;
     }
     
     .company-icon {
-      width: 60px;
-      height: 60px;
-      background: linear-gradient(135deg, #dc2626 0%, #f97316 100%);
-      border-radius: 10px;
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, ${colors.primary} 0%, ${colors.accent} 100%);
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 28px;
+      font-size: 24px;
       color: white;
-      box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+      box-shadow: 0 4px 15px ${colors.primary}40;
     }
     
     .company-info h1 {
@@ -106,8 +131,8 @@ export function generateIndustrialTemplate(data: TemplateData): string {
     }
     
     .company-subtitle {
-      color: #dc2626;
-      font-size: 10px;
+      color: ${colors.primary};
+      font-size: 9pt;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 2px;
@@ -138,9 +163,9 @@ export function generateIndustrialTemplate(data: TemplateData): string {
     }
     
     .doc-number {
-      font-size: 16px;
+      font-size: 14pt;
       font-weight: 700;
-      color: #dc2626;
+      color: ${colors.primary};
       margin-bottom: 5px;
     }
     
@@ -151,19 +176,19 @@ export function generateIndustrialTemplate(data: TemplateData): string {
     
     /* Informations client style industriel */
     .client-card {
-      background: linear-gradient(135deg, #fef3f2 0%, #fef2f2 100%);
-      border-left: 5px solid #dc2626;
-      padding: 20px 25px;
-      margin-bottom: 30px;
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border-left: 5px solid ${colors.primary};
+      padding: 15px 20px;
+      margin-bottom: 25px;
     }
     
     .client-label {
-      font-size: 9px;
+      font-size: 8pt;
       font-weight: 700;
-      color: #dc2626;
+      color: ${colors.primary};
       text-transform: uppercase;
       letter-spacing: 2px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
     
     .client-name {
@@ -206,7 +231,7 @@ export function generateIndustrialTemplate(data: TemplateData): string {
     
     .items-table th.amount {
       text-align: right;
-      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      background: linear-gradient(135deg, ${colors.primary} 0%, ${colors.accent} 100%);
     }
     
     .items-table td {
@@ -225,8 +250,8 @@ export function generateIndustrialTemplate(data: TemplateData): string {
     .items-table td.amount {
       text-align: right;
       font-weight: 700;
-      color: #dc2626;
-      font-size: 12px;
+      color: ${colors.primary};
+      font-size: 11pt;
     }
     
     .item-name {
@@ -267,11 +292,11 @@ export function generateIndustrialTemplate(data: TemplateData): string {
     }
     
     .totals-row.discount {
-      background: #dc2626;
+      background: ${colors.primary};
     }
     
     .totals-row.final {
-      background: linear-gradient(135deg, #f97316 0%, #dc2626 100%);
+      background: linear-gradient(135deg, ${colors.accent} 0%, ${colors.primary} 100%);
       padding: 18px 20px;
     }
     
@@ -409,7 +434,7 @@ export function generateIndustrialTemplate(data: TemplateData): string {
     }
     
     .footer-icon {
-      color: #dc2626;
+      color: ${colors.primary};
     }
   </style>
 </head>
