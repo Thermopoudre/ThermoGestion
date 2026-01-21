@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@/lib/supabase/client'
 import { QuickCreateClientModal } from '@/components/ui/QuickCreateClientModal'
@@ -97,12 +97,101 @@ export function DevisForm({
     valeur: 0,
   })
 
-  const [formData, setFormData] = useState({
-    client_id: initialData?.client_id || '',
-    numero: initialData?.numero || '',
-    items: initialData?.items || ([] as DevisItem[]),
-    notes: initialData?.notes || '',
-  })
+  // Auto-save state
+  const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const [lastSaved, setLastSaved] = useState<Date | null>(null)
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const localStorageKey = `devis_draft_${atelierId}_${devisId || 'new'}`
+
+  // Charger le brouillon depuis localStorage au démarrage (seulement pour nouveaux devis)
+  const getInitialFormData = () => {
+    if (initialData) {
+      return {
+        client_id: initialData.client_id || '',
+        numero: initialData.numero || '',
+        items: initialData.items || ([] as DevisItem[]),
+        notes: initialData.notes || '',
+      }
+    }
+    
+    // Essayer de charger depuis localStorage pour les nouveaux devis
+    if (typeof window !== 'undefined' && !devisId) {
+      try {
+        const saved = localStorage.getItem(localStorageKey)
+        if (saved) {
+          const parsed = JSON.parse(saved)
+          return {
+            client_id: parsed.client_id || '',
+            numero: parsed.numero || '',
+            items: parsed.items || ([] as DevisItem[]),
+            notes: parsed.notes || '',
+          }
+        }
+      } catch (e) {
+        console.warn('Erreur lecture brouillon localStorage:', e)
+      }
+    }
+    
+    return {
+      client_id: '',
+      numero: '',
+      items: [] as DevisItem[],
+      notes: '',
+    }
+  }
+
+  const [formData, setFormData] = useState(getInitialFormData)
+
+  // Auto-save vers localStorage avec debounce
+  useEffect(() => {
+    // Ne pas sauvegarder si pas de données
+    if (!formData.client_id && formData.items.length === 0 && !formData.notes) {
+      return
+    }
+
+    // Debounce: attendre 2 secondes après la dernière modification
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current)
+    }
+
+    setAutoSaveStatus('saving')
+
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      try {
+        // Sauvegarder dans localStorage
+        localStorage.setItem(localStorageKey, JSON.stringify({
+          client_id: formData.client_id,
+          items: formData.items,
+          notes: formData.notes,
+          remise: remise,
+          savedAt: new Date().toISOString(),
+        }))
+        setAutoSaveStatus('saved')
+        setLastSaved(new Date())
+        
+        // Remettre à idle après 3 secondes
+        setTimeout(() => setAutoSaveStatus('idle'), 3000)
+      } catch (e) {
+        console.error('Erreur auto-save:', e)
+        setAutoSaveStatus('error')
+      }
+    }, 2000)
+
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current)
+      }
+    }
+  }, [formData, remise, localStorageKey])
+
+  // Nettoyer le brouillon après sauvegarde réussie
+  const clearDraft = useCallback(() => {
+    try {
+      localStorage.removeItem(localStorageKey)
+    } catch (e) {
+      console.warn('Erreur suppression brouillon:', e)
+    }
+  }, [localStorageKey])
 
   // Calculer surface d'une pièce
   const calculateSurface = (longueur: number, largeur: number, hauteur?: number, quantite: number = 1): number => {
@@ -347,6 +436,9 @@ export function DevisForm({
         if (insertError) throw insertError
       }
 
+      // Nettoyer le brouillon après sauvegarde réussie
+      clearDraft()
+      
       router.push('/app/devis')
       router.refresh()
     } catch (err: any) {
@@ -372,6 +464,32 @@ export function DevisForm({
         {error && (
           <div className="bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-200 px-4 py-3 rounded-lg text-sm">
             {error}
+          </div>
+        )}
+
+        {/* Auto-save status */}
+        {!devisId && (
+          <div className="flex items-center justify-end gap-2 text-xs">
+            {autoSaveStatus === 'saving' && (
+              <span className="text-blue-600 dark:text-blue-400 flex items-center gap-1">
+                <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                Sauvegarde automatique...
+              </span>
+            )}
+            {autoSaveStatus === 'saved' && (
+              <span className="text-green-600 dark:text-green-400 flex items-center gap-1">
+                ✓ Brouillon sauvegardé
+                {lastSaved && ` à ${lastSaved.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`}
+              </span>
+            )}
+            {autoSaveStatus === 'error' && (
+              <span className="text-red-600 dark:text-red-400">
+                ⚠️ Erreur de sauvegarde
+              </span>
+            )}
           </div>
         )}
 

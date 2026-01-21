@@ -27,6 +27,13 @@ export function StockPoudreDetail({ poudre, stock, atelierId }: StockPoudreDetai
     tare_carton_kg: stock?.tare_carton_kg?.toString() || '',
     stock_reel_kg: stock?.stock_reel_kg?.toString() || '',
   })
+  
+  // État pour les alertes
+  const [alerteSettings, setAlerteSettings] = useState({
+    seuil_alerte_kg: stock?.seuil_alerte_kg?.toString() || '5',
+    alerte_active: stock?.alerte_active !== false, // true par défaut
+  })
+  const [alerteSaving, setAlerteSaving] = useState(false)
 
   const stockTheorique = stock ? Number(stock.stock_theorique_kg) : 0
   const stockReel = stock?.stock_reel_kg ? Number(stock.stock_reel_kg) : null
@@ -99,6 +106,44 @@ export function StockPoudreDetail({ poudre, stock, atelierId }: StockPoudreDetai
       setError(err.message || 'Erreur lors de la pesée')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleSaveAlerteSettings = async () => {
+    setAlerteSaving(true)
+    try {
+      const seuilAlerte = parseFloat(alerteSettings.seuil_alerte_kg) || 5
+
+      if (stock) {
+        const { error: updateError } = await supabase
+          .from('stock_poudres')
+          .update({
+            seuil_alerte_kg: seuilAlerte,
+            alerte_active: alerteSettings.alerte_active,
+          })
+          .eq('id', stock.id)
+
+        if (updateError) throw updateError
+      } else {
+        // Créer le stock si n'existe pas
+        const { error: insertError } = await supabase
+          .from('stock_poudres')
+          .insert({
+            atelier_id: atelierId,
+            poudre_id: poudre.id,
+            stock_theorique_kg: 0,
+            seuil_alerte_kg: seuilAlerte,
+            alerte_active: alerteSettings.alerte_active,
+          })
+
+        if (insertError) throw insertError
+      }
+
+      router.refresh()
+    } catch (err: any) {
+      setError(err.message || 'Erreur lors de la sauvegarde')
+    } finally {
+      setAlerteSaving(false)
     }
   }
 
@@ -324,6 +369,69 @@ export function StockPoudreDetail({ poudre, stock, atelierId }: StockPoudreDetai
                 </button>
               </form>
             </div>
+          </div>
+        )}
+      </div>
+
+      {/* Paramètres d'alerte stock bas */}
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-4">🔔 Alertes stock bas</h2>
+        <p className="text-sm text-gray-600 mb-6">
+          Recevez une notification lorsque le stock passe en dessous du seuil défini.
+        </p>
+        
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
+          <div className="flex-1">
+            <label htmlFor="seuil_alerte_kg" className="block text-sm font-medium text-gray-700 mb-2">
+              Seuil d'alerte (kg)
+            </label>
+            <input
+              id="seuil_alerte_kg"
+              type="number"
+              step="0.1"
+              min="0"
+              value={alerteSettings.seuil_alerte_kg}
+              onChange={(e) => setAlerteSettings({ ...alerteSettings, seuil_alerte_kg: e.target.value })}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              placeholder="5"
+            />
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={alerteSettings.alerte_active}
+                onChange={(e) => setAlerteSettings({ ...alerteSettings, alerte_active: e.target.checked })}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
+              <span className="ms-3 text-sm font-medium text-gray-700">Alertes actives</span>
+            </label>
+          </div>
+          
+          <button
+            type="button"
+            onClick={handleSaveAlerteSettings}
+            disabled={alerteSaving}
+            className="bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-orange-600 hover:to-red-700 transition-all disabled:opacity-50"
+          >
+            {alerteSaving ? 'Sauvegarde...' : 'Enregistrer'}
+          </button>
+        </div>
+        
+        {/* Indicateur de statut */}
+        {stockReel !== null && (
+          <div className={`mt-4 p-3 rounded-lg ${stockReel < parseFloat(alerteSettings.seuil_alerte_kg || '5') ? 'bg-red-50 border border-red-200' : 'bg-green-50 border border-green-200'}`}>
+            {stockReel < parseFloat(alerteSettings.seuil_alerte_kg || '5') ? (
+              <p className="text-sm text-red-700">
+                ⚠️ Le stock actuel ({stockReel.toFixed(2)} kg) est <strong>en dessous</strong> du seuil d'alerte ({alerteSettings.seuil_alerte_kg} kg)
+              </p>
+            ) : (
+              <p className="text-sm text-green-700">
+                ✅ Le stock actuel ({stockReel.toFixed(2)} kg) est <strong>au-dessus</strong> du seuil d'alerte ({alerteSettings.seuil_alerte_kg} kg)
+              </p>
+            )}
           </div>
         )}
       </div>

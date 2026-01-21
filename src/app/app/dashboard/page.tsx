@@ -5,6 +5,8 @@ import { ChartCA } from '@/components/dashboard/ChartCA'
 import { AlertsPanel } from '@/components/dashboard/AlertsPanel'
 import { ProjectsOverview } from '@/components/dashboard/ProjectsOverview'
 import { TopPoudres } from '@/components/dashboard/TopPoudres'
+import { ConversionStats } from '@/components/dashboard/ConversionStats'
+import { TopClients } from '@/components/dashboard/TopClients'
 import Link from 'next/link'
 
 // Page d'erreur pour afficher quand le profil est incomplet
@@ -98,6 +100,9 @@ export default async function DashboardPage() {
     devisConverted,
     topPoudres,
     caByMonth,
+    devisRefuses,
+    devisSignes,
+    facturesParClient,
   ] = await Promise.all([
     // CA du mois
     supabase
@@ -187,6 +192,27 @@ export default async function DashboardPage() {
       .eq('payment_status', 'paid')
       .gte('paid_at', new Date(now.getFullYear() - 1, now.getMonth(), 1).toISOString())
       .order('paid_at', { ascending: true }),
+    
+    // Devis refusés
+    supabase
+      .from('devis')
+      .select('id', { count: 'exact', head: true })
+      .eq('atelier_id', atelier.id)
+      .eq('status', 'refuse'),
+    
+    // Devis avec date de signature pour calcul temps moyen
+    supabase
+      .from('devis')
+      .select('created_at, signed_at, total_ht')
+      .eq('atelier_id', atelier.id)
+      .not('signed_at', 'is', null),
+    
+    // Top clients par CA (factures payées)
+    supabase
+      .from('factures')
+      .select('client_id, total_ttc, clients(id, full_name)')
+      .eq('atelier_id', atelier.id)
+      .eq('payment_status', 'paid'),
   ])
 
   // Calculer les KPIs
@@ -199,7 +225,36 @@ export default async function DashboardPage() {
   const nbDevisEnAttente = devisEnAttente.data?.length || 0
   const totalDevis = devisTotal.count || 0
   const convertedDevis = devisConverted.count || 0
+  const refusedDevis = devisRefuses.count || 0
   const tauxConversion = totalDevis > 0 ? (convertedDevis / totalDevis) * 100 : 0
+
+  // Calculer temps moyen de signature
+  let tempsSignatureMoyen = 0
+  let montantMoyenDevis = 0
+  if (devisSignes.data && devisSignes.data.length > 0) {
+    const tempsTotal = devisSignes.data.reduce((sum, d) => {
+      const created = new Date(d.created_at)
+      const signed = new Date(d.signed_at!)
+      return sum + (signed.getTime() - created.getTime()) / (1000 * 60 * 60 * 24)
+    }, 0)
+    tempsSignatureMoyen = tempsTotal / devisSignes.data.length
+    montantMoyenDevis = devisSignes.data.reduce((sum, d) => sum + Number(d.total_ht || 0), 0) / devisSignes.data.length
+  }
+
+  // Calculer top clients par CA
+  const clientCAMap: Record<string, { id: string; name: string; ca: number; projets: number }> = {}
+  for (const f of facturesParClient.data || []) {
+    const client = f.clients as any
+    if (!client?.id) continue
+    if (!clientCAMap[client.id]) {
+      clientCAMap[client.id] = { id: client.id, name: client.full_name || 'Client inconnu', ca: 0, projets: 0 }
+    }
+    clientCAMap[client.id].ca += Number(f.total_ttc || 0)
+    clientCAMap[client.id].projets++
+  }
+  const topClientsData = Object.values(clientCAMap)
+    .sort((a, b) => b.ca - a.ca)
+    .slice(0, 5)
 
   // Formater les projets en retard
   const formattedProjetsEnRetard = (projetsEnRetard.data || []).map((p: any) => ({
@@ -355,6 +410,19 @@ export default async function DashboardPage() {
             projetsEnRetard={formattedProjetsEnRetard}
             projetsAVenir={formattedProjetsAVenir}
           />
+        </div>
+
+        {/* Conversion Stats + Top Clients */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mt-6 sm:mt-8">
+          <ConversionStats
+            totalDevis={totalDevis}
+            devisAcceptes={convertedDevis}
+            devisRefuses={refusedDevis}
+            tauxConversion={tauxConversion}
+            tempsSignatureMoyen={tempsSignatureMoyen}
+            montantMoyenDevis={montantMoyenDevis}
+          />
+          <TopClients clients={topClientsData} />
         </div>
 
         {/* Top Poudres + Actions rapides */}

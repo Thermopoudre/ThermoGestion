@@ -4,6 +4,7 @@ import { PushNotificationButton } from '@/components/notifications/PushNotificat
 import { SearchButton } from '@/components/search/SearchButton'
 import { ThemeToggle } from '@/components/theme/ThemeToggle'
 import { MobileNav } from '@/components/navigation/MobileNav'
+import { NotificationBell } from '@/components/ui/NotificationBell'
 
 export default async function AppLayout({
   children,
@@ -74,6 +75,7 @@ export default async function AppLayout({
             {/* Actions */}
             <div className="flex items-center gap-2 md:gap-4">
               <SearchButton />
+              <NotificationBell />
               <PushNotificationButton />
               <ThemeToggle />
               <span className="text-sm text-gray-600 dark:text-gray-300 hidden xl:inline truncate max-w-[150px]">{user.email}</span>

@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import type { Database } from '@/types/database.types'
 
@@ -29,7 +31,34 @@ interface DevisItem {
 }
 
 export function DevisDetail({ devis, atelier }: DevisDetailProps) {
+  const router = useRouter()
+  const [duplicating, setDuplicating] = useState(false)
   const items = (devis.items as any) as DevisItem[] || []
+
+  const handleDuplicate = async () => {
+    if (duplicating) return
+    
+    setDuplicating(true)
+    try {
+      const response = await fetch(`/api/devis/${devis.id}/duplicate`, {
+        method: 'POST',
+      })
+      
+      const data = await response.json()
+      
+      if (data.success && data.devis) {
+        // Rediriger vers le nouveau devis en mode édition
+        router.push(`/app/devis/${data.devis.id}/edit`)
+      } else {
+        alert(data.error || 'Erreur lors de la duplication')
+      }
+    } catch (error) {
+      console.error('Erreur duplication:', error)
+      alert('Erreur lors de la duplication du devis')
+    } finally {
+      setDuplicating(false)
+    }
+  }
   
   const statusColors: Record<string, string> = {
     brouillon: 'bg-gray-100 text-gray-800',
@@ -223,6 +252,13 @@ export function DevisDetail({ devis, atelier }: DevisDetailProps) {
           >
             📄 Télécharger PDF
           </a>
+          <button
+            onClick={handleDuplicate}
+            disabled={duplicating}
+            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold py-3 px-6 rounded-lg hover:from-indigo-500 hover:to-purple-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {duplicating ? '⏳ Duplication...' : '📋 Dupliquer'}
+          </button>
         </div>
       </div>
     </div>

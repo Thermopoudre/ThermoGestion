@@ -13,6 +13,13 @@ interface DevisSettings {
   tva_rate: number
 }
 
+interface RelanceSettings {
+  actif: boolean
+  delai_premiere_relance_jours: number
+  delai_entre_relances_jours: number
+  max_relances: number
+}
+
 interface AtelierSettingsFormProps {
   atelier: {
     id: string
@@ -29,6 +36,7 @@ interface AtelierSettingsFormProps {
     bic?: string | null
     settings?: {
       devis?: DevisSettings
+      devis_relance?: RelanceSettings
     } | null
   }
 }
@@ -70,6 +78,19 @@ export function AtelierSettingsForm({ atelier }: AtelierSettingsFormProps) {
     ...(atelier.settings?.devis || {}),
   })
 
+  // Paramètres de relance devis
+  const defaultRelanceSettings: RelanceSettings = {
+    actif: true,
+    delai_premiere_relance_jours: 7,
+    delai_entre_relances_jours: 5,
+    max_relances: 3,
+  }
+
+  const [relanceSettings, setRelanceSettings] = useState<RelanceSettings>({
+    ...defaultRelanceSettings,
+    ...(atelier.settings?.devis_relance || {}),
+  })
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -94,6 +115,7 @@ export function AtelierSettingsForm({ atelier }: AtelierSettingsFormProps) {
           settings: {
             ...atelier.settings,
             devis: devisSettings,
+            devis_relance: relanceSettings,
           },
         })
         .eq('id', atelier.id)
@@ -464,6 +486,87 @@ export function AtelierSettingsForm({ atelier }: AtelierSettingsFormProps) {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Paramètres de relance automatique */}
+      <div className={cardClasses}>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+          📬 Relances automatiques devis
+        </h2>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+          Recevez des rappels pour relancer les clients qui n'ont pas signé leurs devis.
+        </p>
+        
+        <div className="mb-4">
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              checked={relanceSettings.actif}
+              onChange={(e) => setRelanceSettings({ ...relanceSettings, actif: e.target.checked })}
+              className="sr-only peer"
+            />
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500"></div>
+            <span className="ms-3 text-sm font-medium text-gray-700 dark:text-gray-300">Activer les relances automatiques</span>
+          </label>
+        </div>
+        
+        {relanceSettings.actif && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label className={labelClasses}>
+                Première relance après (jours)
+              </label>
+              <input
+                type="number"
+                step="1"
+                min="1"
+                max="30"
+                value={relanceSettings.delai_premiere_relance_jours}
+                onChange={(e) => setRelanceSettings({ ...relanceSettings, delai_premiere_relance_jours: parseInt(e.target.value) || 7 })}
+                className={inputClasses}
+              />
+              <p className={helpTextClasses}>Jours après l'envoi du devis</p>
+            </div>
+
+            <div>
+              <label className={labelClasses}>
+                Entre chaque relance (jours)
+              </label>
+              <input
+                type="number"
+                step="1"
+                min="1"
+                max="30"
+                value={relanceSettings.delai_entre_relances_jours}
+                onChange={(e) => setRelanceSettings({ ...relanceSettings, delai_entre_relances_jours: parseInt(e.target.value) || 5 })}
+                className={inputClasses}
+              />
+              <p className={helpTextClasses}>Délai entre les relances</p>
+            </div>
+
+            <div>
+              <label className={labelClasses}>
+                Nombre max de relances
+              </label>
+              <input
+                type="number"
+                step="1"
+                min="1"
+                max="10"
+                value={relanceSettings.max_relances}
+                onChange={(e) => setRelanceSettings({ ...relanceSettings, max_relances: parseInt(e.target.value) || 3 })}
+                className={inputClasses}
+              />
+              <p className={helpTextClasses}>Arrêter après X relances</p>
+            </div>
+          </div>
+        )}
+        
+        {relanceSettings.actif && (
+          <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm text-blue-700 dark:text-blue-300">
+            <strong>Exemple :</strong> Avec ces paramètres, un devis envoyé le 1er janvier recevra une notification de relance le {relanceSettings.delai_premiere_relance_jours} janvier, puis le {relanceSettings.delai_premiere_relance_jours + relanceSettings.delai_entre_relances_jours} janvier, etc.
+          </div>
+        )}
       </div>
 
       {/* Bouton de soumission */}
