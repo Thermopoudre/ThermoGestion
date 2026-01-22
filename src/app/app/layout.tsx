@@ -6,6 +6,7 @@ import { MobileNav } from '@/components/navigation/MobileNav'
 import { NavLink } from '@/components/navigation/NavLink'
 import { UserMenu } from '@/components/navigation/UserMenu'
 import { NotificationBell } from '@/components/ui/NotificationBell'
+import AppShell from '@/components/layout/AppShell'
 
 export default async function AppLayout({
   children,
@@ -55,9 +56,13 @@ export default async function AppLayout({
               <NavLink href="/app/stats">Stats</NavLink>
             </div>
 
-            {/* Actions */}
+            {/* Actions avec raccourci clavier visible */}
             <div className="flex items-center gap-2 md:gap-3">
               <SearchButton />
+              <div className="hidden md:flex items-center gap-1 px-2 py-1 text-xs text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                <kbd className="font-sans">⌘</kbd>
+                <kbd className="font-sans">K</kbd>
+              </div>
               <ThemeToggle />
               <UserMenu userEmail={user.email || ''} />
               <NotificationBell />
@@ -66,8 +71,10 @@ export default async function AppLayout({
         </div>
       </nav>
 
-      {/* Contenu */}
-      <main className="dark:bg-gray-900 transition-colors">{children}</main>
+      {/* Contenu avec AppShell (breadcrumbs, FAB, toasts) */}
+      <main className="dark:bg-gray-900 transition-colors">
+        <AppShell>{children}</AppShell>
+      </main>
     </div>
   )
 }
