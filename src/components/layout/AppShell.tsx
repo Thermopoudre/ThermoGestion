@@ -6,6 +6,8 @@ import FloatingActionButton from '@/components/ui/FloatingActionButton'
 import Breadcrumbs from '@/components/ui/Breadcrumbs'
 import KeyboardShortcuts from '@/components/ui/KeyboardShortcuts'
 import { ToastProvider } from '@/components/ui/Toast'
+import { ConfirmProvider } from '@/components/ui/ConfirmDialog'
+import { OnboardingProvider } from '@/components/ui/OnboardingTour'
 
 interface AppShellProps {
   children: React.ReactNode
@@ -29,27 +31,31 @@ export default function AppShell({ children }: AppShellProps) {
 
   return (
     <ToastProvider>
-      {/* Keyboard shortcuts handler */}
-      <KeyboardShortcuts onOpenCommandPalette={() => setIsCommandPaletteOpen(true)} />
-      
-      {/* Command palette */}
-      <CommandPalette 
-        isOpen={isCommandPaletteOpen} 
-        onClose={() => setIsCommandPaletteOpen(false)} 
-      />
+      <ConfirmProvider>
+        <OnboardingProvider>
+          {/* Keyboard shortcuts handler */}
+          <KeyboardShortcuts onOpenCommandPalette={() => setIsCommandPaletteOpen(true)} />
+          
+          {/* Command palette */}
+          <CommandPalette 
+            isOpen={isCommandPaletteOpen} 
+            onClose={() => setIsCommandPaletteOpen(false)} 
+          />
 
-      {/* Breadcrumbs - affiché sous la nav */}
-      <div className="container mx-auto px-4 py-2">
-        <Breadcrumbs />
-      </div>
+          {/* Breadcrumbs - affiché sous la nav */}
+          <div className="container mx-auto px-4 py-2">
+            <Breadcrumbs />
+          </div>
 
-      {/* Main content */}
-      <div className="pb-24">
-        {children}
-      </div>
+          {/* Main content */}
+          <div className="pb-24">
+            {children}
+          </div>
 
-      {/* Floating action button */}
-      <FloatingActionButton />
+          {/* Floating action button */}
+          <FloatingActionButton />
+        </OnboardingProvider>
+      </ConfirmProvider>
     </ToastProvider>
   )
 }
