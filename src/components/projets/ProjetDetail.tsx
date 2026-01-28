@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { createBrowserClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { ProjetQRCode } from '@/components/projets/ProjetQRCode'
+import ProjetTimeline from '@/components/projets/ProjetTimeline'
+import { formatSurfaceWithUnit, formatMoney, formatDate } from '@/lib/format'
 import type { Database } from '@/types/database.types'
 
 type Projet = Database['public']['Tables']['projets']['Row']
@@ -240,6 +242,12 @@ export function ProjetDetail({ projet, photos, retouches = [], storageQuota, sto
 
   return (
     <div className="space-y-4 sm:space-y-6">
+      {/* Timeline de suivi - Visible en premier */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 transition-colors">
+        <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-6">Suivi du projet</h2>
+        <ProjetTimeline currentStatus={projet.status} />
+      </div>
+
       {/* Informations générales */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 transition-colors">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4 sm:mb-6">

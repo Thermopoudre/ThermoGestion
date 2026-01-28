@@ -261,7 +261,7 @@ export default function BatchingView({ projets, onCreateBatch }: BatchingViewPro
                     </div>
                   </div>
                   {projet.surface_m2 && (
-                    <span className="text-xs text-gray-500">{projet.surface_m2.toFixed(1)} m²</span>
+                    <span className="text-xs text-gray-500">{projet.surface_m2} m²</span>
                   )}
                 </Link>
               ))}
@@ -270,7 +270,7 @@ export default function BatchingView({ projets, onCreateBatch }: BatchingViewPro
               {group.totalSurface > 0 && (
                 <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700 mt-2">
                   <span className="text-sm text-gray-500">Surface totale</span>
-                  <span className="font-semibold">{group.totalSurface.toFixed(1)} m²</span>
+                  <span className="font-semibold">{Math.round(group.totalSurface * 10) / 10} m²</span>
                 </div>
               )}
 

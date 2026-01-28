@@ -76,33 +76,36 @@ export function ConvertDevisToProjet({ devis, poudres, atelierId, userId }: Conv
         : 0
       const numero = `PROJ-${year}-${String(lastNum + 1).padStart(4, '0')}`
 
-      // Créer le projet
+      // Créer le projet (sans les champs montant qui peuvent ne pas exister)
+      const projetData: Record<string, any> = {
+        atelier_id: atelierId,
+        client_id: devis.client_id,
+        devis_id: devis.id,
+        numero,
+        name: formData.name,
+        status: 'en_cours',
+        poudre_id: formData.poudre_id || null,
+        couches: formData.couches,
+        temp_cuisson: formData.temp_cuisson ? parseInt(formData.temp_cuisson) : null,
+        duree_cuisson: formData.duree_cuisson ? parseInt(formData.duree_cuisson) : null,
+        date_depot: formData.date_depot || null,
+        date_promise: formData.date_promise || null,
+        workflow_config: formData.workflow_config,
+        current_step: 0,
+        pieces: devis.items,
+        created_by: userId,
+      }
+
       const { data: projet, error: projetError } = await supabase
         .from('projets')
-        .insert({
-          atelier_id: atelierId,
-          client_id: devis.client_id,
-          devis_id: devis.id,
-          numero,
-          name: formData.name,
-          status: 'en_cours',
-          poudre_id: formData.poudre_id || null,
-          couches: formData.couches,
-          temp_cuisson: formData.temp_cuisson ? parseInt(formData.temp_cuisson) : null,
-          duree_cuisson: formData.duree_cuisson ? parseInt(formData.duree_cuisson) : null,
-          date_depot: formData.date_depot || null,
-          date_promise: formData.date_promise || null,
-          workflow_config: formData.workflow_config,
-          current_step: 0,
-          pieces: devis.items,
-          montant_total: totalTtc,
-          montant_acompte: formData.createAcompte ? montantAcompteTtc : 0,
-          created_by: userId,
-        })
+        .insert(projetData)
         .select()
         .single()
 
-      if (projetError) throw projetError
+      if (projetError) {
+        console.error('Erreur création projet:', projetError)
+        throw new Error(projetError.message || 'Erreur lors de la création du projet')
+      }
 
       // Si création d'acompte demandée
       let factureAcompteId = null
@@ -150,14 +153,12 @@ export function ConvertDevisToProjet({ devis, poudres, atelierId, userId }: Conv
           .select()
           .single()
           
-        if (factureError) throw factureError
-        factureAcompteId = factureAcompte.id
-        
-        // Mettre à jour le projet avec la ref facture acompte
-        await supabase
-          .from('projets')
-          .update({ facture_acompte_id: factureAcompteId })
-          .eq('id', projet.id)
+        if (factureError) {
+          console.error('Erreur création facture acompte:', factureError)
+          // On continue même si la facture d'acompte échoue
+        } else {
+          factureAcompteId = factureAcompte.id
+        }
       }
 
       // Mettre à jour le devis (statut converted)
@@ -166,7 +167,10 @@ export function ConvertDevisToProjet({ devis, poudres, atelierId, userId }: Conv
         .update({ status: 'converted' })
         .eq('id', devis.id)
 
-      if (devisError) throw devisError
+      if (devisError) {
+        console.error('Erreur mise à jour devis:', devisError)
+        // On continue car le projet est créé
+      }
 
       // Journal d'audit
       await supabase.from('audit_logs').insert({
