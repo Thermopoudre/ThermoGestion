@@ -6,79 +6,120 @@ const OFFLINE_URL = '/offline.html'
 const STATIC_ASSETS = [
   '/',
   '/offline.html',
-  '/logo.svg',
-  '/logo-icon.svg',
   '/manifest.json',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
 ]
 
-// Installation du service worker
+// Installation
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[SW] Mise en cache des ressources statiques')
+      console.log('[SW] Caching static assets')
       return cache.addAll(STATIC_ASSETS)
     })
   )
   self.skipWaiting()
 })
 
-// Activation et nettoyage des anciens caches
+// Activation
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames
           .filter((name) => name !== CACHE_NAME)
-          .map((name) => {
-            console.log('[SW] Suppression ancien cache:', name)
-            return caches.delete(name)
-          })
+          .map((name) => caches.delete(name))
       )
     })
   )
   self.clients.claim()
 })
 
-// Stratégie de cache: Network First avec fallback sur cache
+// Stratégie de fetch
 self.addEventListener('fetch', (event) => {
-  // Ignorer les requêtes non-GET
-  if (event.request.method !== 'GET') return
+  const { request } = event
+  const url = new URL(request.url)
 
-  // Ignorer les requêtes API (toujours réseau)
-  if (event.request.url.includes('/api/')) return
+  // Ignorer les requêtes non-GET
+  if (request.method !== 'GET') return
+
+  // Ignorer les requêtes API (on veut toujours des données fraîches)
+  if (url.pathname.startsWith('/api/')) return
 
   // Ignorer les requêtes Supabase
-  if (event.request.url.includes('supabase.co')) return
+  if (url.hostname.includes('supabase')) return
 
-  event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        // Mettre en cache les réponses valides
-        if (response.status === 200) {
+  // Stratégie: Network First pour les pages HTML
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          // Mettre en cache la réponse
           const responseClone = response.clone()
           caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone)
+            cache.put(request, responseClone)
           })
-        }
-        return response
-      })
-      .catch(() => {
-        // Fallback sur le cache
-        return caches.match(event.request).then((cachedResponse) => {
-          if (cachedResponse) {
-            return cachedResponse
-          }
-          // Page hors ligne pour les navigations
-          if (event.request.mode === 'navigate') {
-            return caches.match(OFFLINE_URL)
-          }
-          return new Response('Hors ligne', { status: 503 })
+          return response
+        })
+        .catch(() => {
+          // Si offline, servir depuis le cache ou la page offline
+          return caches.match(request).then((cached) => {
+            return cached || caches.match(OFFLINE_URL)
+          })
+        })
+    )
+    return
+  }
+
+  // Stratégie: Cache First pour les assets statiques
+  if (
+    url.pathname.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2)$/)
+  ) {
+    event.respondWith(
+      caches.match(request).then((cached) => {
+        if (cached) return cached
+
+        return fetch(request).then((response) => {
+          const responseClone = response.clone()
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, responseClone)
+          })
+          return response
         })
       })
+    )
+    return
+  }
+
+  // Par défaut: Network First
+  event.respondWith(
+    fetch(request)
+      .then((response) => {
+        const responseClone = response.clone()
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(request, responseClone)
+        })
+        return response
+      })
+      .catch(() => caches.match(request))
   )
 })
 
-// Gestion des notifications push
+// Sync en arrière-plan (pour les données hors ligne)
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-data') {
+    event.waitUntil(syncData())
+  }
+})
+
+async function syncData() {
+  // Récupérer les données en attente depuis IndexedDB
+  // et les envoyer au serveur
+  console.log('[SW] Syncing offline data...')
+}
+
+// Notifications push
 self.addEventListener('push', (event) => {
   if (!event.data) return
 
@@ -86,11 +127,12 @@ self.addEventListener('push', (event) => {
   
   const options = {
     body: data.body,
-    icon: data.icon || '/logo-icon.svg',
-    badge: data.badge || '/logo-icon.svg',
-    data: data.data || {},
-    tag: data.tag,
-    requireInteraction: data.requireInteraction || false,
+    icon: '/icons/icon-192.png',
+    badge: '/icons/badge-72.png',
+    vibrate: [100, 50, 100],
+    data: {
+      url: data.url || '/',
+    },
     actions: data.actions || [],
   }
 
@@ -103,33 +145,20 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
   event.notification.close()
 
-  const data = event.notification.data || {}
-  const url = data.url || '/app/dashboard'
+  const url = event.notification.data?.url || '/'
 
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+    clients.matchAll({ type: 'window' }).then((windowClients) => {
       // Chercher une fenêtre existante
-      for (const client of clientList) {
+      for (const client of windowClients) {
         if (client.url === url && 'focus' in client) {
           return client.focus()
         }
       }
-      // Ouvrir une nouvelle fenêtre
+      // Sinon ouvrir une nouvelle fenêtre
       if (clients.openWindow) {
         return clients.openWindow(url)
       }
     })
   )
 })
-
-// Synchronisation en arrière-plan
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-data') {
-    event.waitUntil(syncData())
-  }
-})
-
-async function syncData() {
-  // Logique de synchronisation des données hors ligne
-  console.log('[SW] Synchronisation des données...')
-}
