@@ -23,20 +23,15 @@ export default async function FacturesPage() {
     redirect('/complete-profile')
   }
 
-  // Récupérer les factures
+  // Récupérer les factures - requête simplifiée pour éviter les erreurs de jointure
   const { data: factures, error } = await supabase
     .from('factures')
     .select(`
       *,
-      clients (
+      clients!left (
         id,
         full_name,
         email
-      ),
-      projets (
-        id,
-        name,
-        numero
       )
     `)
     .eq('atelier_id', userData.atelier_id)
@@ -45,6 +40,9 @@ export default async function FacturesPage() {
   if (error) {
     console.error('Erreur récupération factures:', error)
   }
+
+  // Debug temporaire - à retirer
+  console.log('Factures query - atelier_id:', userData.atelier_id, 'count:', factures?.length || 0, 'error:', error)
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">

@@ -22,7 +22,38 @@ export default async function ClientDashboardPage() {
     .single()
 
   if (clientError || !clientUser) {
-    redirect('/client/auth/login?error=not_client')
+    // L'utilisateur n'est pas un client - afficher un message
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-16 text-center">
+        <div className="bg-white rounded-2xl shadow-lg p-8">
+          <div className="w-20 h-20 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <span className="text-4xl">🔐</span>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Espace Client</h1>
+          <p className="text-gray-600 mb-6">
+            Cet espace est réservé aux clients des ateliers utilisant ThermoGestion.
+          </p>
+          <p className="text-sm text-gray-500 mb-8">
+            Si vous êtes un client, veuillez vous connecter avec les identifiants fournis par votre atelier.
+            Si vous êtes un atelier, utilisez l'interface de gestion.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link 
+              href="/client/auth/login"
+              className="px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold rounded-lg hover:from-orange-600 hover:to-red-600 transition-colors"
+            >
+              Connexion Client
+            </Link>
+            <Link 
+              href="/app/dashboard"
+              className="px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Interface Atelier
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   // Récupérer les stats
