@@ -16,39 +16,25 @@ export default async function FacturesPage() {
     redirect('/auth/login')
   }
 
-  // Charger l'atelier de l'utilisateur avec jointure complète comme dans le dashboard
+  // Charger l'atelier_id de l'utilisateur - approche simplifiée
   const { data: userData, error: userError } = await supabase
     .from('users')
-    .select('*, ateliers (*)')
+    .select('atelier_id')
     .eq('id', user.id)
     .single()
 
   if (userError || !userData || !userData.atelier_id) {
+    console.error('[Factures Page] userData error:', userError, userData)
     redirect('/complete-profile')
   }
 
-  // Extraire l'atelier comme dans le dashboard
-  let atelier = Array.isArray(userData.ateliers) ? userData.ateliers[0] : userData.ateliers
-  if ((!atelier || !atelier.id) && userData.atelier_id) {
-    const { data: atelierDirect } = await supabase
-      .from('ateliers')
-      .select('*')
-      .eq('id', userData.atelier_id)
-      .single()
-    atelier = atelierDirect
-  }
+  const atelierId = userData.atelier_id
 
-  // Si pas d'atelier trouvé, rediriger
-  if (!atelier || !atelier.id) {
-    console.error('[Factures Page] Atelier non trouvé')
-    redirect('/complete-profile')
-  }
-
-  // Récupérer les factures - utiliser atelier.id directement comme le dashboard
+  // Récupérer les factures - requête simplifiée
   const { data: facturesData, error: facturesError } = await supabase
     .from('factures')
     .select('id, numero, client_id, type, status, payment_status, total_ht, total_ttc, tva_rate, due_date, paid_at, items, notes, created_at')
-    .eq('atelier_id', atelier.id)
+    .eq('atelier_id', atelierId)
     .order('created_at', { ascending: false })
 
   // Récupérer les clients séparément si des factures existent
@@ -73,8 +59,9 @@ export default async function FacturesPage() {
   }
 
   // Debug logging
-  console.log('[Factures Page] atelier.id:', atelier.id)
+  console.log('[Factures Page] atelierId:', atelierId)
   console.log('[Factures Page] facturesData count:', facturesData?.length || 0)
+  console.log('[Factures Page] facturesError:', facturesError)
   if (facturesError) {
     console.error('[Factures Page] Erreur récupération factures:', facturesError)
   }
