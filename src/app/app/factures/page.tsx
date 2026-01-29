@@ -114,9 +114,25 @@ export default async function FacturesPage() {
     }
   }
 
+  // Debug info to display in development
+  const debugInfo = {
+    atelierId: atelier.id,
+    atelierName: atelier.name,
+    facturesCount: facturesData?.length || 0,
+    facturesError: facturesError?.message || null,
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       <div className="container mx-auto px-4 py-6 sm:py-8">
+        {/* Debug banner - remove in production */}
+        <div className="mb-4 p-4 bg-yellow-100 dark:bg-yellow-900 rounded-lg text-sm">
+          <p><strong>Debug:</strong> Atelier ID: {debugInfo.atelierId}</p>
+          <p>Atelier Name: {debugInfo.atelierName}</p>
+          <p>Factures trouvées: {debugInfo.facturesCount}</p>
+          {debugInfo.facturesError && <p className="text-red-600">Erreur: {debugInfo.facturesError}</p>}
+        </div>
+
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">Factures</h1>
