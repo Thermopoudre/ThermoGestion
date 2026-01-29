@@ -38,13 +38,17 @@ export default async function FacturesPage() {
     atelier = atelierDirect
   }
 
-  const atelierId = atelier?.id || userData.atelier_id
+  // Si pas d'atelier trouvé, rediriger
+  if (!atelier || !atelier.id) {
+    console.error('[Factures Page] Atelier non trouvé')
+    redirect('/complete-profile')
+  }
 
-  // Récupérer les factures - colonnes spécifiques pour éviter les problèmes RLS
+  // Récupérer les factures - utiliser atelier.id directement comme le dashboard
   const { data: facturesData, error: facturesError } = await supabase
     .from('factures')
-    .select('id, numero, client_id, projet_id, type, status, payment_status, total_ht, total_ttc, tva_rate, due_date, paid_at, items, notes, created_at, updated_at, atelier_id')
-    .eq('atelier_id', atelierId)
+    .select('id, numero, client_id, type, status, payment_status, total_ht, total_ttc, tva_rate, due_date, paid_at, items, notes, created_at')
+    .eq('atelier_id', atelier.id)
     .order('created_at', { ascending: false })
 
   // Récupérer les clients séparément si des factures existent
@@ -69,7 +73,7 @@ export default async function FacturesPage() {
   }
 
   // Debug logging
-  console.log('[Factures Page] atelierId:', atelierId)
+  console.log('[Factures Page] atelier.id:', atelier.id)
   console.log('[Factures Page] facturesData count:', facturesData?.length || 0)
   if (facturesError) {
     console.error('[Factures Page] Erreur récupération factures:', facturesError)
