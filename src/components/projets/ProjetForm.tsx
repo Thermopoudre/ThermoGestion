@@ -67,19 +67,14 @@ export function ProjetForm({ atelierId, userId, clients: initialClients, poudres
       // Générer numéro si nouveau projet
       let numero = ''
       if (!projetId) {
-        const { data: lastProjet } = await supabase
+        const { count: projetsCount } = await supabase
           .from('projets')
-          .select('numero')
+          .select('id', { count: 'exact', head: true })
           .eq('atelier_id', atelierId)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .single()
 
         const year = new Date().getFullYear()
-        const lastNum = lastProjet?.numero 
-          ? parseInt(lastProjet.numero.split('-')[2] || '0')
-          : 0
-        numero = `PROJ-${year}-${String(lastNum + 1).padStart(4, '0')}`
+        const nextNum = (projetsCount || 0) + 1
+        numero = `PROJ-${year}-${String(nextNum).padStart(4, '0')}`
       }
 
       const projetData = {

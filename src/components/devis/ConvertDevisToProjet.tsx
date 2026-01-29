@@ -62,19 +62,14 @@ export function ConvertDevisToProjet({ devis, poudres, atelierId, userId }: Conv
 
     try {
       // Générer numéro projet
-      const { data: lastProjet } = await supabase
+      const { data: projetsCount } = await supabase
         .from('projets')
-        .select('numero')
+        .select('id', { count: 'exact', head: true })
         .eq('atelier_id', atelierId)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single()
 
       const year = new Date().getFullYear()
-      const lastNum = lastProjet?.numero 
-        ? parseInt(lastProjet.numero.split('-')[2] || '0')
-        : 0
-      const numero = `PROJ-${year}-${String(lastNum + 1).padStart(4, '0')}`
+      const nextNum = (projetsCount || 0) + 1
+      const numero = `PROJ-${year}-${String(nextNum).padStart(4, '0')}`
 
       // Créer le projet (sans les champs montant qui peuvent ne pas exister)
       const projetData: Record<string, any> = {

@@ -5,8 +5,9 @@ import { FactureDetail } from '@/components/factures/FactureDetail'
 export default async function FactureDetailPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const resolvedParams = await params
   const supabase = await createServerClient()
 
   const {
@@ -27,39 +28,52 @@ export default async function FactureDetailPage({
     redirect('/complete-profile')
   }
 
-  // Récupérer la facture
-  const { data: facture, error: factureError } = await supabase
+  // Récupérer la facture - requête simple pour éviter les problèmes RLS avec les jointures
+  const { data: factureData, error: factureError } = await supabase
     .from('factures')
-    .select(`
-      *,
-      clients (
-        id,
-        full_name,
-        email,
-        phone,
-        address,
-        type,
-        siret
-      ),
-      projets (
-        id,
-        name,
-        numero
-      )
-    `)
-    .eq('id', params.id)
+    .select('*')
+    .eq('id', resolvedParams.id)
     .eq('atelier_id', userData.atelier_id)
     .single()
 
-  if (factureError || !facture) {
+  if (factureError || !factureData) {
+    console.error('Erreur récupération facture:', factureError)
     redirect('/app/factures?error=not_found')
+  }
+
+  // Récupérer le client séparément
+  let client = null
+  if (factureData.client_id) {
+    const { data: clientData } = await supabase
+      .from('clients')
+      .select('id, full_name, email, phone, address, type, siret')
+      .eq('id', factureData.client_id)
+      .single()
+    client = clientData
+  }
+
+  // Récupérer le projet séparément
+  let projet = null
+  if (factureData.projet_id) {
+    const { data: projetData } = await supabase
+      .from('projets')
+      .select('id, name, numero')
+      .eq('id', factureData.projet_id)
+      .single()
+    projet = projetData
+  }
+
+  const facture = {
+    ...factureData,
+    clients: client,
+    projets: projet
   }
 
   // Récupérer les paiements
   const { data: paiements } = await supabase
     .from('paiements')
     .select('*')
-    .eq('facture_id', params.id)
+    .eq('facture_id', resolvedParams.id)
     .order('created_at', { ascending: false })
 
   // Récupérer l'atelier

@@ -67,18 +67,13 @@ export async function onDevisSigned(
 
     // 3. Générer le numéro de projet
     const year = new Date().getFullYear()
-    const { data: lastProjet } = await supabase
+    const { count: projetsCount } = await supabase
       .from('projets')
-      .select('numero')
+      .select('id', { count: 'exact', head: true })
       .eq('atelier_id', devis.atelier_id)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single()
 
-    const lastNum = lastProjet?.numero 
-      ? parseInt(lastProjet.numero.split('-')[2] || '0')
-      : 0
-    const numero = `PROJ-${year}-${String(lastNum + 1).padStart(4, '0')}`
+    const nextNum = (projetsCount || 0) + 1
+    const numero = `PROJ-${year}-${String(nextNum).padStart(4, '0')}`
 
     // 4. Extraire les infos du devis pour créer le projet
     const items = (devis.items as any[]) || []

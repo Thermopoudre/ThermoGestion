@@ -391,19 +391,14 @@ export function DevisForm({
       // Générer numéro si nouveau devis
       let numero = formData.numero || initialData?.numero
       if (!numero && !devisId) {
-        const { data: lastDevis } = await supabase
+        const { data: devisData, count: devisCount } = await supabase
           .from('devis')
-          .select('numero')
+          .select('id', { count: 'exact', head: true })
           .eq('atelier_id', atelierId)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .single()
 
         const year = new Date().getFullYear()
-        const lastNum = lastDevis?.numero 
-          ? parseInt(lastDevis.numero.split('-')[2] || '0')
-          : 0
-        numero = `DEV-${year}-${String(lastNum + 1).padStart(4, '0')}`
+        const nextNum = (devisCount || 0) + 1
+        numero = `DEV-${year}-${String(nextNum).padStart(4, '0')}`
       }
 
       const devisData = {

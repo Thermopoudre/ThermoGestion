@@ -41,19 +41,14 @@ export async function POST(
     }
 
     // Générer un nouveau numéro
-    const { data: lastDevis } = await supabase
+    const { count: devisCount } = await supabase
       .from('devis')
-      .select('numero')
+      .select('id', { count: 'exact', head: true })
       .eq('atelier_id', userData.atelier_id)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single()
 
     const year = new Date().getFullYear()
-    const lastNum = lastDevis?.numero
-      ? parseInt(lastDevis.numero.split('-')[2] || '0')
-      : 0
-    const newNumero = `DEV-${year}-${String(lastNum + 1).padStart(4, '0')}`
+    const nextNum = (devisCount || 0) + 1
+    const newNumero = `DEV-${year}-${String(nextNum).padStart(4, '0')}`
 
     // Créer le nouveau devis (copie)
     const { data: newDevis, error: insertError } = await supabase
