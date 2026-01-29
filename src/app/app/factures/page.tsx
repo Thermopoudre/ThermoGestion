@@ -13,18 +13,29 @@ export default async function FacturesPage() {
     redirect('/auth/login')
   }
 
-  // Charger l'atelier de l'utilisateur avec une jointure ateliers
-  const { data: userData } = await supabase
+  // Charger l'atelier de l'utilisateur avec jointure complète comme dans le dashboard
+  const { data: userData, error: userError } = await supabase
     .from('users')
-    .select(`atelier_id, ateliers (id)`)
+    .select('*, ateliers (*)')
     .eq('id', user.id)
     .single()
 
-  if (!userData || !userData.atelier_id) {
+  if (userError || !userData || !userData.atelier_id) {
     redirect('/complete-profile')
   }
 
-  const atelierId = userData.atelier_id
+  // Extraire l'atelier comme dans le dashboard
+  let atelier = Array.isArray(userData.ateliers) ? userData.ateliers[0] : userData.ateliers
+  if (!atelier && userData.atelier_id) {
+    const { data: atelierDirect } = await supabase
+      .from('ateliers')
+      .select('*')
+      .eq('id', userData.atelier_id)
+      .single()
+    atelier = atelierDirect
+  }
+
+  const atelierId = atelier?.id || userData.atelier_id
 
   // Récupérer les factures - requête simple sans jointure pour RLS
   const { data: facturesData, error: facturesError } = await supabase
