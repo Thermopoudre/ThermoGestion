@@ -1,4 +1,5 @@
 import { createServerClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
 import { FacturesList } from '@/components/factures/FacturesList'
 
@@ -23,12 +24,15 @@ export default async function FacturesPage() {
     redirect('/complete-profile')
   }
 
-  // Récupérer les factures - requête simplifiée pour éviter les erreurs de jointure
-  const { data: factures, error } = await supabase
+  // Utiliser le client admin pour éviter les problèmes RLS avec les jointures
+  const adminSupabase = createAdminClient()
+
+  // Récupérer les factures
+  const { data: factures, error } = await adminSupabase
     .from('factures')
     .select(`
       *,
-      clients!left (
+      clients (
         id,
         full_name,
         email
