@@ -41,8 +41,6 @@ export default async function FacturesPage() {
     console.error('Erreur récupération factures:', error)
   }
 
-  // Debug temporaire - à retirer
-  console.log('Factures query - atelier_id:', userData.atelier_id, 'count:', factures?.length || 0, 'error:', error)
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">

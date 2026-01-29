@@ -35,17 +35,25 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Routes protégées (nécessitent authentification)
-  const isProtectedRoute = request.nextUrl.pathname.startsWith('/app')
+  // Routes protégées atelier (nécessitent authentification atelier)
+  const isAtelierRoute = request.nextUrl.pathname.startsWith('/app')
   
-  // Routes d'auth (login/inscription)
-  const isAuthRoute = request.nextUrl.pathname.startsWith('/auth/login') || 
-                      request.nextUrl.pathname.startsWith('/auth/inscription')
+  // Routes protégées client (nécessitent authentification client)
+  const isClientRoute = request.nextUrl.pathname.startsWith('/client') && 
+                        !request.nextUrl.pathname.startsWith('/client/auth')
 
-  // Si route protégée et pas connecté -> rediriger vers login
-  if (isProtectedRoute && !user) {
+  // Si route atelier et pas connecté -> rediriger vers login atelier
+  if (isAtelierRoute && !user) {
     const redirectUrl = request.nextUrl.clone()
     redirectUrl.pathname = '/auth/login'
+    redirectUrl.searchParams.set('redirect', request.nextUrl.pathname)
+    return NextResponse.redirect(redirectUrl)
+  }
+
+  // Si route client et pas connecté -> rediriger vers login client
+  if (isClientRoute && !user) {
+    const redirectUrl = request.nextUrl.clone()
+    redirectUrl.pathname = '/client/auth/login'
     redirectUrl.searchParams.set('redirect', request.nextUrl.pathname)
     return NextResponse.redirect(redirectUrl)
   }
