@@ -37,10 +37,10 @@ export default async function FacturesPage() {
 
   const atelierId = atelier?.id || userData.atelier_id
 
-  // Récupérer les factures - requête simple sans jointure pour RLS
+  // Récupérer les factures - colonnes spécifiques pour éviter les problèmes RLS
   const { data: facturesData, error: facturesError } = await supabase
     .from('factures')
-    .select('*')
+    .select('id, numero, client_id, projet_id, type, status, payment_status, total_ht, total_ttc, tva_rate, due_date, paid_at, items, notes, created_at, updated_at, atelier_id')
     .eq('atelier_id', atelierId)
     .order('created_at', { ascending: false })
 
@@ -65,8 +65,11 @@ export default async function FacturesPage() {
     }
   }
 
+  // Debug logging
+  console.log('[Factures Page] atelierId:', atelierId)
+  console.log('[Factures Page] facturesData count:', facturesData?.length || 0)
   if (facturesError) {
-    console.error('Erreur récupération factures:', facturesError)
+    console.error('[Factures Page] Erreur récupération factures:', facturesError)
   }
 
 
