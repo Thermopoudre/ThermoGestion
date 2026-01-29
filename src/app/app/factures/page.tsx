@@ -29,7 +29,7 @@ export default async function FacturesPage() {
 
   // Extraire l'atelier comme dans le dashboard
   let atelier = Array.isArray(userData.ateliers) ? userData.ateliers[0] : userData.ateliers
-  if (!atelier && userData.atelier_id) {
+  if ((!atelier || !atelier.id) && userData.atelier_id) {
     const { data: atelierDirect } = await supabase
       .from('ateliers')
       .select('*')
