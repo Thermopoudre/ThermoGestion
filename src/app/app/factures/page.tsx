@@ -2,6 +2,9 @@ import { createServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { FacturesList } from '@/components/factures/FacturesList'
 
+// Force dynamic rendering to avoid caching issues
+export const dynamic = 'force-dynamic'
+
 export default async function FacturesPage() {
   const supabase = await createServerClient()
 
