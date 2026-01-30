@@ -9,6 +9,7 @@ const tabs = [
   { href: '/app/parametres/integrations', label: 'Intégrations' },
   { href: '/app/parametres/templates', label: 'Templates' },
   { href: '/app/parametres/abonnement', label: 'Abonnement' },
+  { href: '/app/parametres/paiement', label: 'Paiement' },
 ]
 
 export function SettingsNav() {
