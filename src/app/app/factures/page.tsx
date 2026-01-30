@@ -1,129 +1,65 @@
-'use client'
-
-import { useEffect, useState } from 'react'
-import { createBrowserClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
+import { createServerClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 import { FacturesList } from '@/components/factures/FacturesList'
 
-// Version marker pour confirmer le déploiement
-const BUILD_VERSION = 'v4-client-20260130'
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
-export default function FacturesPage() {
-  const [factures, setFactures] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [debugInfo, setDebugInfo] = useState<any>(null)
-  const router = useRouter()
+export default async function FacturesPage() {
+  const supabase = await createServerClient()
 
-  useEffect(() => {
-    const supabase = createBrowserClient()
-    
-    async function loadFactures() {
-      try {
-        console.log('[Factures] Starting load...')
-        
-        // Get user
-        const { data: { user }, error: authError } = await supabase.auth.getUser()
-        console.log('[Factures] Auth result:', user?.id, authError?.message)
-        
-        if (!user) {
-          console.log('[Factures] No user, redirecting...')
-          router.push('/auth/login')
-          return
-        }
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    redirect('/auth/login')
+  }
 
-        // Get user's atelier
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('atelier_id')
-          .eq('id', user.id)
-          .single()
-        
-        console.log('[Factures] User data:', userData, userError?.message)
+  // Get user's atelier
+  const { data: userData } = await supabase
+    .from('users')
+    .select('atelier_id')
+    .eq('id', user.id)
+    .single()
 
-        if (userError || !userData?.atelier_id) {
-          setError('Profil incomplet: ' + (userError?.message || 'pas d\'atelier'))
-          setLoading(false)
-          return
-        }
+  if (!userData?.atelier_id) {
+    redirect('/app/complete-profile')
+  }
 
-        // Get factures with joins
-        const { data: facturesData, error: facturesError } = await supabase
-          .from('factures')
-          .select(`
-            *,
-            clients (
-              id,
-              full_name,
-              email
-            ),
-            projets (
-              id,
-              name,
-              numero
-            )
-          `)
-          .eq('atelier_id', userData.atelier_id)
-          .order('created_at', { ascending: false })
+  // Get factures - query simple sans jointures
+  const { data: facturesData, error } = await supabase
+    .from('factures')
+    .select('id, numero, client_id, projet_id, type, status, payment_status, total_ht, total_ttc, tva_rate, due_date, paid_at, items, notes, created_at')
+    .eq('atelier_id', userData.atelier_id)
+    .order('created_at', { ascending: false })
 
-        console.log('[Factures] Factures result:', facturesData?.length, facturesError?.message)
-
-        setDebugInfo({
-          userId: user.id,
-          atelierId: userData.atelier_id,
-          facturesCount: facturesData?.length || 0,
-          facturesError: facturesError?.message || null
-        })
-
-        if (facturesError) {
-          console.error('Erreur factures:', facturesError)
-          setError(facturesError.message)
-        } else {
-          setFactures(facturesData || [])
-        }
-      } catch (err: any) {
-        console.error('[Factures] Error:', err)
-        setError(err.message)
-      } finally {
-        console.log('[Factures] Done loading')
-        setLoading(false)
-      }
+  // Get clients separately
+  let factures = facturesData || []
+  if (factures.length > 0) {
+    const clientIds = [...new Set(factures.map(f => f.client_id).filter(Boolean))]
+    if (clientIds.length > 0) {
+      const { data: clientsData } = await supabase
+        .from('clients')
+        .select('id, full_name, email')
+        .in('id', clientIds)
+      
+      const clientsMap = new Map(clientsData?.map(c => [c.id, c]) || [])
+      factures = factures.map(f => ({
+        ...f,
+        clients: clientsMap.get(f.client_id) || null
+      }))
     }
-
-    loadFactures()
-  }, [router])
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center flex-col gap-4">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
-        <p className="text-gray-500 text-sm">Chargement des factures... ({BUILD_VERSION})</p>
-      </div>
-    )
   }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       <div className="container mx-auto px-4 py-6 sm:py-8">
-        {/* Debug info - à supprimer en production */}
-        {debugInfo && (
-          <div className="mb-4 p-3 bg-blue-100 dark:bg-blue-900 rounded text-sm text-blue-800 dark:text-blue-200">
-            <p><strong>Debug ({BUILD_VERSION}):</strong> Atelier ID: {debugInfo.atelierId}</p>
-            <p>Factures trouvées: {debugInfo.facturesCount}</p>
-            {debugInfo.facturesError && <p className="text-red-600">Erreur: {debugInfo.facturesError}</p>}
-          </div>
-        )}
-
-        {error && (
-          <div className="mb-4 p-4 bg-red-100 dark:bg-red-900 rounded-lg text-red-700 dark:text-red-200">
-            <p>Erreur: {error}</p>
-          </div>
-        )}
-
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">Factures</h1>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Gérez vos factures et paiements</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
+              Factures Clients
+            </h1>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+              Gérez vos factures et paiements clients
+            </p>
           </div>
           <a
             href="/app/factures/new"
@@ -132,6 +68,12 @@ export default function FacturesPage() {
             + Nouvelle facture
           </a>
         </div>
+
+        {error && (
+          <div className="mb-4 p-4 bg-red-100 dark:bg-red-900 rounded-lg text-red-700 dark:text-red-200">
+            Erreur: {error.message}
+          </div>
+        )}
 
         <FacturesList factures={factures} />
       </div>
