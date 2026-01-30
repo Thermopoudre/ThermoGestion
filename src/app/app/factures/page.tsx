@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { FacturesList } from '@/components/factures/FacturesList'
 
 // Version marker pour confirmer le déploiement
-const BUILD_VERSION = 'v3-client-20260121'
+const BUILD_VERSION = 'v4-client-20260130'
 
 export default function FacturesPage() {
   const [factures, setFactures] = useState<any[]>([])
@@ -14,14 +14,20 @@ export default function FacturesPage() {
   const [error, setError] = useState<string | null>(null)
   const [debugInfo, setDebugInfo] = useState<any>(null)
   const router = useRouter()
-  const supabase = createBrowserClient()
 
   useEffect(() => {
+    const supabase = createBrowserClient()
+    
     async function loadFactures() {
       try {
+        console.log('[Factures] Starting load...')
+        
         // Get user
-        const { data: { user } } = await supabase.auth.getUser()
+        const { data: { user }, error: authError } = await supabase.auth.getUser()
+        console.log('[Factures] Auth result:', user?.id, authError?.message)
+        
         if (!user) {
+          console.log('[Factures] No user, redirecting...')
           router.push('/auth/login')
           return
         }
@@ -32,9 +38,11 @@ export default function FacturesPage() {
           .select('atelier_id')
           .eq('id', user.id)
           .single()
+        
+        console.log('[Factures] User data:', userData, userError?.message)
 
         if (userError || !userData?.atelier_id) {
-          setError('Profil incomplet')
+          setError('Profil incomplet: ' + (userError?.message || 'pas d\'atelier'))
           setLoading(false)
           return
         }
@@ -58,6 +66,8 @@ export default function FacturesPage() {
           .eq('atelier_id', userData.atelier_id)
           .order('created_at', { ascending: false })
 
+        console.log('[Factures] Factures result:', facturesData?.length, facturesError?.message)
+
         setDebugInfo({
           userId: user.id,
           atelierId: userData.atelier_id,
@@ -72,15 +82,16 @@ export default function FacturesPage() {
           setFactures(facturesData || [])
         }
       } catch (err: any) {
-        console.error('Erreur:', err)
+        console.error('[Factures] Error:', err)
         setError(err.message)
       } finally {
+        console.log('[Factures] Done loading')
         setLoading(false)
       }
     }
 
     loadFactures()
-  }, [supabase, router])
+  }, [router])
 
   if (loading) {
     return (
