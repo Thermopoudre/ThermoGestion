@@ -1,164 +1,320 @@
-// Service Worker pour ThermoGestion PWA
-const CACHE_NAME = 'thermogestion-v1'
-const OFFLINE_URL = '/offline.html'
+// ThermoGestion Service Worker
+// Version 1.0.0
 
-// Ressources à mettre en cache
-const STATIC_ASSETS = [
+const CACHE_NAME = 'thermogestion-v1';
+const OFFLINE_URL = '/offline';
+
+// Resources to cache immediately on install
+const PRECACHE_RESOURCES = [
   '/',
-  '/offline.html',
+  '/app/dashboard',
+  '/offline',
   '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
-]
+];
 
-// Installation
+// Cache strategies
+const CACHE_STRATEGIES = {
+  // Network first, fallback to cache
+  networkFirst: [
+    '/api/',
+    '/app/',
+  ],
+  // Cache first, fallback to network
+  cacheFirst: [
+    '/icons/',
+    '/images/',
+    '/_next/static/',
+    '/fonts/',
+  ],
+  // Stale while revalidate
+  staleWhileRevalidate: [
+    '/status',
+    '/securite',
+    '/api-docs',
+  ],
+};
+
+// Install event - cache essential resources
 self.addEventListener('install', (event) => {
+  console.log('[SW] Installing Service Worker...');
+  
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('[SW] Caching static assets')
-      return cache.addAll(STATIC_ASSETS)
-    })
-  )
-  self.skipWaiting()
-})
+    caches.open(CACHE_NAME)
+      .then((cache) => {
+        console.log('[SW] Precaching resources');
+        return cache.addAll(PRECACHE_RESOURCES);
+      })
+      .then(() => {
+        console.log('[SW] Skip waiting');
+        return self.skipWaiting();
+      })
+  );
+});
 
-// Activation
+// Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
+  console.log('[SW] Activating Service Worker...');
+  
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
-      )
-    })
-  )
-  self.clients.claim()
-})
+    caches.keys()
+      .then((cacheNames) => {
+        return Promise.all(
+          cacheNames
+            .filter((cacheName) => cacheName !== CACHE_NAME)
+            .map((cacheName) => {
+              console.log('[SW] Deleting old cache:', cacheName);
+              return caches.delete(cacheName);
+            })
+        );
+      })
+      .then(() => {
+        console.log('[SW] Claiming clients');
+        return self.clients.claim();
+      })
+  );
+});
 
-// Stratégie de fetch
+// Fetch event - handle requests with appropriate strategy
 self.addEventListener('fetch', (event) => {
-  const { request } = event
-  const url = new URL(request.url)
-
-  // Ignorer les requêtes non-GET
-  if (request.method !== 'GET') return
-
-  // Ignorer les requêtes API (on veut toujours des données fraîches)
-  if (url.pathname.startsWith('/api/')) return
-
-  // Ignorer les requêtes Supabase
-  if (url.hostname.includes('supabase')) return
-
-  // Stratégie: Network First pour les pages HTML
-  if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          // Mettre en cache la réponse
-          const responseClone = response.clone()
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, responseClone)
-          })
-          return response
-        })
-        .catch(() => {
-          // Si offline, servir depuis le cache ou la page offline
-          return caches.match(request).then((cached) => {
-            return cached || caches.match(OFFLINE_URL)
-          })
-        })
-    )
-    return
+  const { request } = event;
+  const url = new URL(request.url);
+  
+  // Skip non-GET requests
+  if (request.method !== 'GET') {
+    return;
   }
-
-  // Stratégie: Cache First pour les assets statiques
-  if (
-    url.pathname.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2)$/)
-  ) {
-    event.respondWith(
-      caches.match(request).then((cached) => {
-        if (cached) return cached
-
-        return fetch(request).then((response) => {
-          const responseClone = response.clone()
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, responseClone)
-          })
-          return response
-        })
-      })
-    )
-    return
+  
+  // Skip cross-origin requests
+  if (url.origin !== self.location.origin) {
+    return;
   }
-
-  // Par défaut: Network First
-  event.respondWith(
-    fetch(request)
-      .then((response) => {
-        const responseClone = response.clone()
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(request, responseClone)
-        })
-        return response
-      })
-      .catch(() => caches.match(request))
-  )
-})
-
-// Sync en arrière-plan (pour les données hors ligne)
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-data') {
-    event.waitUntil(syncData())
+  
+  // Determine cache strategy
+  let strategy = 'networkFirst'; // Default
+  
+  for (const [strat, patterns] of Object.entries(CACHE_STRATEGIES)) {
+    if (patterns.some(pattern => url.pathname.startsWith(pattern))) {
+      strategy = strat;
+      break;
+    }
   }
-})
+  
+  event.respondWith(handleFetch(request, strategy));
+});
 
-async function syncData() {
-  // Récupérer les données en attente depuis IndexedDB
-  // et les envoyer au serveur
-  console.log('[SW] Syncing offline data...')
+// Handle fetch with different strategies
+async function handleFetch(request, strategy) {
+  switch (strategy) {
+    case 'cacheFirst':
+      return cacheFirst(request);
+    case 'networkFirst':
+      return networkFirst(request);
+    case 'staleWhileRevalidate':
+      return staleWhileRevalidate(request);
+    default:
+      return networkFirst(request);
+  }
 }
 
-// Notifications push
-self.addEventListener('push', (event) => {
-  if (!event.data) return
+// Cache first strategy
+async function cacheFirst(request) {
+  const cachedResponse = await caches.match(request);
+  if (cachedResponse) {
+    return cachedResponse;
+  }
+  
+  try {
+    const networkResponse = await fetch(request);
+    if (networkResponse.ok) {
+      const cache = await caches.open(CACHE_NAME);
+      cache.put(request, networkResponse.clone());
+    }
+    return networkResponse;
+  } catch (error) {
+    console.error('[SW] Cache first failed:', error);
+    return new Response('Offline', { status: 503 });
+  }
+}
 
-  const data = event.data.json()
+// Network first strategy
+async function networkFirst(request) {
+  try {
+    const networkResponse = await fetch(request);
+    if (networkResponse.ok) {
+      const cache = await caches.open(CACHE_NAME);
+      cache.put(request, networkResponse.clone());
+    }
+    return networkResponse;
+  } catch (error) {
+    console.log('[SW] Network failed, trying cache');
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    
+    // Return offline page for navigation requests
+    if (request.mode === 'navigate') {
+      return caches.match(OFFLINE_URL);
+    }
+    
+    return new Response('Offline', { status: 503 });
+  }
+}
+
+// Stale while revalidate strategy
+async function staleWhileRevalidate(request) {
+  const cache = await caches.open(CACHE_NAME);
+  const cachedResponse = await cache.match(request);
+  
+  const fetchPromise = fetch(request)
+    .then((networkResponse) => {
+      if (networkResponse.ok) {
+        cache.put(request, networkResponse.clone());
+      }
+      return networkResponse;
+    })
+    .catch(() => cachedResponse);
+  
+  return cachedResponse || fetchPromise;
+}
+
+// Background sync for offline form submissions
+self.addEventListener('sync', (event) => {
+  console.log('[SW] Sync event:', event.tag);
+  
+  if (event.tag === 'sync-pending-data') {
+    event.waitUntil(syncPendingData());
+  }
+});
+
+// Sync pending data when back online
+async function syncPendingData() {
+  console.log('[SW] Syncing pending data...');
+  
+  // Get pending data from IndexedDB
+  const pendingData = await getPendingDataFromDB();
+  
+  for (const item of pendingData) {
+    try {
+      const response = await fetch(item.url, {
+        method: item.method,
+        headers: item.headers,
+        body: item.body,
+      });
+      
+      if (response.ok) {
+        await removePendingDataFromDB(item.id);
+        console.log('[SW] Synced:', item.id);
+      }
+    } catch (error) {
+      console.error('[SW] Sync failed for:', item.id, error);
+    }
+  }
+}
+
+// Helper function - would need IndexedDB implementation
+async function getPendingDataFromDB() {
+  // Placeholder - implement with IndexedDB
+  return [];
+}
+
+async function removePendingDataFromDB(id) {
+  // Placeholder - implement with IndexedDB
+  console.log('[SW] Removed from pending:', id);
+}
+
+// Push notifications
+self.addEventListener('push', (event) => {
+  console.log('[SW] Push received');
+  
+  let data = { title: 'ThermoGestion', body: 'Nouvelle notification' };
+  
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch (e) {
+      data.body = event.data.text();
+    }
+  }
   
   const options = {
     body: data.body,
-    icon: '/icons/icon-192.png',
-    badge: '/icons/badge-72.png',
+    icon: '/icons/icon-192x192.png',
+    badge: '/icons/badge-72x72.png',
     vibrate: [100, 50, 100],
     data: {
-      url: data.url || '/',
+      url: data.url || '/app/dashboard',
     },
     actions: data.actions || [],
-  }
-
+  };
+  
   event.waitUntil(
     self.registration.showNotification(data.title, options)
-  )
-})
+  );
+});
 
-// Clic sur notification
+// Handle notification click
 self.addEventListener('notificationclick', (event) => {
-  event.notification.close()
-
-  const url = event.notification.data?.url || '/'
-
+  console.log('[SW] Notification clicked');
+  
+  event.notification.close();
+  
   event.waitUntil(
-    clients.matchAll({ type: 'window' }).then((windowClients) => {
-      // Chercher une fenêtre existante
-      for (const client of windowClients) {
-        if (client.url === url && 'focus' in client) {
-          return client.focus()
+    clients.matchAll({ type: 'window' })
+      .then((clientList) => {
+        // Check if a window is already open
+        for (const client of clientList) {
+          if (client.url === event.notification.data.url && 'focus' in client) {
+            return client.focus();
+          }
         }
-      }
-      // Sinon ouvrir une nouvelle fenêtre
-      if (clients.openWindow) {
-        return clients.openWindow(url)
-      }
-    })
-  )
-})
+        // Open new window
+        if (clients.openWindow) {
+          return clients.openWindow(event.notification.data.url);
+        }
+      })
+  );
+});
+
+// Periodic sync for background updates
+self.addEventListener('periodicsync', (event) => {
+  console.log('[SW] Periodic sync:', event.tag);
+  
+  if (event.tag === 'update-dashboard') {
+    event.waitUntil(updateDashboardCache());
+  }
+});
+
+async function updateDashboardCache() {
+  console.log('[SW] Updating dashboard cache...');
+  
+  try {
+    const response = await fetch('/api/dashboard-data');
+    if (response.ok) {
+      const cache = await caches.open(CACHE_NAME);
+      await cache.put('/api/dashboard-data', response);
+    }
+  } catch (error) {
+    console.error('[SW] Dashboard cache update failed:', error);
+  }
+}
+
+// Message handler for client communication
+self.addEventListener('message', (event) => {
+  console.log('[SW] Message received:', event.data);
+  
+  if (event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+  
+  if (event.data.type === 'CLEAR_CACHE') {
+    event.waitUntil(
+      caches.delete(CACHE_NAME)
+        .then(() => {
+          event.ports[0].postMessage({ success: true });
+        })
+    );
+  }
+});
+
+console.log('[SW] Service Worker loaded');

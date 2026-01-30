@@ -1,63 +1,64 @@
 {
   "name": "ThermoGestion",
   "short_name": "ThermoGestion",
-  "description": "Logiciel de gestion pour ateliers de thermolaquage",
+  "description": "Application de gestion pour les ateliers de thermolaquage - Devis, Factures, Projets",
   "start_url": "/app/dashboard",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#f97316",
   "orientation": "any",
+  "scope": "/",
+  "id": "thermogestion-app",
   "icons": [
     {
-      "src": "/icons/icon-72.png",
+      "src": "/icons/icon-72x72.png",
       "sizes": "72x72",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-96.png",
+      "src": "/icons/icon-96x96.png",
       "sizes": "96x96",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-128.png",
+      "src": "/icons/icon-128x128.png",
       "sizes": "128x128",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-144.png",
+      "src": "/icons/icon-144x144.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-152.png",
+      "src": "/icons/icon-152x152.png",
       "sizes": "152x152",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-192.png",
+      "src": "/icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-384.png",
+      "src": "/icons/icon-384x384.png",
       "sizes": "384x384",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/icon-512.png",
+      "src": "/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
   ],
-  "categories": ["business", "productivity"],
   "screenshots": [
     {
       "src": "/screenshots/dashboard.png",
@@ -65,24 +66,61 @@
       "type": "image/png",
       "form_factor": "wide",
       "label": "Dashboard ThermoGestion"
+    },
+    {
+      "src": "/screenshots/mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "ThermoGestion sur mobile"
     }
   ],
+  "categories": ["business", "productivity"],
   "shortcuts": [
-    {
-      "name": "Nouveau projet",
-      "short_name": "Projet",
-      "description": "Créer un nouveau projet",
-      "url": "/app/projets/new",
-      "icons": [{ "src": "/icons/shortcut-projet.png", "sizes": "96x96" }]
-    },
     {
       "name": "Nouveau devis",
       "short_name": "Devis",
       "description": "Créer un nouveau devis",
       "url": "/app/devis/new",
-      "icons": [{ "src": "/icons/shortcut-devis.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/icons/devis.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Nouvelle facture",
+      "short_name": "Facture",
+      "description": "Créer une nouvelle facture",
+      "url": "/app/factures/new",
+      "icons": [{ "src": "/icons/facture.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Planning",
+      "short_name": "Planning",
+      "description": "Voir le planning",
+      "url": "/app/planning",
+      "icons": [{ "src": "/icons/planning.png", "sizes": "96x96" }]
     }
   ],
+  "share_target": {
+    "action": "/app/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "file",
+          "accept": ["image/*", "application/pdf"]
+        }
+      ]
+    }
+  },
   "related_applications": [],
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+  "protocol_handlers": [
+    {
+      "protocol": "web+thermogestion",
+      "url": "/app/handle?url=%s"
+    }
+  ]
 }

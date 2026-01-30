@@ -8,6 +8,7 @@ const tabs = [
   { href: '/app/equipe', label: 'Équipe' },
   { href: '/app/parametres/integrations', label: 'Intégrations' },
   { href: '/app/parametres/templates', label: 'Templates' },
+  { href: '/app/parametres/langue', label: 'Langue' },
   { href: '/app/parametres/abonnement', label: 'Abonnement' },
   { href: '/app/parametres/paiement', label: 'Paiement' },
 ]
