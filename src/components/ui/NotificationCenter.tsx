@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@/lib/supabase/client'
 import { 
   Bell, X, Check, CheckCheck, Trash2, 
   Package, FileText, Receipt, AlertTriangle, 
@@ -40,7 +40,7 @@ const notificationColors: Record<string, string> = {
 }
 
 export function NotificationCenter() {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient()
   const [isOpen, setIsOpen] = useState(false)
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [loading, setLoading] = useState(true)

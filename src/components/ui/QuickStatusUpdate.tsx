@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Check, ChevronDown, Loader2 } from 'lucide-react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@/lib/supabase/client'
 
 interface QuickStatusUpdateProps {
   projetId: string
@@ -21,7 +21,7 @@ const statuses = [
 ]
 
 export default function QuickStatusUpdate({ projetId, currentStatus, onUpdate, size = 'md' }: QuickStatusUpdateProps) {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient()
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState(currentStatus)

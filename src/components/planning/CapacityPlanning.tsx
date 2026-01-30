@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@/lib/supabase/client'
 import { Calendar, AlertTriangle, TrendingUp, Package, Clock } from 'lucide-react'
 
 interface DayLoad {
@@ -20,7 +20,7 @@ interface DayLoad {
 }
 
 export default function CapacityPlanning() {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient()
   const [loading, setLoading] = useState(true)
   const [weekOffset, setWeekOffset] = useState(0)
   const [capaciteJour, setCapaciteJour] = useState(50) // m²/jour par défaut

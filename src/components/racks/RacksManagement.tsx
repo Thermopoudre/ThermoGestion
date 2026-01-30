@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Plus, Edit2, Trash2, Camera, Box, Weight, Ruler, Check, X, AlertCircle } from 'lucide-react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@/lib/supabase/client'
 
 interface Rack {
   id: string
@@ -26,7 +26,7 @@ interface RacksManagementProps {
 }
 
 export default function RacksManagement({ racks, atelierId, onUpdate }: RacksManagementProps) {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient()
   const [editingRack, setEditingRack] = useState<Rack | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [loading, setLoading] = useState(false)

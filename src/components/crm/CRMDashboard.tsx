@@ -7,7 +7,7 @@ import {
   MessageSquare, DollarSign
 } from 'lucide-react'
 import Link from 'next/link'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@/lib/supabase/client'
 
 interface Client {
   id: string
@@ -72,7 +72,7 @@ const statutOpportunite: Record<string, { label: string; color: string }> = {
 }
 
 export default function CRMDashboard({ clients, interactions, opportunites, atelierId, onUpdate }: CRMDashboardProps) {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient()
   const [activeTab, setActiveTab] = useState<'overview' | 'clients' | 'opportunites' | 'interactions'>('overview')
   const [showInteractionForm, setShowInteractionForm] = useState(false)
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null)

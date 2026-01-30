@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { Flame, Wind, Plus, Calendar, Clock, AlertCircle, Wrench, ChevronLeft, ChevronRight } from 'lucide-react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@/lib/supabase/client'
 
 interface Equipement {
   id: string
@@ -42,7 +42,7 @@ interface EquipmentPlanningProps {
 }
 
 export default function EquipmentPlanning({ equipements, reservations, atelierId, onUpdate }: EquipmentPlanningProps) {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient()
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [showAddForm, setShowAddForm] = useState(false)
   const [showReservationForm, setShowReservationForm] = useState(false)

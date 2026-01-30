@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@/lib/supabase/client'
 import { 
   LayoutGrid, Plus, X, GripVertical, Settings, 
   TrendingUp, Users, Package, Receipt, Calendar,
@@ -38,7 +38,7 @@ interface CustomizableDashboardProps {
 }
 
 export default function CustomizableDashboard({ userId, initialWidgets = [] }: CustomizableDashboardProps) {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient()
   const [widgets, setWidgets] = useState<Widget[]>(initialWidgets)
   const [editMode, setEditMode] = useState(false)
   const [showAddModal, setShowAddModal] = useState(false)

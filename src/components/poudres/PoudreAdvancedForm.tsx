@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Calendar, FileText, Shield, Upload, AlertTriangle, Award, Package } from 'lucide-react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@/lib/supabase/client'
 
 interface PoudreData {
   id?: string
@@ -36,7 +36,7 @@ interface PoudreAdvancedFormProps {
 }
 
 export default function PoudreAdvancedForm({ poudre, atelierId, onSave, onCancel }: PoudreAdvancedFormProps) {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient()
   const [loading, setLoading] = useState(false)
   const [uploadingFT, setUploadingFT] = useState(false)
   const [uploadingFDS, setUploadingFDS] = useState(false)

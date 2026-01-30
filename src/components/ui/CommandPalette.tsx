@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@/lib/supabase/client'
 import {
   Search, Command, ArrowRight, Plus, User, FileText, Package,
   Palette, Calculator, BarChart2, Settings, Home, Calendar,
@@ -49,7 +49,7 @@ const actionCommands: Omit<CommandItem, 'action'>[] = [
 
 export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
   const router = useRouter()
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient()
   const inputRef = useRef<HTMLInputElement>(null)
   const [query, setQuery] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)

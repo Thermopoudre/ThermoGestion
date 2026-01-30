@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { CheckCircle2, XCircle, AlertTriangle, Camera, Save, ClipboardCheck, Ruler, Droplets, Eye, Palette, Sparkles } from 'lucide-react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@/lib/supabase/client'
 
 interface ControleQualite {
   id?: string
@@ -36,7 +36,7 @@ const etapes = [
 ] as const
 
 export default function QualityChecklist({ projetId, projetNumero, atelierId, userId, existingControles = [], onSave }: QualityChecklistProps) {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient()
   const [activeEtape, setActiveEtape] = useState<typeof etapes[number]['id']>('preparation')
   const [loading, setSaving] = useState(false)
   

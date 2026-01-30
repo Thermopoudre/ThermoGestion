@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Play, Pause, Square, Clock, User, Calendar, BarChart2 } from 'lucide-react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@/lib/supabase/client'
 
 interface Pointage {
   id: string
@@ -39,7 +39,7 @@ const etapes = [
 ]
 
 export default function TimeTracking({ projetId, projetNumero, atelierId, userId, userName, pointages = [], onUpdate }: TimeTrackingProps) {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient()
   const [activePointage, setActivePointage] = useState<Pointage | null>(null)
   const [elapsedTime, setElapsedTime] = useState(0)
   const [selectedEtape, setSelectedEtape] = useState('preparation')

@@ -2,12 +2,12 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@/lib/supabase/client'
 import { Send, Upload, X, CheckCircle2 } from 'lucide-react'
 
 export default function DemandeDevisPage() {
   const router = useRouter()
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient()
   
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)

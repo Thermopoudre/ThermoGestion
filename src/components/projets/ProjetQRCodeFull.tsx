@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
 import { Download, Printer, Copy, Check, ExternalLink, RefreshCw } from 'lucide-react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@/lib/supabase/client'
 
 interface ProjetQRCodeFullProps {
   projet: {
@@ -17,7 +17,7 @@ interface ProjetQRCodeFullProps {
 }
 
 export default function ProjetQRCodeFull({ projet, size = 'md', showActions = true }: ProjetQRCodeFullProps) {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient()
   const [copied, setCopied] = useState(false)
   const [qrToken, setQrToken] = useState(projet.qr_token)
   const [regenerating, setRegenerating] = useState(false)

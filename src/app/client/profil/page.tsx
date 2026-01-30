@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@/lib/supabase/client'
 import { User, Mail, Phone, MapPin, Building2, Save, CheckCircle2 } from 'lucide-react'
 
 export default function ClientProfilPage() {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient()
   
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)

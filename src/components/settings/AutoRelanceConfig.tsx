@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@/lib/supabase/client'
 import { Bell, Mail, MessageSquare, Save, CheckCircle2, Clock, AlertTriangle } from 'lucide-react'
 
 interface RelanceConfig {
@@ -80,7 +80,7 @@ Cordialement,
 }
 
 export default function AutoRelanceConfig() {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [success, setSuccess] = useState(false)

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Plus, Edit2, Trash2, Package, Search, Filter, GripVertical } from 'lucide-react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@/lib/supabase/client'
 
 interface Prestation {
   id: string
@@ -43,7 +43,7 @@ const unites = [
 ]
 
 export default function PrestationsCatalog({ prestations, atelierId, onUpdate, onSelect }: PrestationsCatalogProps) {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient()
   const [showForm, setShowForm] = useState(false)
   const [editingPrestation, setEditingPrestation] = useState<Prestation | null>(null)
   const [search, setSearch] = useState('')

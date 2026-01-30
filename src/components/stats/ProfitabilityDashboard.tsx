@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@/lib/supabase/client'
 import { TrendingUp, TrendingDown, DollarSign, AlertTriangle, Users, BarChart3, PieChart } from 'lucide-react'
 
 interface ProjetRentabilite {
@@ -27,7 +27,7 @@ interface ClientRentabilite {
 }
 
 export default function ProfitabilityDashboard() {
-  const supabase = createClientComponentClient()
+  const supabase = createBrowserClient()
   const [loading, setLoading] = useState(true)
   const [projets, setProjets] = useState<ProjetRentabilite[]>([])
   const [clientStats, setClientStats] = useState<ClientRentabilite[]>([])

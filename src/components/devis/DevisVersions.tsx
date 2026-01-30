@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { History, ChevronDown, ChevronUp, Copy, ArrowRight, Check, Clock, FileText } from 'lucide-react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@/lib/supabase/client'
 
 interface DevisVersion {
   id: string
