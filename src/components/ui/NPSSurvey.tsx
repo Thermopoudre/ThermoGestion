@@ -70,7 +70,7 @@ export function NPSSurvey({ userId }: NPSSurveyProps) {
     //   feedback: npsFeedback,
     // })
     
-    console.log('NPS Survey:', { score: npsScore, feedback: npsFeedback })
+    // NPS data submitted
   }
 
   function dismiss() {

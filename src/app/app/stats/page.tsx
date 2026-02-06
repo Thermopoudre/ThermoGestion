@@ -143,14 +143,12 @@ export default async function StatsPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">📊 Statistiques</h1>
-          <p className="mt-1 text-gray-600">Rapports et analyses de votre activité</p>
+          <h1 className="text-3xl font-black text-gray-900 dark:text-white">Statistiques</h1>
+          <p className="mt-1 text-gray-600 dark:text-gray-400">Rapports et analyses de votre activité</p>
         </div>
-        <select className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-          <option value="year">Cette année ({now.getFullYear()})</option>
-          <option value="month">Ce mois</option>
-          <option value="quarter">Ce trimestre</option>
-        </select>
+        <div className="text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+          Année {now.getFullYear()}
+        </div>
       </div>
 
       {/* KPIs */}

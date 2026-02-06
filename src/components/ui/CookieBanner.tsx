@@ -57,11 +57,9 @@ export function CookieBanner() {
     
     // Here you would initialize analytics/marketing scripts based on consent
     if (consent.analytics) {
-      console.log('Analytics enabled')
       // initGoogleAnalytics()
     }
     if (consent.marketing) {
-      console.log('Marketing enabled')
       // initMarketingPixels()
     }
   }

@@ -44,16 +44,47 @@ export default async function AppLayout({
             </div>
 
             {/* Navigation desktop */}
-            <div className="hidden lg:flex items-center gap-5 ml-8">
+            <div className="hidden lg:flex items-center gap-4 ml-8">
               <NavLink href="/app/dashboard">Dashboard</NavLink>
               <NavLink href="/app/clients">Clients</NavLink>
               <NavLink href="/app/projets">Projets</NavLink>
               <NavLink href="/app/devis">Devis</NavLink>
-              <NavLink href="/app/poudres">Poudres</NavLink>
-              <NavLink href="/app/series">Séries</NavLink>
               <NavLink href="/app/factures">Factures</NavLink>
+              <NavLink href="/app/poudres">Poudres</NavLink>
               <NavLink href="/app/planning">Planning</NavLink>
               <NavLink href="/app/stats">Stats</NavLink>
+              
+              {/* Menu Plus pour les fonctionnalités avancées */}
+              <div className="relative group">
+                <button className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-400 transition-colors flex items-center gap-1 py-2">
+                  Plus
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                </button>
+                <div className="absolute top-full -left-4 mt-1 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                  <div className="py-2">
+                    <p className="px-4 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Production</p>
+                    <NavLink href="/app/kanban" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Kanban</NavLink>
+                    <NavLink href="/app/batching" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Batching</NavLink>
+                    <NavLink href="/app/atelier" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Mode Atelier</NavLink>
+                    <NavLink href="/app/series" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Séries</NavLink>
+                    <NavLink href="/app/retouches" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Retouches</NavLink>
+                  </div>
+                  <div className="border-t border-gray-100 dark:border-gray-700 py-2">
+                    <p className="px-4 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Outils</p>
+                    <NavLink href="/app/ral" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Nuancier RAL</NavLink>
+                    <NavLink href="/app/calculateur" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Calculateur</NavLink>
+                    <NavLink href="/app/photos" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Photos</NavLink>
+                    <NavLink href="/app/signature" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Signatures</NavLink>
+                  </div>
+                  <div className="border-t border-gray-100 dark:border-gray-700 py-2">
+                    <p className="px-4 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Communication</p>
+                    <NavLink href="/app/chat" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Messages</NavLink>
+                    <NavLink href="/app/fidelite" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Fidélité</NavLink>
+                    <NavLink href="/app/equipe" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Équipe</NavLink>
+                    <NavLink href="/app/activite" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Activité</NavLink>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Actions avec raccourci clavier visible */}

@@ -6,7 +6,8 @@ import { createBrowserClient } from '@/lib/supabase/client'
 import {
   Search, Command, ArrowRight, Plus, User, FileText, Package,
   Palette, Calculator, BarChart2, Settings, Home, Calendar,
-  Clock, X, Keyboard, Zap, Users, Receipt
+  Clock, X, Keyboard, Zap, Users, Receipt, Columns,
+  Layers, Camera, MessageSquare, Pen, Gift, Activity, Monitor
 } from 'lucide-react'
 
 interface CommandPaletteProps {
@@ -34,8 +35,19 @@ const navigationCommands: Omit<CommandItem, 'action'>[] = [
   { id: 'nav-poudres', type: 'navigation', category: 'Navigation', title: 'Poudres', icon: <Palette className="w-4 h-4" />, shortcut: 'G O' },
   { id: 'nav-planning', type: 'navigation', category: 'Navigation', title: 'Planning', icon: <Calendar className="w-4 h-4" />, shortcut: 'G L' },
   { id: 'nav-stats', type: 'navigation', category: 'Navigation', title: 'Statistiques', icon: <BarChart2 className="w-4 h-4" />, shortcut: 'G S' },
-  { id: 'nav-atelier', type: 'navigation', category: 'Navigation', title: 'Écran Atelier', icon: <Zap className="w-4 h-4" /> },
-  { id: 'nav-parametres', type: 'navigation', category: 'Navigation', title: 'Paramètres', icon: <Settings className="w-4 h-4" />, shortcut: 'G ,' },
+  { id: 'nav-kanban', type: 'navigation', category: 'Production', title: 'Vue Kanban', icon: <Columns className="w-4 h-4" />, shortcut: 'G K' },
+  { id: 'nav-batching', type: 'navigation', category: 'Production', title: 'Batching couleurs', icon: <Layers className="w-4 h-4" /> },
+  { id: 'nav-atelier', type: 'navigation', category: 'Production', title: 'Mode Atelier', icon: <Monitor className="w-4 h-4" /> },
+  { id: 'nav-series', type: 'navigation', category: 'Production', title: 'Séries', icon: <Package className="w-4 h-4" /> },
+  { id: 'nav-retouches', type: 'navigation', category: 'Production', title: 'Retouches', icon: <Activity className="w-4 h-4" /> },
+  { id: 'nav-ral', type: 'navigation', category: 'Outils', title: 'Nuancier RAL', icon: <Palette className="w-4 h-4" /> },
+  { id: 'nav-photos', type: 'navigation', category: 'Outils', title: 'Photos', icon: <Camera className="w-4 h-4" /> },
+  { id: 'nav-signature', type: 'navigation', category: 'Outils', title: 'Signatures', icon: <Pen className="w-4 h-4" /> },
+  { id: 'nav-chat', type: 'navigation', category: 'Communication', title: 'Messages', icon: <MessageSquare className="w-4 h-4" />, shortcut: 'G M' },
+  { id: 'nav-fidelite', type: 'navigation', category: 'Communication', title: 'Programme fidélité', icon: <Gift className="w-4 h-4" /> },
+  { id: 'nav-equipe', type: 'navigation', category: 'Réglages', title: 'Équipe', icon: <Users className="w-4 h-4" /> },
+  { id: 'nav-activite', type: 'navigation', category: 'Réglages', title: 'Activité', icon: <Activity className="w-4 h-4" /> },
+  { id: 'nav-parametres', type: 'navigation', category: 'Réglages', title: 'Paramètres', icon: <Settings className="w-4 h-4" />, shortcut: 'G ,' },
 ]
 
 const actionCommands: Omit<CommandItem, 'action'>[] = [
@@ -66,13 +78,25 @@ export default function CommandPalette({ isOpen, onClose }: CommandPaletteProps)
     'nav-poudres': '/app/poudres',
     'nav-planning': '/app/planning',
     'nav-stats': '/app/stats',
+    'nav-kanban': '/app/kanban',
+    'nav-batching': '/app/batching',
     'nav-atelier': '/app/atelier',
+    'nav-series': '/app/series',
+    'nav-retouches': '/app/retouches',
+    'nav-ral': '/app/ral',
+    'nav-photos': '/app/photos',
+    'nav-signature': '/app/signature',
+    'nav-chat': '/app/chat',
+    'nav-fidelite': '/app/fidelite',
+    'nav-equipe': '/app/equipe',
+    'nav-activite': '/app/activite',
     'nav-parametres': '/app/parametres',
     'new-projet': '/app/projets/new',
     'new-devis': '/app/devis/new',
     'new-client': '/app/clients/new',
     'new-facture': '/app/factures/new',
     'new-poudre': '/app/poudres/new',
+    'calculator': '/app/calculateur',
   }
 
   // Build commands with actions

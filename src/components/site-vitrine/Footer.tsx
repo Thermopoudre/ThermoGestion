@@ -20,7 +20,7 @@ export function Footer() {
                 />
               </div>
               <span className="text-white font-bold text-xl">
-                Thermo<span className="text-blue-400">Gestion</span>
+                Thermo<span className="text-orange-400">Gestion</span>
               </span>
             </div>
             <p className="text-gray-400 text-sm mb-4 max-w-md">
@@ -29,21 +29,21 @@ export function Footer() {
             <div className="flex gap-4">
               <a
                 href="#"
-                className="w-10 h-10 bg-gray-800 hover:bg-blue-600 rounded-lg flex items-center justify-center transition-colors text-white"
+                className="w-10 h-10 bg-gray-800 hover:bg-orange-600 rounded-lg flex items-center justify-center transition-colors text-white"
                 aria-label="Facebook"
               >
                 f
               </a>
               <a
                 href="#"
-                className="w-10 h-10 bg-gray-800 hover:bg-blue-600 rounded-lg flex items-center justify-center transition-colors"
+                className="w-10 h-10 bg-gray-800 hover:bg-orange-600 rounded-lg flex items-center justify-center transition-colors"
                 aria-label="LinkedIn"
               >
                 in
               </a>
               <a
                 href="#"
-                className="w-10 h-10 bg-gray-800 hover:bg-blue-600 rounded-lg flex items-center justify-center transition-colors"
+                className="w-10 h-10 bg-gray-800 hover:bg-orange-600 rounded-lg flex items-center justify-center transition-colors"
                 aria-label="YouTube"
               >
                 ▶
@@ -54,32 +54,32 @@ export function Footer() {
             <h4 className="text-white font-bold mb-4">Navigation</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/" className="text-gray-400 hover:text-blue-400 transition-colors">
+                <Link href="/" className="text-gray-400 hover:text-orange-400 transition-colors">
                   Accueil
                 </Link>
               </li>
               <li>
-                <Link href="/fonctionnalites" className="text-gray-400 hover:text-blue-400 transition-colors">
+                <Link href="/fonctionnalites" className="text-gray-400 hover:text-orange-400 transition-colors">
                   Fonctionnalités
                 </Link>
               </li>
               <li>
-                <Link href="/tarifs" className="text-gray-400 hover:text-blue-400 transition-colors">
+                <Link href="/tarifs" className="text-gray-400 hover:text-orange-400 transition-colors">
                   Tarifs
                 </Link>
               </li>
               <li>
-                <Link href="/temoignages" className="text-gray-400 hover:text-blue-400 transition-colors">
+                <Link href="/temoignages" className="text-gray-400 hover:text-orange-400 transition-colors">
                   Témoignages
                 </Link>
               </li>
               <li>
-                <Link href="/aide" className="text-gray-400 hover:text-blue-400 transition-colors">
+                <Link href="/aide" className="text-gray-400 hover:text-orange-400 transition-colors">
                   Aide
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-gray-400 hover:text-blue-400 transition-colors">
+                <Link href="/contact" className="text-gray-400 hover:text-orange-400 transition-colors">
                   Contact
                 </Link>
               </li>
@@ -95,27 +95,27 @@ export function Footer() {
             <h4 className="text-white font-bold mb-4 mt-6">Légal</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/cgu" className="text-gray-400 hover:text-blue-400 transition-colors">
+                <Link href="/cgu" className="text-gray-400 hover:text-orange-400 transition-colors">
                   CGU
                 </Link>
               </li>
               <li>
-                <Link href="/cgv" className="text-gray-400 hover:text-blue-400 transition-colors">
+                <Link href="/cgv" className="text-gray-400 hover:text-orange-400 transition-colors">
                   CGV
                 </Link>
               </li>
               <li>
-                <Link href="/confidentialite" className="text-gray-400 hover:text-blue-400 transition-colors">
+                <Link href="/confidentialite" className="text-gray-400 hover:text-orange-400 transition-colors">
                   Confidentialité
                 </Link>
               </li>
               <li>
-                <Link href="/mentions-legales" className="text-gray-400 hover:text-blue-400 transition-colors">
+                <Link href="/mentions-legales" className="text-gray-400 hover:text-orange-400 transition-colors">
                   Mentions légales
                 </Link>
               </li>
               <li>
-                <Link href="/cookies" className="text-gray-400 hover:text-blue-400 transition-colors">
+                <Link href="/cookies" className="text-gray-400 hover:text-orange-400 transition-colors">
                   Cookies
                 </Link>
               </li>
@@ -123,7 +123,7 @@ export function Footer() {
           </div>
         </div>
         <div className="border-t border-gray-800 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-gray-500 text-sm">© 2025 ThermoGestion. Tous droits réservés.</p>
+          <p className="text-gray-500 text-sm">© 2026 ThermoGestion. Tous droits réservés.</p>
           <div className="flex gap-4 text-sm">
             <Link href="/cgu" className="text-gray-500 hover:text-gray-400 transition-colors">
               CGU

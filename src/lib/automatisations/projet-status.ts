@@ -244,7 +244,7 @@ async function decrementStock(
       .update({ auto_stock_decremented_at: new Date().toISOString() })
       .eq('id', projet.id)
 
-    console.log(`Stock poudre ${poudre.reference}: ${stockAvant} → ${stockApres} kg (-${quantiteUtilisee.toFixed(3)} kg)`)
+    // Stock updated for poudre
 
     return { success: true }
 
@@ -400,7 +400,7 @@ async function createAutoFacture(
       })
       .eq('id', projet.id)
 
-    console.log(`Facture ${factureType} ${numero} créée automatiquement pour projet ${projet.numero}`)
+    // Auto-generated invoice created
 
     return { success: true, factureId: facture.id }
 

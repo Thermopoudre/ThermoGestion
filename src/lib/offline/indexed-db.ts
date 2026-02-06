@@ -41,7 +41,7 @@ export async function initDB(): Promise<IDBDatabase> {
 
     request.onsuccess = () => {
       db = request.result
-      console.log('[IndexedDB] Database opened')
+      // Database opened
       resolve(db)
     }
 
@@ -68,7 +68,7 @@ export async function initDB(): Promise<IDBDatabase> {
         draftsStore.createIndex('lastModified', 'lastModified', { unique: false })
       }
 
-      console.log('[IndexedDB] Database schema created/updated')
+      // Schema created/updated
     }
   })
 }
@@ -146,7 +146,7 @@ export async function addPendingSync(
     timestamp: Date.now(),
   })
   
-  console.log('[IndexedDB] Added pending sync:', id)
+  // Pending sync added
   return id
 }
 
@@ -156,7 +156,7 @@ export async function getPendingSyncs(): Promise<DBSchema['pendingSync'][]> {
 
 export async function removePendingSync(id: string): Promise<void> {
   await remove('pendingSync', id)
-  console.log('[IndexedDB] Removed pending sync:', id)
+  // Pending sync removed
 }
 
 export async function clearPendingSyncs(): Promise<void> {
@@ -169,7 +169,7 @@ export async function clearPendingSyncs(): Promise<void> {
 
     request.onerror = () => reject(request.error)
     request.onsuccess = () => {
-      console.log('[IndexedDB] Cleared all pending syncs')
+      // Cleared pending syncs
       resolve()
     }
   })
@@ -184,7 +184,7 @@ export async function setCachedData(key: string, data: any, ttl: number = 360000
     timestamp: Date.now(),
     ttl,
   })
-  console.log('[IndexedDB] Cached:', key)
+  // Data cached
 }
 
 export async function getCachedData<T>(key: string): Promise<T | null> {
@@ -211,7 +211,7 @@ export async function clearCachedData(): Promise<void> {
 
     request.onerror = () => reject(request.error)
     request.onsuccess = () => {
-      console.log('[IndexedDB] Cleared all cached data')
+      // Cleared cached data
       resolve()
     }
   })
@@ -230,7 +230,7 @@ export async function saveDraft(
     data,
     lastModified: Date.now(),
   })
-  console.log('[IndexedDB] Saved draft:', id)
+  // Draft saved
 }
 
 export async function getDraft(id: string): Promise<DBSchema['drafts'] | null> {
@@ -253,7 +253,7 @@ export async function getDraftsByType(type: 'devis' | 'facture' | 'projet'): Pro
 
 export async function deleteDraft(id: string): Promise<void> {
   await remove('drafts', id)
-  console.log('[IndexedDB] Deleted draft:', id)
+  // Draft deleted
 }
 
 export async function getAllDrafts(): Promise<DBSchema['drafts'][]> {
@@ -287,5 +287,5 @@ export async function clearAllData(): Promise<void> {
     })
   }
   
-  console.log('[IndexedDB] Cleared all data')
+  // All data cleared
 }

@@ -4,7 +4,7 @@ export async function registerServiceWorker() {
   if (typeof window === 'undefined') return
   
   if (!('serviceWorker' in navigator)) {
-    console.log('[PWA] Service workers not supported')
+    // Service workers not supported
     return
   }
 
@@ -14,18 +14,18 @@ export async function registerServiceWorker() {
       updateViaCache: 'none',
     })
 
-    console.log('[PWA] Service Worker registered:', registration.scope)
+    // SW registered
 
     // Check for updates
     registration.addEventListener('updatefound', () => {
       const newWorker = registration.installing
       if (newWorker) {
-        console.log('[PWA] New Service Worker installing...')
+        // New SW installing
         
         newWorker.addEventListener('statechange', () => {
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
             // New version available
-            console.log('[PWA] New version available!')
+            // New version available
             showUpdateNotification(registration)
           }
         })
@@ -34,7 +34,7 @@ export async function registerServiceWorker() {
 
     // Handle controller change (new SW activated)
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      console.log('[PWA] Controller changed, reloading...')
+      // Controller changed
       window.location.reload()
     })
 
@@ -98,7 +98,7 @@ export async function unregisterServiceWorker() {
   
   for (const registration of registrations) {
     await registration.unregister()
-    console.log('[PWA] Service Worker unregistered')
+    // SW unregistered
   }
 }
 
@@ -115,19 +115,19 @@ export async function requestPersistentStorage(): Promise<boolean> {
   if (typeof window === 'undefined') return false
   
   if (!navigator.storage || !navigator.storage.persist) {
-    console.log('[PWA] Persistent storage not supported')
+    // Persistent storage not supported
     return false
   }
 
   const isPersisted = await navigator.storage.persisted()
   
   if (isPersisted) {
-    console.log('[PWA] Storage already persisted')
+    // Storage already persisted
     return true
   }
 
   const result = await navigator.storage.persist()
-  console.log('[PWA] Persistent storage:', result ? 'granted' : 'denied')
+  // Persistent storage result
   
   return result
 }
@@ -158,7 +158,7 @@ export async function clearCache(): Promise<void> {
     await caches.delete(cacheName)
   }
   
-  console.log('[PWA] Cache cleared')
+  // Cache cleared
 }
 
 // Background sync registration
@@ -166,14 +166,14 @@ export async function registerBackgroundSync(tag: string): Promise<boolean> {
   if (typeof window === 'undefined') return false
   
   if (!('serviceWorker' in navigator) || !('SyncManager' in window)) {
-    console.log('[PWA] Background sync not supported')
+    // Background sync not supported
     return false
   }
 
   try {
     const registration = await navigator.serviceWorker.ready
     await (registration as any).sync.register(tag)
-    console.log('[PWA] Background sync registered:', tag)
+    // Background sync registered
     return true
   } catch (error) {
     console.error('[PWA] Background sync registration failed:', error)
