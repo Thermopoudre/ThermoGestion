@@ -12,10 +12,15 @@ interface PdfSettings {
   accentColor: string
   showLogo: boolean
   fontFamily: 'inter' | 'roboto' | 'opensans'
-  cgvText: string
+  cgvDevis: string
+  cgvFacture: string
   paymentTerms: string
   footerText: string
 }
+
+const DEFAULT_CGV_DEVIS = 'Devis valable 30 jours à compter de sa date d\'émission. Acompte de 30% à la commande, solde à la livraison. Pas d\'escompte pour paiement anticipé.'
+
+const DEFAULT_CGV_FACTURE = 'Paiement à réception de facture. En cas de retard de paiement, une pénalité de retard au taux de 3 fois le taux d\'intérêt légal sera appliquée (art. L441-10 C. com.), ainsi qu\'une indemnité forfaitaire de recouvrement de 40 € (art. D441-5 C. com.). Pas d\'escompte pour paiement anticipé.'
 
 const DEFAULT_SETTINGS: PdfSettings = {
   template: 'industrial',
@@ -23,7 +28,8 @@ const DEFAULT_SETTINGS: PdfSettings = {
   accentColor: '#f97316',
   showLogo: true,
   fontFamily: 'inter',
-  cgvText: 'Devis valable 30 jours. Paiement à réception de facture.',
+  cgvDevis: DEFAULT_CGV_DEVIS,
+  cgvFacture: DEFAULT_CGV_FACTURE,
   paymentTerms: '30 jours',
   footerText: '',
 }
@@ -115,7 +121,8 @@ export function TemplateCustomizer({ atelierId, initialSettings, atelierLogo }: 
             pdf_accent_color: settings.accentColor,
             pdf_show_logo: settings.showLogo,
             pdf_font_family: settings.fontFamily,
-            pdf_cgv_text: settings.cgvText,
+            cgv_devis: settings.cgvDevis,
+            cgv_facture: settings.cgvFacture,
             pdf_payment_terms: settings.paymentTerms,
             pdf_footer_text: settings.footerText,
           },
@@ -315,14 +322,34 @@ export function TemplateCustomizer({ atelierId, initialSettings, atelierLogo }: 
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Conditions générales de vente (CGV)
+                  CGV — Devis
                 </label>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">
+                  Texte affiché en bas de chaque devis (validité, acompte, conditions)
+                </p>
                 <textarea
-                  value={settings.cgvText}
-                  onChange={(e) => setSettings(prev => ({ ...prev, cgvText: e.target.value }))}
+                  value={settings.cgvDevis}
+                  onChange={(e) => setSettings(prev => ({ ...prev, cgvDevis: e.target.value }))}
+                  rows={3}
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                  placeholder="Devis valable 30 jours..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  CGV — Factures
+                  <span className="ml-2 text-xs font-normal text-orange-500">(obligatoire légalement)</span>
+                </label>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">
+                  Texte affiché en bas de chaque facture (pénalités de retard, escompte, indemnité forfaitaire)
+                </p>
+                <textarea
+                  value={settings.cgvFacture}
+                  onChange={(e) => setSettings(prev => ({ ...prev, cgvFacture: e.target.value }))}
                   rows={4}
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
-                  placeholder="Conditions de paiement, validité du devis..."
+                  placeholder="Pénalités de retard, escompte, indemnité forfaitaire..."
                 />
               </div>
 

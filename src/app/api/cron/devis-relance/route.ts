@@ -1,133 +1,169 @@
-import { createServerClient } from '@/lib/supabase/server'
-import { NextRequest, NextResponse } from 'next/server'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { NextResponse } from 'next/server'
 
-// Paramètres par défaut de relance
-const DEFAULT_RELANCE_SETTINGS = {
-  delai_premiere_relance_jours: 7, // 7 jours après envoi
-  delai_entre_relances_jours: 5, // 5 jours entre chaque relance
-  max_relances: 3, // Maximum 3 relances
-  actif: true,
-}
+/**
+ * API Cron - Relance automatique des devis non signés
+ * 
+ * Conditions de relance :
+ * - Devis envoyé depuis plus de 7 jours sans réponse
+ * - Maximum 3 relances par devis
+ * - Espacement minimum de 5 jours entre chaque relance
+ * 
+ * À appeler via un cron Vercel toutes les 24h
+ * vercel.json : { "crons": [{ "path": "/api/cron/devis-relance", "schedule": "0 9 * * *" }] }
+ */
 
-export async function GET(request: NextRequest) {
+const RELANCE_DELAY_DAYS = 7    // Première relance après 7 jours
+const RELANCE_INTERVAL_DAYS = 5 // Intervalle entre les relances
+const MAX_RELANCES = 3          // Maximum 3 relances
+
+export async function GET(request: Request) {
   try {
+    // Vérifier le secret d'autorisation (cron Vercel)
     const authHeader = request.headers.get('authorization')
     const cronSecret = process.env.CRON_SECRET
-
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-      if (process.env.NODE_ENV === 'production') {
-        return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
-      }
+    if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+      return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
     }
 
-    const supabase = await createServerClient()
+    const supabase = createAdminClient()
     const now = new Date()
+    
+    // Calculer la date limite pour la première relance
+    const firstRelanceDate = new Date(now)
+    firstRelanceDate.setDate(firstRelanceDate.getDate() - RELANCE_DELAY_DAYS)
 
-    // Récupérer tous les ateliers avec leurs paramètres
-    const { data: ateliers, error: ateliersError } = await supabase
-      .from('ateliers')
-      .select('id, name, email, settings')
+    // Récupérer les devis éligibles à une relance
+    const { data: devisToRelance, error: fetchError } = await supabase
+      .from('devis')
+      .select(`
+        id,
+        numero,
+        client_id,
+        atelier_id,
+        total_ttc,
+        relance_count,
+        last_relance_at,
+        sent_at,
+        created_at,
+        clients (
+          id,
+          full_name,
+          email
+        ),
+        ateliers (
+          id,
+          name,
+          email
+        )
+      `)
+      .in('status', ['envoye', 'sent'])
+      .is('signed_at', null)
+      .lt('relance_count', MAX_RELANCES)
 
-    if (ateliersError) {
-      console.error('Erreur récupération ateliers:', ateliersError)
-      return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
+    if (fetchError) {
+      console.error('Erreur récupération devis relance:', fetchError)
+      return NextResponse.json({ error: fetchError.message }, { status: 500 })
     }
 
-    let relancesEnvoyees = 0
-    let alertesCreees = 0
+    if (!devisToRelance || devisToRelance.length === 0) {
+      return NextResponse.json({ 
+        success: true, 
+        message: 'Aucun devis à relancer',
+        relanced: 0 
+      })
+    }
 
-    for (const atelier of ateliers || []) {
-      // Récupérer les paramètres de relance de l'atelier
-      const relanceSettings = {
-        ...DEFAULT_RELANCE_SETTINGS,
-        ...(atelier.settings?.devis_relance || {}),
+    let relancedCount = 0
+    const errors: string[] = []
+
+    for (const devis of devisToRelance) {
+      const sentDate = new Date(devis.sent_at || devis.created_at)
+      const lastRelance = devis.last_relance_at ? new Date(devis.last_relance_at) : null
+      const relanceCount = devis.relance_count || 0
+      const client = devis.clients as { id: string; full_name: string; email: string } | null
+      const atelier = devis.ateliers as { id: string; name: string; email: string } | null
+
+      if (!client?.email || !atelier) continue
+
+      // Vérifier si éligible
+      let eligible = false
+
+      if (relanceCount === 0) {
+        // Première relance : envoyé depuis plus de RELANCE_DELAY_DAYS
+        eligible = sentDate <= firstRelanceDate
+      } else if (lastRelance) {
+        // Relances suivantes : dernier rappel depuis plus de RELANCE_INTERVAL_DAYS
+        const intervalDate = new Date(now)
+        intervalDate.setDate(intervalDate.getDate() - RELANCE_INTERVAL_DAYS)
+        eligible = lastRelance <= intervalDate
       }
 
-      if (!relanceSettings.actif) continue
+      if (!eligible) continue
 
-      // Récupérer les devis envoyés mais non signés qui peuvent être relancés
-      const { data: devisARelancer, error: devisError } = await supabase
-        .from('devis')
-        .select(`
-          *,
-          clients (
-            id,
-            full_name,
-            email
-          )
-        `)
-        .eq('atelier_id', atelier.id)
-        .eq('status', 'envoye')
-        .is('signed_at', null)
-        .eq('relance_desactivee', false)
-        .lt('relance_count', relanceSettings.max_relances)
-
-      if (devisError) {
-        console.error('Erreur récupération devis:', devisError)
-        continue
-      }
-
-      for (const devis of devisARelancer || []) {
-        // Calculer si une relance est due
-        const dateEnvoi = new Date(devis.sent_at || devis.created_at)
-        const derniereRelance = devis.derniere_relance_at ? new Date(devis.derniere_relance_at) : null
-
-        let dateProchainRelance: Date
-
-        if (devis.relance_count === 0) {
-          // Première relance
-          dateProchainRelance = new Date(dateEnvoi)
-          dateProchainRelance.setDate(dateProchainRelance.getDate() + relanceSettings.delai_premiere_relance_jours)
-        } else {
-          // Relances suivantes
-          dateProchainRelance = new Date(derniereRelance!)
-          dateProchainRelance.setDate(dateProchainRelance.getDate() + relanceSettings.delai_entre_relances_jours)
-        }
-
-        // Vérifier si la relance est due
-        if (now < dateProchainRelance) continue
-
-        // Créer une alerte pour rappeler de relancer le client
-        const { error: alerteError } = await supabase
-          .from('alertes')
-          .insert({
-            atelier_id: atelier.id,
-            type: 'devis_relance',
-            titre: `Relance devis ${devis.numero}`,
-            message: `Le devis ${devis.numero} pour ${devis.clients?.full_name || 'client'} n'a pas été signé depuis ${Math.floor((now.getTime() - dateEnvoi.getTime()) / 86400000)} jours. Relance ${devis.relance_count + 1}/${relanceSettings.max_relances}.`,
-            lien: `/app/devis/${devis.id}/send`,
-            data: {
-              devis_id: devis.id,
-              client_id: devis.client_id,
-              relance_numero: devis.relance_count + 1,
-            },
-          })
-
-        if (alerteError) {
-          console.error('Erreur création alerte relance:', alerteError)
-          continue
-        }
+      try {
+        // Créer une notification de relance dans la file d'attente email
+        await supabase.from('email_queue').insert({
+          atelier_id: devis.atelier_id,
+          to_email: client.email,
+          to_name: client.full_name,
+          subject: `Rappel : Devis ${devis.numero} en attente de validation`,
+          template: 'devis_relance',
+          variables: {
+            client_name: client.full_name,
+            devis_numero: devis.numero,
+            devis_total: Number(devis.total_ttc).toLocaleString('fr-FR', {
+              style: 'currency',
+              currency: 'EUR',
+            }),
+            atelier_name: atelier.name,
+            relance_number: relanceCount + 1,
+            devis_url: `${process.env.NEXT_PUBLIC_APP_URL}/client/devis/${devis.id}`,
+          },
+          status: 'pending',
+        })
 
         // Mettre à jour le compteur de relances
         await supabase
           .from('devis')
           .update({
-            relance_count: devis.relance_count + 1,
-            derniere_relance_at: now.toISOString(),
+            relance_count: relanceCount + 1,
+            last_relance_at: now.toISOString(),
           })
           .eq('id', devis.id)
 
-        alertesCreees++
+        // Audit log
+        await supabase.from('audit_logs').insert({
+          atelier_id: devis.atelier_id,
+          action: 'devis_relance',
+          table_name: 'devis',
+          record_id: devis.id,
+          new_data: {
+            relance_number: relanceCount + 1,
+            client_email: client.email,
+          },
+        })
+
+        relancedCount++
+      } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : 'Erreur inconnue'
+        errors.push(`Devis ${devis.numero}: ${errorMsg}`)
+        console.error(`Erreur relance devis ${devis.numero}:`, err)
       }
     }
 
     return NextResponse.json({
       success: true,
-      message: `${alertesCreees} alerte(s) de relance créée(s)`,
-      alertes_creees: alertesCreees,
+      message: `${relancedCount} devis relancé(s)`,
+      relanced: relancedCount,
+      total_eligible: devisToRelance.length,
+      errors: errors.length > 0 ? errors : undefined,
     })
-  } catch (error) {
-    console.error('Erreur cron devis relance:', error)
-    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
+  } catch (error: unknown) {
+    console.error('Erreur cron devis-relance:', error)
+    return NextResponse.json(
+      { error: 'Erreur lors de l\'exécution du cron' },
+      { status: 500 }
+    )
   }
 }

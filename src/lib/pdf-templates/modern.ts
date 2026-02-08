@@ -1,5 +1,6 @@
 // Template Modern - Design contemporain et épuré
 import type { TemplateData } from './index'
+import { getRetractationHTML, getDefaultCGV } from './index'
 import type { CustomColors } from './generator'
 
 const formatMoney = (amount: number): string => {
@@ -488,9 +489,11 @@ export function generateModernTemplate(data: TemplateData, customColors?: Custom
         </div>
       ` : ''}
 
+      ${isDevis ? getRetractationHTML(data.client.type) : ''}
+
       <div class="footer">
         <div class="footer-legal">
-          ${data.cgv || 'Devis valable 30 jours. Paiement à réception de facture. Pas d\'escompte pour paiement anticipé.'}
+          ${data.cgv || getDefaultCGV(data.type)}
         </div>
         <div class="footer-badges">
           ${data.atelier.siret ? `<span class="footer-badge">SIRET ${data.atelier.siret}</span>` : ''}

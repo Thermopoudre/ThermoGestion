@@ -64,17 +64,19 @@ export function ProjetForm({ atelierId, userId, clients: initialClients, poudres
     }
 
     try {
-      // Générer numéro si nouveau projet
+      // Générer numéro via fonction RPC atomique (évite les doublons en cas de concurrence)
       let numero = ''
       if (!projetId) {
-        const { count: projetsCount } = await supabase
-          .from('projets')
-          .select('id', { count: 'exact', head: true })
-          .eq('atelier_id', atelierId)
+        const { data: generatedNumero, error: numeroError } = await supabase
+          .rpc('generate_projet_numero', { p_atelier_id: atelierId })
 
-        const year = new Date().getFullYear()
-        const nextNum = (projetsCount || 0) + 1
-        numero = `PROJ-${year}-${String(nextNum).padStart(4, '0')}`
+        if (numeroError || !generatedNumero) {
+          // Fallback si la fonction RPC n'est pas disponible
+          const year = new Date().getFullYear()
+          numero = `PROJ-${year}-${crypto.randomUUID().slice(0, 4).toUpperCase()}`
+        } else {
+          numero = generatedNumero
+        }
       }
 
       const projetData = {

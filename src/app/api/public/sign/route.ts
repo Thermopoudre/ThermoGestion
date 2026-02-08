@@ -1,11 +1,22 @@
 import { createServerClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import { apiLimiter, getClientIP } from '@/lib/security/rate-limit'
 
 // API publique pour signer un devis via token
 // Pas besoin d'authentification, le token fait office de preuve
 
 export async function POST(request: Request) {
   try {
+    // Rate limiting sur les endpoints publics
+    const ip = getClientIP(request)
+    const rateLimitResult = await apiLimiter.check(ip)
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { error: 'Trop de requêtes. Réessayez plus tard.' },
+        { status: 429 }
+      )
+    }
+
     const { token, signatureData, acceptedTerms } = await request.json()
 
     if (!token) {

@@ -1,27 +1,58 @@
 /**
- * Génération PDF factures - CONFORME LÉGISLATION FRANÇAISE
+ * Génération PDF factures - CONFORME LÉGISLATION FRANÇAISE 2026
+ * 
+ * Base légale : Article L441-3 et L441-9 du Code de commerce
+ *               Article 242 nonies A du CGI
+ *               Décret n° 2022-1299 du 7 octobre 2022 (nouvelles mentions)
  * 
  * Mentions obligatoires incluses :
- * - Numéro de facture (unique, séquentiel)
+ * 
+ * ÉMETTEUR :
+ * - Dénomination sociale, adresse siège social
+ * - SIRET / SIREN
+ * - TVA intracommunautaire
+ * - RCS (+ ville du greffe)
+ * - Numéro au répertoire des métiers (si artisan)
+ * - Forme juridique + capital social
+ * 
+ * CLIENT :
+ * - Nom / dénomination sociale, adresse
+ * - SIRET (si professionnel)
+ * - TVA intracommunautaire (si professionnel)
+ * - Adresse de livraison si différente (Décret 2022-1299)
+ * 
+ * FACTURE :
+ * - Numéro unique séquentiel
  * - Date d'émission
- * - Date de prestation/livraison
- * - Identité vendeur complète (nom, adresse, SIRET, TVA intra, RCS)
- * - Identité client (nom, adresse, SIRET si pro)
+ * - Date de prestation / livraison
+ * - Catégorie d'opération : biens, services ou mixte (Décret 2022-1299)
+ * 
+ * CONTENU :
  * - Désignation, quantité, prix unitaire HT
- * - Taux et montant TVA
+ * - Taux et montant TVA par ligne
  * - Total HT et TTC
+ * - Mention "TVA non applicable, art. 293 B du CGI" si micro-entreprise
+ * 
+ * PAIEMENT :
  * - Date d'échéance
- * - Conditions de paiement
- * - Pénalités de retard
+ * - Modes de paiement acceptés
+ * - Conditions d'escompte (ou "aucun escompte")
+ * - Taux de pénalités de retard (chiffré)
  * - Indemnité forfaitaire de recouvrement (40€ pour pros)
- * - Escompte (ou mention "pas d'escompte")
+ * - Mention "option débits" si applicable
  */
 
 import type { Database } from '@/types/database.types'
 
+type ClientRow = Database['public']['Tables']['clients']['Row'] & {
+  tva_intra?: string | null
+  adresse_livraison?: string | null
+}
+
 type Facture = Database['public']['Tables']['factures']['Row'] & {
-  clients?: Database['public']['Tables']['clients']['Row']
+  clients?: ClientRow
   projets?: Database['public']['Tables']['projets']['Row']
+  categorie_operation?: string | null
 }
 
 // Type étendu pour l'atelier avec mentions légales
@@ -32,6 +63,8 @@ type AtelierLegal = Database['public']['Tables']['ateliers']['Row'] & {
   capital_social?: string | null
   iban?: string | null
   bic?: string | null
+  numero_rm?: string | null
+  assujetti_tva?: boolean
 }
 
 interface FactureItem {
@@ -60,6 +93,20 @@ export function generateFacturePdfHtml(facture: Facture, atelier?: AtelierLegal)
   
   // Déterminer si client professionnel
   const isClientPro = facture.clients?.type === 'professionnel'
+
+  // TVA applicable ?
+  const isAssujettiTva = atelier?.assujetti_tva !== false
+
+  // Catégorie d'opération (Décret 2022-1299)
+  const categorieOp = (facture as Facture & { categorie_operation?: string }).categorie_operation || 'services'
+  const categorieLabel = categorieOp === 'biens' 
+    ? 'Livraison de biens' 
+    : categorieOp === 'mixte' 
+    ? 'Livraison de biens et prestations de services' 
+    : 'Prestations de services'
+
+  // SIREN (9 premiers chiffres du SIRET)
+  const siren = atelier?.siret ? atelier.siret.replace(/\s/g, '').substring(0, 9) : null
 
   return `
 <!DOCTYPE html>
@@ -279,15 +326,17 @@ export function generateFacturePdfHtml(facture: Facture, atelier?: AtelierLegal)
   <div class="header">
     <div class="atelier-info">
       <h1>${atelier?.name || 'Atelier'}</h1>
+      ${atelier?.forme_juridique ? `<p>${atelier.forme_juridique}${atelier?.capital_social ? ` au capital de ${atelier.capital_social}` : ''}</p>` : ''}
       ${atelier?.address ? `<p>${atelier.address}</p>` : ''}
       ${atelier?.phone ? `<p>Tél : ${atelier.phone}</p>` : ''}
       ${atelier?.email ? `<p>Email : ${atelier.email}</p>` : ''}
       <p style="margin-top: 8px;">
-        ${atelier?.siret ? `<strong>SIRET :</strong> ${atelier.siret}` : ''}
-        ${atelier?.tva_intra ? ` • <strong>TVA Intra :</strong> ${atelier.tva_intra}` : ''}
+        ${siren ? `<strong>SIREN :</strong> ${siren}` : ''}
+        ${atelier?.siret ? ` • <strong>SIRET :</strong> ${atelier.siret}` : ''}
       </p>
+      ${atelier?.tva_intra ? `<p><strong>N° TVA Intracommunautaire :</strong> ${atelier.tva_intra}</p>` : ''}
       ${atelier?.rcs ? `<p><strong>RCS :</strong> ${atelier.rcs}</p>` : ''}
-      ${atelier?.forme_juridique ? `<p>${atelier.forme_juridique}${atelier?.capital_social ? ` au capital de ${atelier.capital_social}` : ''}</p>` : ''}
+      ${atelier?.numero_rm ? `<p><strong>N° Répertoire des Métiers :</strong> ${atelier.numero_rm}</p>` : ''}
     </div>
     <div class="facture-info">
       <div class="facture-title">FACTURE</div>
@@ -295,6 +344,7 @@ export function generateFacturePdfHtml(facture: Facture, atelier?: AtelierLegal)
       <p><strong>Date d'émission :</strong> ${new Date(facture.created_at).toLocaleDateString('fr-FR')}</p>
       <p><strong>Date prestation :</strong> ${new Date(datePrestation).toLocaleDateString('fr-FR')}</p>
       ${facture.due_date ? `<p><strong>Échéance :</strong> ${new Date(facture.due_date).toLocaleDateString('fr-FR')}</p>` : ''}
+      <p style="margin-top: 6px; font-size: 9px; color: #6b7280;"><strong>Nature :</strong> ${categorieLabel}</p>
     </div>
   </div>
 
@@ -307,6 +357,8 @@ export function generateFacturePdfHtml(facture: Facture, atelier?: AtelierLegal)
       ${facture.clients?.phone ? `<p>Tél : ${facture.clients.phone}</p>` : ''}
       ${facture.clients?.email ? `<p>Email : ${facture.clients.email}</p>` : ''}
       ${isClientPro && facture.clients?.siret ? `<p><strong>SIRET :</strong> ${facture.clients.siret}</p>` : ''}
+      ${isClientPro && (facture.clients as ClientRow)?.tva_intra ? `<p><strong>TVA Intra :</strong> ${(facture.clients as ClientRow).tva_intra}</p>` : ''}
+      ${(facture.clients as ClientRow)?.adresse_livraison ? `<p style="margin-top: 6px;"><strong>Adresse de livraison :</strong><br>${(facture.clients as ClientRow).adresse_livraison}</p>` : ''}
     </div>
     <div class="prestation-info">
       <h2>Référence</h2>
@@ -355,10 +407,17 @@ export function generateFacturePdfHtml(facture: Facture, atelier?: AtelierLegal)
         <td class="label">Total HT</td>
         <td class="value">${Number(facture.total_ht).toFixed(2)} €</td>
       </tr>
+      ${isAssujettiTva ? `
       <tr>
         <td class="label">TVA (${facture.tva_rate}%)</td>
         <td class="value">${totalTva.toFixed(2)} €</td>
       </tr>
+      ` : `
+      <tr>
+        <td class="label" style="font-size: 9px;">TVA non applicable,<br>art. 293 B du CGI</td>
+        <td class="value">0,00 €</td>
+      </tr>
+      `}
       ${acompte > 0 ? `
       <tr>
         <td class="label">Acompte versé</td>
@@ -390,9 +449,9 @@ export function generateFacturePdfHtml(facture: Facture, atelier?: AtelierLegal)
   <div class="conditions-section">
     <h3>📋 Conditions générales</h3>
     <p><strong>Escompte :</strong> Aucun escompte accordé pour paiement anticipé.</p>
-    <p class="important"><strong>Pénalités de retard :</strong> En cas de retard de paiement, des pénalités seront exigibles au taux de 3 fois le taux d'intérêt légal en vigueur.</p>
+    <p class="important"><strong>Pénalités de retard :</strong> En cas de retard de paiement, des pénalités de retard seront exigibles au taux annuel de 11,62 % (3 fois le taux d'intérêt légal en vigueur, conformément à l'article L.441-10 du Code de commerce).</p>
     ${isClientPro ? `<p class="important"><strong>Indemnité forfaitaire de recouvrement :</strong> En cas de retard de paiement, une indemnité forfaitaire de 40 € sera due de plein droit (art. L.441-10 et D.441-5 du Code de commerce).</p>` : ''}
-    <p>TVA acquittée sur les débits.</p>
+    <p><strong>Nature des opérations :</strong> ${categorieLabel}.</p>
   </div>
 
   ${facture.notes ? `
@@ -417,8 +476,9 @@ export function generateFacturePdfHtml(facture: Facture, atelier?: AtelierLegal)
     
     <div class="mentions-legales">
       ${atelier?.name || 'Atelier'} ${atelier?.forme_juridique ? `• ${atelier.forme_juridique}` : ''} ${atelier?.capital_social ? `au capital de ${atelier.capital_social}` : ''}<br>
-      ${atelier?.siret ? `SIRET : ${atelier.siret}` : ''} ${atelier?.tva_intra ? `• TVA Intracommunautaire : ${atelier.tva_intra}` : ''} ${atelier?.rcs ? `• ${atelier.rcs}` : ''}<br>
-      Document généré électroniquement et conforme à l'article 289 du Code Général des Impôts.
+      ${siren ? `SIREN : ${siren} • ` : ''}${atelier?.siret ? `SIRET : ${atelier.siret}` : ''} ${atelier?.tva_intra ? `• TVA Intracommunautaire : ${atelier.tva_intra}` : ''}<br>
+      ${atelier?.rcs ? `${atelier.rcs}` : ''} ${atelier?.numero_rm ? `• RM : ${atelier.numero_rm}` : ''}<br>
+      ${!isAssujettiTva ? 'TVA non applicable, article 293 B du Code Général des Impôts. ' : ''}Document généré électroniquement et conforme à l'article 289 du Code Général des Impôts.
     </div>
   </div>
 </body>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@/lib/supabase/client'
+import { TwoFactorSetup } from '@/components/security/TwoFactorSetup'
 
 export default function ComptePage() {
   const router = useRouter()
@@ -333,18 +334,8 @@ export default function ComptePage() {
             </button>
           </form>
 
-          {/* 2FA Placeholder */}
-          <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium text-gray-900 dark:text-white">Authentification à deux facteurs (2FA)</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Ajouter une couche de sécurité supplémentaire</p>
-              </div>
-              <button className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                Bientôt disponible
-              </button>
-            </div>
-          </div>
+          {/* 2FA */}
+          <TwoFactorSetup initialEnabled={userData?.two_factor_enabled || false} />
         </div>
 
         {/* Danger Zone */}

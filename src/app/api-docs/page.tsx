@@ -137,7 +137,7 @@ export default function ApiDocsPage() {
               Récupérez la liste de vos clients :
             </p>
             <div className="bg-gray-900 rounded-lg p-4 font-mono text-sm overflow-x-auto">
-              <span className="text-gray-500">// Response</span><br/>
+              <span className="text-gray-500">{/* Response */}</span><br/>
               {'{'}<br/>
               &nbsp;&nbsp;<span className="text-blue-400">"data"</span>: [<br/>
               &nbsp;&nbsp;&nbsp;&nbsp;{'{'}<br/>

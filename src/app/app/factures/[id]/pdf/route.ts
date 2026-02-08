@@ -1,6 +1,7 @@
 import { createServerClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
-import { generateFacturePdfHtml } from '@/lib/facturation/pdf'
+import { generatePDF, prepareFactureData } from '@/lib/pdf-templates/generator'
+import type { TemplateName } from '@/lib/pdf-templates'
 
 export async function GET(
   request: Request,
@@ -38,7 +39,9 @@ export async function GET(
           phone,
           address,
           type,
-          siret
+          siret,
+          tva_intra,
+          adresse_livraison
         ),
         projets (
           id,
@@ -60,7 +63,17 @@ export async function GET(
       .eq('id', userData.atelier_id)
       .single()
 
-    const html = generateFacturePdfHtml(facture, atelier)
+    // Récupérer le template choisi (depuis l'URL ou les paramètres atelier)
+    const url = new URL(request.url)
+    const templateParam = url.searchParams.get('template') as TemplateName | null
+    const defaultTemplate = (atelier?.settings?.pdf_template as TemplateName) || 'industrial'
+    const templateName: TemplateName = templateParam || defaultTemplate
+
+    // Préparer les données (inclut les CGV depuis atelier.settings.cgv_facture)
+    const templateData = prepareFactureData(facture, atelier, facture.clients)
+
+    // Générer le HTML avec le même système de templates que les devis
+    const html = generatePDF(templateName, templateData)
 
     return new NextResponse(html, {
       headers: {

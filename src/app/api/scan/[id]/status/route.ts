@@ -1,8 +1,8 @@
 import { createServerClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
-// API publique pour mise à jour du statut via scan QR
-// Sécurisé par l'ID du projet (qui est dans le QR code)
+// API pour mise à jour du statut via scan QR
+// Sécurisé par authentification utilisateur + vérification atelier_id
 
 const VALID_STATUSES = [
   'en_attente',
@@ -41,6 +41,23 @@ export async function PATCH(
 
     const supabase = await createServerClient()
 
+    // Vérifier l'authentification
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
+    }
+
+    // Récupérer l'atelier_id de l'utilisateur
+    const { data: userData } = await supabase
+      .from('users')
+      .select('atelier_id')
+      .eq('id', user.id)
+      .single()
+
+    if (!userData?.atelier_id) {
+      return NextResponse.json({ error: 'Utilisateur non rattaché à un atelier' }, { status: 403 })
+    }
+
     // Récupérer le projet
     const { data: projet, error: projetError } = await supabase
       .from('projets')
@@ -67,6 +84,11 @@ export async function PATCH(
 
     if (projetError || !projet) {
       return NextResponse.json({ error: 'Projet non trouvé' }, { status: 404 })
+    }
+
+    // Vérifier que le projet appartient à l'atelier de l'utilisateur (protection IDOR)
+    if (projet.atelier_id !== userData.atelier_id) {
+      return NextResponse.json({ error: 'Accès non autorisé à ce projet' }, { status: 403 })
     }
 
     const oldStatus = projet.status
@@ -134,10 +156,10 @@ export async function PATCH(
       newStatus,
     })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Erreur scan mise à jour statut:', error)
     return NextResponse.json(
-      { error: error.message || 'Erreur serveur' },
+      { error: 'Erreur serveur' },
       { status: 500 }
     )
   }

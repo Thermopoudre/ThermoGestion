@@ -1,30 +1,11 @@
-import { createServerClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+import { createServerClient, getAuthorizedUser } from '@/lib/supabase/server'
 import { PoudresList } from '@/components/poudres/PoudresList'
 
 export default async function PoudresPage() {
+  const { atelierId } = await getAuthorizedUser()
   const supabase = await createServerClient()
-  
-  const {
-    data: { user: authUser },
-  } = await supabase.auth.getUser()
 
-  if (!authUser) {
-    redirect('/auth/login')
-  }
-
-  // Charger l'atelier de l'utilisateur
-  const { data: userData } = await supabase
-    .from('users')
-    .select('atelier_id')
-    .eq('id', authUser.id)
-    .single()
-
-  if (!userData) {
-    redirect('/app/complete-profile')
-  }
-
-  // Charger les poudres avec leur stock
+  // Charger les poudres avec leur stock - isolation par atelier garantie
   const { data: poudres, error } = await supabase
     .from('poudres')
     .select(`
@@ -35,7 +16,7 @@ export default async function PoudresPage() {
         dernier_pesee_at
       )
     `)
-    .eq('atelier_id', userData.atelier_id)
+    .eq('atelier_id', atelierId)
     .order('marque', { ascending: true })
     .order('reference', { ascending: true })
 
@@ -64,7 +45,7 @@ export default async function PoudresPage() {
             </a>
             <a
               href="/app/poudres/new"
-              className="w-full sm:w-auto text-center bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all"
+              className="w-full sm:w-auto text-center bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-orange-400 hover:to-red-500 transition-all"
             >
               + Nouvelle poudre
             </a>

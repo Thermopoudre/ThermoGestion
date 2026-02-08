@@ -152,12 +152,102 @@ export function isEmpty(value: any): boolean {
 }
 
 /**
- * Generate a unique ID
+ * Generate a unique ID using cryptographically secure random values
  */
 export function generateId(prefix: string = ''): string {
   const timestamp = Date.now().toString(36)
-  const random = Math.random().toString(36).slice(2, 9)
+  const randomBytes = new Uint8Array(8)
+  crypto.getRandomValues(randomBytes)
+  const random = Array.from(randomBytes).map(b => b.toString(36)).join('').slice(0, 9)
   return prefix ? `${prefix}_${timestamp}${random}` : `${timestamp}${random}`
+}
+
+/**
+ * Sanitize a string to prevent XSS attacks
+ * Escapes HTML special characters
+ */
+export function sanitizeHtml(str: string | null | undefined): string {
+  if (!str) return ''
+  
+  const escapeMap: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#x27;',
+    '/': '&#x2F;',
+  }
+  
+  return str.replace(/[&<>"'/]/g, (char) => escapeMap[char] || char)
+}
+
+/**
+ * Sanitize an object's string values recursively
+ */
+export function sanitizeObject<T extends Record<string, unknown>>(obj: T): T {
+  const sanitized = { ...obj }
+  
+  for (const key in sanitized) {
+    const value = sanitized[key]
+    if (typeof value === 'string') {
+      (sanitized as Record<string, unknown>)[key] = sanitizeHtml(value)
+    } else if (Array.isArray(value)) {
+      (sanitized as Record<string, unknown>)[key] = value.map(item =>
+        typeof item === 'string' ? sanitizeHtml(item) : item
+      )
+    }
+  }
+  
+  return sanitized
+}
+
+/**
+ * Sanitize CSV values to prevent CSV injection
+ * Values starting with =, +, -, @, \t, \r can trigger formula execution
+ */
+export function sanitizeCsvValue(value: string | null | undefined): string {
+  if (!value) return ''
+  
+  const dangerousChars = ['=', '+', '-', '@', '\t', '\r']
+  const trimmed = value.trim()
+  
+  if (dangerousChars.some(char => trimmed.startsWith(char))) {
+    return `'${trimmed}`
+  }
+  
+  return trimmed
+}
+
+/**
+ * Validate and sanitize input for server-side operations
+ */
+export function validateInput(value: string, options: {
+  maxLength?: number
+  minLength?: number
+  pattern?: RegExp
+  required?: boolean
+} = {}): { valid: boolean; error?: string; value: string } {
+  const { maxLength = 500, minLength = 0, pattern, required = false } = options
+  
+  const sanitized = sanitizeHtml(value?.trim())
+  
+  if (required && !sanitized) {
+    return { valid: false, error: 'Ce champ est requis', value: sanitized }
+  }
+  
+  if (sanitized.length < minLength) {
+    return { valid: false, error: `Minimum ${minLength} caractères`, value: sanitized }
+  }
+  
+  if (sanitized.length > maxLength) {
+    return { valid: false, error: `Maximum ${maxLength} caractères`, value: sanitized }
+  }
+  
+  if (pattern && !pattern.test(sanitized)) {
+    return { valid: false, error: 'Format invalide', value: sanitized }
+  }
+  
+  return { valid: true, value: sanitized }
 }
 
 /**

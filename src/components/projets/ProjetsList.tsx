@@ -1,8 +1,10 @@
 'use client'
 
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { Package, User, Palette, Calendar, Camera, ChevronRight, AlertTriangle } from 'lucide-react'
+import { Package, User, Palette, Calendar, Camera, ChevronRight, AlertTriangle, Search, X } from 'lucide-react'
 import { StatusBadge } from '@/components/ui/StatusBadge'
+import { Pagination, usePagination } from '@/components/ui/Pagination'
 import type { Database } from '@/types/database.types'
 
 type Projet = Database['public']['Tables']['projets']['Row']
@@ -17,6 +19,34 @@ interface ProjetsListProps {
 }
 
 export function ProjetsList({ projets }: ProjetsListProps) {
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filterStatus, setFilterStatus] = useState<string>('all')
+
+  const filteredProjets = useMemo(() => {
+    let result = projets
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase()
+      result = result.filter(p =>
+        p.numero?.toLowerCase().includes(q) ||
+        p.name?.toLowerCase().includes(q) ||
+        p.clients?.full_name?.toLowerCase().includes(q) ||
+        p.poudres?.reference?.toLowerCase().includes(q)
+      )
+    }
+
+    if (filterStatus !== 'all') {
+      result = result.filter(p => p.status === filterStatus)
+    }
+
+    return result
+  }, [projets, searchQuery, filterStatus])
+
+  const {
+    currentPage, totalPages, totalItems, itemsPerPage,
+    paginatedItems: paginatedProjets, setCurrentPage, setItemsPerPage,
+  } = usePagination(filteredProjets, 25)
+
   if (projets.length === 0) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 sm:p-12 text-center">
@@ -60,9 +90,54 @@ export function ProjetsList({ projets }: ProjetsListProps) {
 
   return (
     <>
+      {/* Barre de filtres */}
+      <div className="mb-4 flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Rechercher par numéro, nom, client, poudre..."
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1) }}
+            className="w-full pl-10 pr-8 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            aria-label="Rechercher un projet"
+          />
+          {searchQuery && (
+            <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" aria-label="Effacer">
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+        <select
+          value={filterStatus}
+          onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1) }}
+          className="px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-orange-500"
+          aria-label="Filtrer par statut"
+        >
+          <option value="all">Tous les statuts</option>
+          <option value="nouveau">Nouveau</option>
+          <option value="en_preparation">En préparation</option>
+          <option value="en_cours">En cours</option>
+          <option value="en_cuisson">En cuisson</option>
+          <option value="controle_qualite">Contrôle qualité</option>
+          <option value="pret">Prêt</option>
+          <option value="livre">Livré</option>
+          <option value="annule">Annulé</option>
+        </select>
+      </div>
+
+      {filteredProjets.length === 0 && projets.length > 0 && (
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center">
+          <p className="text-gray-500 dark:text-gray-400">Aucun projet ne correspond à vos critères</p>
+          <button onClick={() => { setSearchQuery(''); setFilterStatus('all') }} className="mt-2 text-orange-500 hover:text-orange-600 text-sm font-medium">
+            Réinitialiser les filtres
+          </button>
+        </div>
+      )}
+
       {/* Vue mobile - Cartes */}
       <div className="md:hidden space-y-3">
-        {projets.map((projet) => (
+        {paginatedProjets.map((projet) => (
           <Link
             key={projet.id}
             href={`/app/projets/${projet.id}`}
@@ -157,7 +232,7 @@ export function ProjetsList({ projets }: ProjetsListProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-              {projets.map((projet) => (
+              {paginatedProjets.map((projet) => (
                 <tr 
                   key={projet.id} 
                   className={`hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group ${
@@ -222,6 +297,20 @@ export function ProjetsList({ projets }: ProjetsListProps) {
           </table>
         </div>
       </div>
+
+      {/* Pagination */}
+      {filteredProjets.length > 0 && (
+        <div className="mt-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={setItemsPerPage}
+          />
+        </div>
+      )}
     </>
   )
 }

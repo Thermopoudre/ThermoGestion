@@ -1,7 +1,9 @@
 'use client'
 
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { Users, Mail, Phone, Building2, User, ChevronRight, Tag, Upload } from 'lucide-react'
+import { Users, Mail, Phone, Building2, User, ChevronRight, Tag, Upload, Search, X } from 'lucide-react'
+import { Pagination, usePagination } from '@/components/ui/Pagination'
 import type { Database } from '@/types/database.types'
 
 type Client = Database['public']['Tables']['clients']['Row']
@@ -11,6 +13,43 @@ interface ClientsListProps {
 }
 
 export function ClientsList({ clients }: ClientsListProps) {
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filterType, setFilterType] = useState<string>('all')
+
+  // Filtrage
+  const filteredClients = useMemo(() => {
+    let result = clients
+
+    // Filtre par recherche
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase()
+      result = result.filter(c =>
+        c.full_name?.toLowerCase().includes(q) ||
+        c.email?.toLowerCase().includes(q) ||
+        c.phone?.toLowerCase().includes(q) ||
+        c.company?.toLowerCase().includes(q)
+      )
+    }
+
+    // Filtre par type
+    if (filterType !== 'all') {
+      result = result.filter(c => c.type === filterType)
+    }
+
+    return result
+  }, [clients, searchQuery, filterType])
+
+  // Pagination
+  const {
+    currentPage,
+    totalPages,
+    totalItems,
+    itemsPerPage,
+    paginatedItems: paginatedClients,
+    setCurrentPage,
+    setItemsPerPage,
+  } = usePagination(filteredClients, 25)
+
   if (clients.length === 0) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 sm:p-12 text-center">
@@ -40,9 +79,52 @@ export function ClientsList({ clients }: ClientsListProps) {
 
   return (
     <>
+      {/* Barre de filtres */}
+      <div className="mb-4 flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Rechercher un client (nom, email, téléphone...)"
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1) }}
+            className="w-full pl-10 pr-8 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            aria-label="Rechercher un client"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              aria-label="Effacer la recherche"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+        <select
+          value={filterType}
+          onChange={(e) => { setFilterType(e.target.value); setCurrentPage(1) }}
+          className="px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-orange-500"
+          aria-label="Filtrer par type"
+        >
+          <option value="all">Tous les types</option>
+          <option value="particulier">Particuliers</option>
+          <option value="professionnel">Professionnels</option>
+        </select>
+      </div>
+
+      {filteredClients.length === 0 && clients.length > 0 && (
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center">
+          <p className="text-gray-500 dark:text-gray-400">Aucun client ne correspond à votre recherche</p>
+          <button onClick={() => { setSearchQuery(''); setFilterType('all') }} className="mt-2 text-orange-500 hover:text-orange-600 text-sm font-medium">
+            Réinitialiser les filtres
+          </button>
+        </div>
+      )}
+
       {/* Vue mobile - Cartes */}
       <div className="md:hidden space-y-3">
-        {clients.map((client) => (
+        {paginatedClients.map((client) => (
           <Link
             key={client.id}
             href={`/app/clients/${client.id}`}
@@ -123,7 +205,7 @@ export function ClientsList({ clients }: ClientsListProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-              {clients.map((client) => (
+              {paginatedClients.map((client) => (
                 <tr key={client.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
                   <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900 dark:text-white">{client.full_name}</div>
@@ -189,6 +271,20 @@ export function ClientsList({ clients }: ClientsListProps) {
           </table>
         </div>
       </div>
+
+      {/* Pagination */}
+      {filteredClients.length > 0 && (
+        <div className="mt-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={setItemsPerPage}
+          />
+        </div>
+      )}
     </>
   )
 }

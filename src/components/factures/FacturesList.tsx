@@ -1,8 +1,11 @@
 'use client'
 
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
+import { Search, X } from 'lucide-react'
+import { Pagination, usePagination } from '@/components/ui/Pagination'
 import type { Database } from '@/types/database.types'
 
 type Facture = Database['public']['Tables']['factures']['Row'] & {
@@ -35,29 +38,127 @@ const typeLabels: Record<string, string> = {
 }
 
 export function FacturesList({ factures }: FacturesListProps) {
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filterStatus, setFilterStatus] = useState<string>('all')
+  const [filterPayment, setFilterPayment] = useState<string>('all')
+
+  const filteredFactures = useMemo(() => {
+    let result = factures
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase()
+      result = result.filter(f =>
+        f.numero?.toLowerCase().includes(q) ||
+        f.clients?.full_name?.toLowerCase().includes(q)
+      )
+    }
+
+    if (filterStatus !== 'all') {
+      result = result.filter(f => f.status === filterStatus)
+    }
+
+    if (filterPayment !== 'all') {
+      result = result.filter(f => f.payment_status === filterPayment)
+    }
+
+    return result
+  }, [factures, searchQuery, filterStatus, filterPayment])
+
+  const {
+    currentPage, totalPages, totalItems, itemsPerPage,
+    paginatedItems: paginatedFactures, setCurrentPage, setItemsPerPage,
+  } = usePagination(filteredFactures, 25)
+
   if (factures.length === 0) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 sm:p-12 text-center">
-        <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-          <span className="text-3xl">📄</span>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 sm:p-12 text-center">
+        <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-2xl flex items-center justify-center mx-auto mb-6 animate-bounce-subtle">
+          <svg className="w-10 h-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
         </div>
-        <p className="text-gray-600 dark:text-gray-400 text-lg">Aucune facture pour le moment</p>
-        <p className="text-gray-500 dark:text-gray-500 text-sm mt-2">Créez votre première facture</p>
-        <Link
-          href="/app/factures/new"
-          className="inline-block mt-6 bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all"
-        >
-          + Nouvelle facture
-        </Link>
+        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Aucune facture</h3>
+        <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
+          Créez votre première facture ou convertissez un devis accepté pour générer automatiquement une facture
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Link
+            href="/app/factures/new"
+            className="btn-primary"
+          >
+            + Nouvelle facture
+          </Link>
+          <Link
+            href="/app/devis"
+            className="btn-secondary"
+          >
+            Voir les devis
+          </Link>
+        </div>
+        <p className="text-sm text-gray-400 mt-6">
+          Les factures peuvent aussi être générées automatiquement lorsqu'un projet est marqué comme "Prêt"
+        </p>
       </div>
     )
   }
 
   return (
     <>
+      {/* Barre de filtres */}
+      <div className="mb-4 flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Rechercher par numéro, client..."
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1) }}
+            className="w-full pl-10 pr-8 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            aria-label="Rechercher une facture"
+          />
+          {searchQuery && (
+            <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" aria-label="Effacer">
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+        <select
+          value={filterStatus}
+          onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1) }}
+          className="px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-orange-500"
+          aria-label="Filtrer par statut"
+        >
+          <option value="all">Tous les statuts</option>
+          <option value="brouillon">Brouillon</option>
+          <option value="envoyee">Envoyée</option>
+          <option value="payee">Payée</option>
+          <option value="remboursee">Remboursée</option>
+        </select>
+        <select
+          value={filterPayment}
+          onChange={(e) => { setFilterPayment(e.target.value); setCurrentPage(1) }}
+          className="px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-orange-500"
+          aria-label="Filtrer par paiement"
+        >
+          <option value="all">Tous les paiements</option>
+          <option value="unpaid">Impayé</option>
+          <option value="partial">Partiel</option>
+          <option value="paid">Payé</option>
+        </select>
+      </div>
+
+      {filteredFactures.length === 0 && factures.length > 0 && (
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center">
+          <p className="text-gray-500 dark:text-gray-400">Aucune facture ne correspond à vos critères</p>
+          <button onClick={() => { setSearchQuery(''); setFilterStatus('all'); setFilterPayment('all') }} className="mt-2 text-orange-500 hover:text-orange-600 text-sm font-medium">
+            Réinitialiser les filtres
+          </button>
+        </div>
+      )}
+
       {/* Vue mobile - Cartes */}
       <div className="md:hidden space-y-3">
-        {factures.map((facture) => (
+        {paginatedFactures.map((facture) => (
           <Link
             key={facture.id}
             href={`/app/factures/${facture.id}`}
@@ -155,7 +256,7 @@ export function FacturesList({ factures }: FacturesListProps) {
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {factures.map((facture) => (
+              {paginatedFactures.map((facture) => (
                 <tr key={facture.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                   <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-semibold text-gray-900 dark:text-white">{facture.numero}</div>
@@ -209,7 +310,7 @@ export function FacturesList({ factures }: FacturesListProps) {
                   <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <Link
                       href={`/app/factures/${facture.id}`}
-                      className="text-orange-500 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-3"
+                      className="text-orange-500 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 mr-3"
                     >
                       Voir
                     </Link>
@@ -227,6 +328,20 @@ export function FacturesList({ factures }: FacturesListProps) {
           </table>
         </div>
       </div>
+
+      {/* Pagination */}
+      {filteredFactures.length > 0 && (
+        <div className="mt-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={setItemsPerPage}
+          />
+        </div>
+      )}
     </>
   )
 }

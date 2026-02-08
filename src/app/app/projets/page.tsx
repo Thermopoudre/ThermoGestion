@@ -1,30 +1,11 @@
-import { createServerClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+import { createServerClient, getAuthorizedUser } from '@/lib/supabase/server'
 import { ProjetsList } from '@/components/projets/ProjetsList'
 
 export default async function ProjetsPage({ searchParams }: { searchParams: { client?: string; status?: string } }) {
+  const { atelierId } = await getAuthorizedUser()
   const supabase = await createServerClient()
-  
-  const {
-    data: { user: authUser },
-  } = await supabase.auth.getUser()
 
-  if (!authUser) {
-    redirect('/auth/login')
-  }
-
-  // Charger l'atelier de l'utilisateur
-  const { data: userData } = await supabase
-    .from('users')
-    .select('atelier_id')
-    .eq('id', authUser.id)
-    .single()
-
-  if (!userData) {
-    redirect('/app/complete-profile')
-  }
-
-  // Charger les projets
+  // Charger les projets - isolation par atelier garantie
   let query = supabase
     .from('projets')
     .select(`
@@ -41,7 +22,7 @@ export default async function ProjetsPage({ searchParams }: { searchParams: { cl
         finition
       )
     `)
-    .eq('atelier_id', userData.atelier_id)
+    .eq('atelier_id', atelierId)
     .order('created_at', { ascending: false })
 
   if (searchParams.client) {

@@ -41,6 +41,40 @@ export function CreateSerieForm({
     )
   }
 
+  // Vérifie la compatibilité stricte des projets (même poudre exacte)
+  const validateStrictGrouping = (): string | null => {
+    if (!poudre) return 'Poudre non sélectionnée'
+
+    const selected = projetsDisponibles.filter(p => selectedProjets.includes(p.id))
+    
+    for (const projet of selected) {
+      if (!projet.poudres) continue
+
+      const p = projet.poudres
+      // Vérification stricte : même référence + type + finition + RAL
+      if (p.id !== poudre.id) {
+        return `Le projet "${projet.name || projet.numero}" utilise une poudre différente (${p.reference})`
+      }
+      if (p.finition !== poudre.finition) {
+        return `Le projet "${projet.name || projet.numero}" a une finition différente (${p.finition} vs ${poudre.finition})`
+      }
+      if (p.type !== poudre.type) {
+        return `Le projet "${projet.name || projet.numero}" a un type de poudre différent (${p.type} vs ${poudre.type})`
+      }
+      if ((p.ral || '') !== (poudre.ral || '')) {
+        return `Le projet "${projet.name || projet.numero}" a un RAL différent (${p.ral || 'aucun'} vs ${poudre.ral || 'aucun'})`
+      }
+    }
+
+    // Vérifier que toutes les couches sont identiques
+    const couchesSet = new Set(selected.map(p => p.couches || 1))
+    if (couchesSet.size > 1) {
+      return `Les projets sélectionnés ont des nombres de couches différents (${Array.from(couchesSet).join(', ')})`
+    }
+
+    return null
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -54,6 +88,14 @@ export function CreateSerieForm({
 
     if (!poudre) {
       setError('Poudre non sélectionnée')
+      setLoading(false)
+      return
+    }
+
+    // Validation stricte du regroupement
+    const groupingError = validateStrictGrouping()
+    if (groupingError) {
+      setError(`⚠️ Regroupement interdit : ${groupingError}`)
       setLoading(false)
       return
     }
@@ -187,7 +229,7 @@ export function CreateSerieForm({
           <button
             type="submit"
             disabled={loading || selectedProjets.length === 0}
-            className="flex-1 bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-orange-400 hover:to-red-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Création...' : 'Créer la série'}
           </button>

@@ -1,5 +1,6 @@
 // Template Premium - Design haut de gamme élégant
 import type { TemplateData } from './index'
+import { getRetractationHTML, getDefaultCGV } from './index'
 import type { CustomColors } from './generator'
 
 const formatMoney = (amount: number): string => {
@@ -584,9 +585,11 @@ export function generatePremiumTemplate(data: TemplateData, customColors?: Custo
         </div>
       ` : ''}
 
+      ${isDevis ? getRetractationHTML(data.client.type) : ''}
+
       <div class="footer">
         <div class="footer-legal">
-          ${data.cgv || 'Ce devis est valable 30 jours à compter de sa date d\'émission. Règlement selon conditions convenues.'}
+          ${data.cgv || getDefaultCGV(data.type)}
         </div>
         <div class="footer-info">
           ${data.atelier.siret ? `<span>SIRET ${data.atelier.siret}</span>` : ''}

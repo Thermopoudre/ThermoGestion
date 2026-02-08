@@ -1,1 +1,4566 @@
-{"types":"export type Json =\n  | string\n  | number\n  | boolean\n  | null\n  | { [key: string]: Json | undefined }\n  | Json[]\n\nexport type Database = {\n  // Allows to automatically instantiate createClient with right options\n  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)\n  __InternalSupabase: {\n    PostgrestVersion: \"14.1\"\n  }\n  public: {\n    Tables: {\n      alertes: {\n        Row: {\n          atelier_id: string\n          created_at: string | null\n          data: Json | null\n          id: string\n          lien: string | null\n          lu: boolean | null\n          lu_at: string | null\n          lu_par: string | null\n          message: string | null\n          titre: string\n          type: string\n        }\n        Insert: {\n          atelier_id: string\n          created_at?: string | null\n          data?: Json | null\n          id?: string\n          lien?: string | null\n          lu?: boolean | null\n          lu_at?: string | null\n          lu_par?: string | null\n          message?: string | null\n          titre: string\n          type: string\n        }\n        Update: {\n          atelier_id?: string\n          created_at?: string | null\n          data?: Json | null\n          id?: string\n          lien?: string | null\n          lu?: boolean | null\n          lu_at?: string | null\n          lu_par?: string | null\n          message?: string | null\n          titre?: string\n          type?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"alertes_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"alertes_lu_par_fkey\"\n            columns: [\"lu_par\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      ateliers: {\n        Row: {\n          address: string | null\n          auto_review_enabled: boolean | null\n          avis_google_api_key: string | null\n          avis_google_delay_days: number | null\n          avis_google_enabled: boolean | null\n          avis_google_location_id: string | null\n          avis_google_relance_days: number | null\n          bic: string | null\n          bl_numero_counter: number | null\n          bl_numero_format: string | null\n          capacite_m2_jour: number | null\n          capital_social: string | null\n          created_at: string\n          ecran_atelier_config: Json | null\n          email: string | null\n          facture_numero_counter: number | null\n          facture_numero_format: string | null\n          forme_juridique: string | null\n          google_calendar_connected: boolean | null\n          google_calendar_id: string | null\n          google_review_link: string | null\n          iban: string | null\n          id: string\n          name: string\n          nb_cabines: number | null\n          nb_fours: number | null\n          outlook_connected: boolean | null\n          paypal_email: string | null\n          paypal_merchant_id: string | null\n          phone: string | null\n          plan: string\n          rcs: string | null\n          review_delay_days: number | null\n          settings: Json | null\n          siret: string | null\n          sms_enabled: boolean | null\n          sms_templates: Json | null\n          storage_quota_gb: number\n          storage_used_gb: number\n          stripe_account_status: string | null\n          trial_ends_at: string | null\n          tva_intra: string | null\n          twilio_account_sid: string | null\n          twilio_auth_token: string | null\n          twilio_phone_number: string | null\n          updated_at: string\n        }\n        Insert: {\n          address?: string | null\n          auto_review_enabled?: boolean | null\n          avis_google_api_key?: string | null\n          avis_google_delay_days?: number | null\n          avis_google_enabled?: boolean | null\n          avis_google_location_id?: string | null\n          avis_google_relance_days?: number | null\n          bic?: string | null\n          bl_numero_counter?: number | null\n          bl_numero_format?: string | null\n          capacite_m2_jour?: number | null\n          capital_social?: string | null\n          created_at?: string\n          ecran_atelier_config?: Json | null\n          email?: string | null\n          facture_numero_counter?: number | null\n          facture_numero_format?: string | null\n          forme_juridique?: string | null\n          google_calendar_connected?: boolean | null\n          google_calendar_id?: string | null\n          google_review_link?: string | null\n          iban?: string | null\n          id?: string\n          name: string\n          nb_cabines?: number | null\n          nb_fours?: number | null\n          outlook_connected?: boolean | null\n          paypal_email?: string | null\n          paypal_merchant_id?: string | null\n          phone?: string | null\n          plan?: string\n          rcs?: string | null\n          review_delay_days?: number | null\n          settings?: Json | null\n          siret?: string | null\n          sms_enabled?: boolean | null\n          sms_templates?: Json | null\n          storage_quota_gb?: number\n          storage_used_gb?: number\n          stripe_account_status?: string | null\n          trial_ends_at?: string | null\n          tva_intra?: string | null\n          twilio_account_sid?: string | null\n          twilio_auth_token?: string | null\n          twilio_phone_number?: string | null\n          updated_at?: string\n        }\n        Update: {\n          address?: string | null\n          auto_review_enabled?: boolean | null\n          avis_google_api_key?: string | null\n          avis_google_delay_days?: number | null\n          avis_google_enabled?: boolean | null\n          avis_google_location_id?: string | null\n          avis_google_relance_days?: number | null\n          bic?: string | null\n          bl_numero_counter?: number | null\n          bl_numero_format?: string | null\n          capacite_m2_jour?: number | null\n          capital_social?: string | null\n          created_at?: string\n          ecran_atelier_config?: Json | null\n          email?: string | null\n          facture_numero_counter?: number | null\n          facture_numero_format?: string | null\n          forme_juridique?: string | null\n          google_calendar_connected?: boolean | null\n          google_calendar_id?: string | null\n          google_review_link?: string | null\n          iban?: string | null\n          id?: string\n          name?: string\n          nb_cabines?: number | null\n          nb_fours?: number | null\n          outlook_connected?: boolean | null\n          paypal_email?: string | null\n          paypal_merchant_id?: string | null\n          phone?: string | null\n          plan?: string\n          rcs?: string | null\n          review_delay_days?: number | null\n          settings?: Json | null\n          siret?: string | null\n          sms_enabled?: boolean | null\n          sms_templates?: Json | null\n          storage_quota_gb?: number\n          storage_used_gb?: number\n          stripe_account_status?: string | null\n          trial_ends_at?: string | null\n          tva_intra?: string | null\n          twilio_account_sid?: string | null\n          twilio_auth_token?: string | null\n          twilio_phone_number?: string | null\n          updated_at?: string\n        }\n        Relationships: []\n      }\n      audit_logs: {\n        Row: {\n          action: string\n          atelier_id: string\n          created_at: string\n          id: string\n          ip_address: string | null\n          new_data: Json | null\n          old_data: Json | null\n          record_id: string | null\n          table_name: string\n          user_agent: string | null\n          user_id: string | null\n        }\n        Insert: {\n          action: string\n          atelier_id: string\n          created_at?: string\n          id?: string\n          ip_address?: string | null\n          new_data?: Json | null\n          old_data?: Json | null\n          record_id?: string | null\n          table_name: string\n          user_agent?: string | null\n          user_id?: string | null\n        }\n        Update: {\n          action?: string\n          atelier_id?: string\n          created_at?: string\n          id?: string\n          ip_address?: string | null\n          new_data?: Json | null\n          old_data?: Json | null\n          record_id?: string | null\n          table_name?: string\n          user_agent?: string | null\n          user_id?: string | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"audit_logs_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"audit_logs_user_id_fkey\"\n            columns: [\"user_id\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      avis_google: {\n        Row: {\n          atelier_id: string\n          avis_rating: number | null\n          avis_received_at: string | null\n          avis_text: string | null\n          avis_url: string | null\n          client_id: string\n          created_at: string\n          email_relance_sent_at: string | null\n          email_sent_at: string | null\n          id: string\n          projet_id: string\n          status: string\n          updated_at: string\n        }\n        Insert: {\n          atelier_id: string\n          avis_rating?: number | null\n          avis_received_at?: string | null\n          avis_text?: string | null\n          avis_url?: string | null\n          client_id: string\n          created_at?: string\n          email_relance_sent_at?: string | null\n          email_sent_at?: string | null\n          id?: string\n          projet_id: string\n          status?: string\n          updated_at?: string\n        }\n        Update: {\n          atelier_id?: string\n          avis_rating?: number | null\n          avis_received_at?: string | null\n          avis_text?: string | null\n          avis_url?: string | null\n          client_id?: string\n          created_at?: string\n          email_relance_sent_at?: string | null\n          email_sent_at?: string | null\n          id?: string\n          projet_id?: string\n          status?: string\n          updated_at?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"avis_google_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"avis_google_client_id_fkey\"\n            columns: [\"client_id\"]\n            isOneToOne: false\n            referencedRelation: \"clients\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"avis_google_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"projets\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"avis_google_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"v_rentabilite_projets\"\n            referencedColumns: [\"projet_id\"]\n          },\n        ]\n      }\n      bons_livraison: {\n        Row: {\n          adresse_livraison: string | null\n          atelier_id: string\n          client_id: string\n          created_at: string\n          created_by: string | null\n          date_livraison: string\n          etat_pieces: string | null\n          id: string\n          items: Json\n          numero: string\n          observations: string | null\n          pdf_url: string | null\n          projet_id: string\n          reserves: string | null\n          signature_client: string | null\n          signature_client_data: string | null\n          signe_par_client: boolean | null\n          signed_at: string | null\n          transporteur: string | null\n          updated_at: string\n        }\n        Insert: {\n          adresse_livraison?: string | null\n          atelier_id: string\n          client_id: string\n          created_at?: string\n          created_by?: string | null\n          date_livraison?: string\n          etat_pieces?: string | null\n          id?: string\n          items?: Json\n          numero: string\n          observations?: string | null\n          pdf_url?: string | null\n          projet_id: string\n          reserves?: string | null\n          signature_client?: string | null\n          signature_client_data?: string | null\n          signe_par_client?: boolean | null\n          signed_at?: string | null\n          transporteur?: string | null\n          updated_at?: string\n        }\n        Update: {\n          adresse_livraison?: string | null\n          atelier_id?: string\n          client_id?: string\n          created_at?: string\n          created_by?: string | null\n          date_livraison?: string\n          etat_pieces?: string | null\n          id?: string\n          items?: Json\n          numero?: string\n          observations?: string | null\n          pdf_url?: string | null\n          projet_id?: string\n          reserves?: string | null\n          signature_client?: string | null\n          signature_client_data?: string | null\n          signe_par_client?: boolean | null\n          signed_at?: string | null\n          transporteur?: string | null\n          updated_at?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"bons_livraison_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"bons_livraison_client_id_fkey\"\n            columns: [\"client_id\"]\n            isOneToOne: false\n            referencedRelation: \"clients\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"bons_livraison_created_by_fkey\"\n            columns: [\"created_by\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"bons_livraison_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"projets\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"bons_livraison_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"v_rentabilite_projets\"\n            referencedColumns: [\"projet_id\"]\n          },\n        ]\n      }\n      certifications_atelier: {\n        Row: {\n          atelier_id: string\n          created_at: string | null\n          date_expiration: string | null\n          date_obtention: string | null\n          document_url: string | null\n          id: string\n          is_active: boolean | null\n          numero_certification: string | null\n          rappel_renouvellement_jours: number | null\n          type: string\n        }\n        Insert: {\n          atelier_id: string\n          created_at?: string | null\n          date_expiration?: string | null\n          date_obtention?: string | null\n          document_url?: string | null\n          id?: string\n          is_active?: boolean | null\n          numero_certification?: string | null\n          rappel_renouvellement_jours?: number | null\n          type: string\n        }\n        Update: {\n          atelier_id?: string\n          created_at?: string | null\n          date_expiration?: string | null\n          date_obtention?: string | null\n          document_url?: string | null\n          id?: string\n          is_active?: boolean | null\n          numero_certification?: string | null\n          rappel_renouvellement_jours?: number | null\n          type?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"certifications_atelier_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      certificats_conformite: {\n        Row: {\n          adherence_conforme: boolean | null\n          aspect_conforme: boolean | null\n          atelier_id: string\n          brillance_conforme: boolean | null\n          controleur_nom: string | null\n          controleur_signature: string | null\n          couleur_conforme: boolean | null\n          created_at: string | null\n          date_cuisson: string | null\n          date_emission: string | null\n          duree_cuisson: number | null\n          epaisseur_mesuree_um: number | null\n          id: string\n          norme_reference: string | null\n          numero: string\n          observations: string | null\n          pdf_url: string | null\n          poudre_fabricant: string | null\n          poudre_lot: string | null\n          poudre_reference: string | null\n          projet_id: string\n          temperature_cuisson: number | null\n        }\n        Insert: {\n          adherence_conforme?: boolean | null\n          aspect_conforme?: boolean | null\n          atelier_id: string\n          brillance_conforme?: boolean | null\n          controleur_nom?: string | null\n          controleur_signature?: string | null\n          couleur_conforme?: boolean | null\n          created_at?: string | null\n          date_cuisson?: string | null\n          date_emission?: string | null\n          duree_cuisson?: number | null\n          epaisseur_mesuree_um?: number | null\n          id?: string\n          norme_reference?: string | null\n          numero: string\n          observations?: string | null\n          pdf_url?: string | null\n          poudre_fabricant?: string | null\n          poudre_lot?: string | null\n          poudre_reference?: string | null\n          projet_id: string\n          temperature_cuisson?: number | null\n        }\n        Update: {\n          adherence_conforme?: boolean | null\n          aspect_conforme?: boolean | null\n          atelier_id?: string\n          brillance_conforme?: boolean | null\n          controleur_nom?: string | null\n          controleur_signature?: string | null\n          couleur_conforme?: boolean | null\n          created_at?: string | null\n          date_cuisson?: string | null\n          date_emission?: string | null\n          duree_cuisson?: number | null\n          epaisseur_mesuree_um?: number | null\n          id?: string\n          norme_reference?: string | null\n          numero?: string\n          observations?: string | null\n          pdf_url?: string | null\n          poudre_fabricant?: string | null\n          poudre_lot?: string | null\n          poudre_reference?: string | null\n          projet_id?: string\n          temperature_cuisson?: number | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"certificats_conformite_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"certificats_conformite_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"projets\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"certificats_conformite_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"v_rentabilite_projets\"\n            referencedColumns: [\"projet_id\"]\n          },\n        ]\n      }\n      client_confirmations: {\n        Row: {\n          client_user_id: string | null\n          confirmation_code: string | null\n          confirmed_at: string\n          created_at: string\n          id: string\n          notes: string | null\n          projet_id: string\n          type: string\n        }\n        Insert: {\n          client_user_id?: string | null\n          confirmation_code?: string | null\n          confirmed_at?: string\n          created_at?: string\n          id?: string\n          notes?: string | null\n          projet_id: string\n          type: string\n        }\n        Update: {\n          client_user_id?: string | null\n          confirmation_code?: string | null\n          confirmed_at?: string\n          created_at?: string\n          id?: string\n          notes?: string | null\n          projet_id?: string\n          type?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"client_confirmations_client_user_id_fkey\"\n            columns: [\"client_user_id\"]\n            isOneToOne: false\n            referencedRelation: \"client_users\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"client_confirmations_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"projets\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"client_confirmations_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"v_rentabilite_projets\"\n            referencedColumns: [\"projet_id\"]\n          },\n        ]\n      }\n      client_invitations: {\n        Row: {\n          atelier_id: string | null\n          client_id: string | null\n          created_at: string | null\n          email: string\n          expires_at: string | null\n          id: string\n          token: string\n          used_at: string | null\n        }\n        Insert: {\n          atelier_id?: string | null\n          client_id?: string | null\n          created_at?: string | null\n          email: string\n          expires_at?: string | null\n          id?: string\n          token?: string\n          used_at?: string | null\n        }\n        Update: {\n          atelier_id?: string | null\n          client_id?: string | null\n          created_at?: string | null\n          email?: string\n          expires_at?: string | null\n          id?: string\n          token?: string\n          used_at?: string | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"client_invitations_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"client_invitations_client_id_fkey\"\n            columns: [\"client_id\"]\n            isOneToOne: false\n            referencedRelation: \"clients\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      client_users: {\n        Row: {\n          atelier_id: string\n          client_id: string\n          created_at: string\n          email: string\n          email_verified: boolean | null\n          full_name: string | null\n          id: string\n          last_login_at: string | null\n          updated_at: string\n        }\n        Insert: {\n          atelier_id: string\n          client_id: string\n          created_at?: string\n          email: string\n          email_verified?: boolean | null\n          full_name?: string | null\n          id: string\n          last_login_at?: string | null\n          updated_at?: string\n        }\n        Update: {\n          atelier_id?: string\n          client_id?: string\n          created_at?: string\n          email?: string\n          email_verified?: boolean | null\n          full_name?: string | null\n          id?: string\n          last_login_at?: string | null\n          updated_at?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"client_users_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"client_users_client_id_fkey\"\n            columns: [\"client_id\"]\n            isOneToOne: true\n            referencedRelation: \"clients\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      clients: {\n        Row: {\n          address: string | null\n          atelier_id: string\n          ca_total: number | null\n          categorie: string | null\n          created_at: string\n          date_dernier_contact: string | null\n          date_premier_contact: string | null\n          email: string\n          facture_trigger: string | null\n          full_name: string\n          horaires_contact: string | null\n          id: string\n          nb_projets: number | null\n          notes: string | null\n          phone: string | null\n          preferences_contact: string | null\n          score_fidelite: number | null\n          siret: string | null\n          sms_notifications: Json | null\n          sms_optin: boolean | null\n          source_acquisition: string | null\n          tags: string[] | null\n          type: string\n          updated_at: string\n        }\n        Insert: {\n          address?: string | null\n          atelier_id: string\n          ca_total?: number | null\n          categorie?: string | null\n          created_at?: string\n          date_dernier_contact?: string | null\n          date_premier_contact?: string | null\n          email: string\n          facture_trigger?: string | null\n          full_name: string\n          horaires_contact?: string | null\n          id?: string\n          nb_projets?: number | null\n          notes?: string | null\n          phone?: string | null\n          preferences_contact?: string | null\n          score_fidelite?: number | null\n          siret?: string | null\n          sms_notifications?: Json | null\n          sms_optin?: boolean | null\n          source_acquisition?: string | null\n          tags?: string[] | null\n          type?: string\n          updated_at?: string\n        }\n        Update: {\n          address?: string | null\n          atelier_id?: string\n          ca_total?: number | null\n          categorie?: string | null\n          created_at?: string\n          date_dernier_contact?: string | null\n          date_premier_contact?: string | null\n          email?: string\n          facture_trigger?: string | null\n          full_name?: string\n          horaires_contact?: string | null\n          id?: string\n          nb_projets?: number | null\n          notes?: string | null\n          phone?: string | null\n          preferences_contact?: string | null\n          score_fidelite?: number | null\n          siret?: string | null\n          sms_notifications?: Json | null\n          sms_optin?: boolean | null\n          source_acquisition?: string | null\n          tags?: string[] | null\n          type?: string\n          updated_at?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"clients_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      config_relances: {\n        Row: {\n          actif: boolean | null\n          atelier_id: string\n          canal_j1: string | null\n          canal_j2: string | null\n          canal_j3: string | null\n          created_at: string | null\n          delai_j1: number | null\n          delai_j2: number | null\n          delai_j3: number | null\n          id: string\n          template_email: string | null\n          template_sms: string | null\n          type_relance: string\n          updated_at: string | null\n        }\n        Insert: {\n          actif?: boolean | null\n          atelier_id: string\n          canal_j1?: string | null\n          canal_j2?: string | null\n          canal_j3?: string | null\n          created_at?: string | null\n          delai_j1?: number | null\n          delai_j2?: number | null\n          delai_j3?: number | null\n          id?: string\n          template_email?: string | null\n          template_sms?: string | null\n          type_relance: string\n          updated_at?: string | null\n        }\n        Update: {\n          actif?: boolean | null\n          atelier_id?: string\n          canal_j1?: string | null\n          canal_j2?: string | null\n          canal_j3?: string | null\n          created_at?: string | null\n          delai_j1?: number | null\n          delai_j2?: number | null\n          delai_j3?: number | null\n          id?: string\n          template_email?: string | null\n          template_sms?: string | null\n          type_relance?: string\n          updated_at?: string | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"config_relances_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      contrats_clients: {\n        Row: {\n          actif: boolean | null\n          atelier_id: string\n          client_id: string\n          conditions_paiement: string | null\n          created_at: string | null\n          date_debut: string\n          date_fin: string | null\n          delai_paiement_jours: number | null\n          id: string\n          notes: string | null\n          numero: string | null\n          prix_m2_negocie: number | null\n          remise_globale_pourcent: number | null\n          updated_at: string | null\n          volume_engagement_m2: number | null\n        }\n        Insert: {\n          actif?: boolean | null\n          atelier_id: string\n          client_id: string\n          conditions_paiement?: string | null\n          created_at?: string | null\n          date_debut: string\n          date_fin?: string | null\n          delai_paiement_jours?: number | null\n          id?: string\n          notes?: string | null\n          numero?: string | null\n          prix_m2_negocie?: number | null\n          remise_globale_pourcent?: number | null\n          updated_at?: string | null\n          volume_engagement_m2?: number | null\n        }\n        Update: {\n          actif?: boolean | null\n          atelier_id?: string\n          client_id?: string\n          conditions_paiement?: string | null\n          created_at?: string | null\n          date_debut?: string\n          date_fin?: string | null\n          delai_paiement_jours?: number | null\n          id?: string\n          notes?: string | null\n          numero?: string | null\n          prix_m2_negocie?: number | null\n          remise_globale_pourcent?: number | null\n          updated_at?: string | null\n          volume_engagement_m2?: number | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"contrats_clients_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"contrats_clients_client_id_fkey\"\n            columns: [\"client_id\"]\n            isOneToOne: false\n            referencedRelation: \"clients\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      controles_qualite: {\n        Row: {\n          adherence_ok: boolean | null\n          aspect_visuel_ok: boolean | null\n          atelier_id: string\n          brillance_ok: boolean | null\n          commentaires: string | null\n          controleur_id: string | null\n          created_at: string | null\n          date_controle: string | null\n          epaisseur_mesure: number | null\n          epaisseur_ok: boolean | null\n          etape: string\n          id: string\n          photos: string[] | null\n          projet_id: string\n          resultat: string | null\n          teinte_conforme: boolean | null\n        }\n        Insert: {\n          adherence_ok?: boolean | null\n          aspect_visuel_ok?: boolean | null\n          atelier_id: string\n          brillance_ok?: boolean | null\n          commentaires?: string | null\n          controleur_id?: string | null\n          created_at?: string | null\n          date_controle?: string | null\n          epaisseur_mesure?: number | null\n          epaisseur_ok?: boolean | null\n          etape: string\n          id?: string\n          photos?: string[] | null\n          projet_id: string\n          resultat?: string | null\n          teinte_conforme?: boolean | null\n        }\n        Update: {\n          adherence_ok?: boolean | null\n          aspect_visuel_ok?: boolean | null\n          atelier_id?: string\n          brillance_ok?: boolean | null\n          commentaires?: string | null\n          controleur_id?: string | null\n          created_at?: string | null\n          date_controle?: string | null\n          epaisseur_mesure?: number | null\n          epaisseur_ok?: boolean | null\n          etape?: string\n          id?: string\n          photos?: string[] | null\n          projet_id?: string\n          resultat?: string | null\n          teinte_conforme?: boolean | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"controles_qualite_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"controles_qualite_controleur_id_fkey\"\n            columns: [\"controleur_id\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"controles_qualite_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"projets\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"controles_qualite_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"v_rentabilite_projets\"\n            referencedColumns: [\"projet_id\"]\n          },\n        ]\n      }\n      couts_projet: {\n        Row: {\n          atelier_id: string\n          cout_total: number\n          cout_unitaire: number | null\n          created_at: string | null\n          created_by: string | null\n          date_cout: string | null\n          description: string | null\n          id: string\n          projet_id: string\n          quantite: number | null\n          type_cout: string\n          unite: string | null\n        }\n        Insert: {\n          atelier_id: string\n          cout_total: number\n          cout_unitaire?: number | null\n          created_at?: string | null\n          created_by?: string | null\n          date_cout?: string | null\n          description?: string | null\n          id?: string\n          projet_id: string\n          quantite?: number | null\n          type_cout: string\n          unite?: string | null\n        }\n        Update: {\n          atelier_id?: string\n          cout_total?: number\n          cout_unitaire?: number | null\n          created_at?: string | null\n          created_by?: string | null\n          date_cout?: string | null\n          description?: string | null\n          id?: string\n          projet_id?: string\n          quantite?: number | null\n          type_cout?: string\n          unite?: string | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"couts_projet_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"couts_projet_created_by_fkey\"\n            columns: [\"created_by\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"couts_projet_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"projets\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"couts_projet_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"v_rentabilite_projets\"\n            referencedColumns: [\"projet_id\"]\n          },\n        ]\n      }\n      dashboard_widgets: {\n        Row: {\n          created_at: string | null\n          height: number | null\n          id: string\n          position_x: number | null\n          position_y: number | null\n          updated_at: string | null\n          user_id: string\n          visible: boolean | null\n          widget_config: Json | null\n          widget_type: string\n          width: number | null\n        }\n        Insert: {\n          created_at?: string | null\n          height?: number | null\n          id?: string\n          position_x?: number | null\n          position_y?: number | null\n          updated_at?: string | null\n          user_id: string\n          visible?: boolean | null\n          widget_config?: Json | null\n          widget_type: string\n          width?: number | null\n        }\n        Update: {\n          created_at?: string | null\n          height?: number | null\n          id?: string\n          position_x?: number | null\n          position_y?: number | null\n          updated_at?: string | null\n          user_id?: string\n          visible?: boolean | null\n          widget_config?: Json | null\n          widget_type?: string\n          width?: number | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"dashboard_widgets_user_id_fkey\"\n            columns: [\"user_id\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      defaut_types: {\n        Row: {\n          atelier_id: string\n          category: string | null\n          created_at: string\n          description: string | null\n          id: string\n          is_active: boolean | null\n          name: string\n          updated_at: string\n        }\n        Insert: {\n          atelier_id: string\n          category?: string | null\n          created_at?: string\n          description?: string | null\n          id?: string\n          is_active?: boolean | null\n          name: string\n          updated_at?: string\n        }\n        Update: {\n          atelier_id?: string\n          category?: string | null\n          created_at?: string\n          description?: string | null\n          id?: string\n          is_active?: boolean | null\n          name?: string\n          updated_at?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"defaut_types_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      demandes_devis: {\n        Row: {\n          atelier_id: string\n          client_id: string\n          couleur_souhaitee: string | null\n          created_at: string | null\n          date_souhaitee: string | null\n          description: string | null\n          devis_id: string | null\n          finition: string | null\n          id: string\n          notes: string | null\n          quantite: number | null\n          status: string | null\n          titre: string\n          traite_at: string | null\n          traite_par: string | null\n          type_pieces: string | null\n          updated_at: string | null\n          urgence: string | null\n        }\n        Insert: {\n          atelier_id: string\n          client_id: string\n          couleur_souhaitee?: string | null\n          created_at?: string | null\n          date_souhaitee?: string | null\n          description?: string | null\n          devis_id?: string | null\n          finition?: string | null\n          id?: string\n          notes?: string | null\n          quantite?: number | null\n          status?: string | null\n          titre: string\n          traite_at?: string | null\n          traite_par?: string | null\n          type_pieces?: string | null\n          updated_at?: string | null\n          urgence?: string | null\n        }\n        Update: {\n          atelier_id?: string\n          client_id?: string\n          couleur_souhaitee?: string | null\n          created_at?: string | null\n          date_souhaitee?: string | null\n          description?: string | null\n          devis_id?: string | null\n          finition?: string | null\n          id?: string\n          notes?: string | null\n          quantite?: number | null\n          status?: string | null\n          titre?: string\n          traite_at?: string | null\n          traite_par?: string | null\n          type_pieces?: string | null\n          updated_at?: string | null\n          urgence?: string | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"demandes_devis_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"demandes_devis_client_id_fkey\"\n            columns: [\"client_id\"]\n            isOneToOne: false\n            referencedRelation: \"clients\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"demandes_devis_devis_id_fkey\"\n            columns: [\"devis_id\"]\n            isOneToOne: false\n            referencedRelation: \"devis\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"demandes_devis_traite_par_fkey\"\n            columns: [\"traite_par\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      devis: {\n        Row: {\n          atelier_id: string\n          auto_projet_created_at: string | null\n          client_id: string\n          created_at: string\n          created_by: string | null\n          derniere_relance_at: string | null\n          devis_parent_id: string | null\n          id: string\n          items: Json\n          marge_pct: number | null\n          numero: string\n          pdf_url: string | null\n          public_token: string | null\n          relance_count: number | null\n          relance_desactivee: boolean | null\n          remise: Json | null\n          signature_data: Json | null\n          signature_ip: string | null\n          signature_user_agent: string | null\n          signed_at: string | null\n          signed_by: string | null\n          signed_ip: string | null\n          status: string\n          template_id: string | null\n          total_ht: number\n          total_revient: number | null\n          total_ttc: number\n          tva_rate: number\n          updated_at: string\n          version_actuelle: number | null\n        }\n        Insert: {\n          atelier_id: string\n          auto_projet_created_at?: string | null\n          client_id: string\n          created_at?: string\n          created_by?: string | null\n          derniere_relance_at?: string | null\n          devis_parent_id?: string | null\n          id?: string\n          items?: Json\n          marge_pct?: number | null\n          numero: string\n          pdf_url?: string | null\n          public_token?: string | null\n          relance_count?: number | null\n          relance_desactivee?: boolean | null\n          remise?: Json | null\n          signature_data?: Json | null\n          signature_ip?: string | null\n          signature_user_agent?: string | null\n          signed_at?: string | null\n          signed_by?: string | null\n          signed_ip?: string | null\n          status?: string\n          template_id?: string | null\n          total_ht: number\n          total_revient?: number | null\n          total_ttc: number\n          tva_rate?: number\n          updated_at?: string\n          version_actuelle?: number | null\n        }\n        Update: {\n          atelier_id?: string\n          auto_projet_created_at?: string | null\n          client_id?: string\n          created_at?: string\n          created_by?: string | null\n          derniere_relance_at?: string | null\n          devis_parent_id?: string | null\n          id?: string\n          items?: Json\n          marge_pct?: number | null\n          numero?: string\n          pdf_url?: string | null\n          public_token?: string | null\n          relance_count?: number | null\n          relance_desactivee?: boolean | null\n          remise?: Json | null\n          signature_data?: Json | null\n          signature_ip?: string | null\n          signature_user_agent?: string | null\n          signed_at?: string | null\n          signed_by?: string | null\n          signed_ip?: string | null\n          status?: string\n          template_id?: string | null\n          total_ht?: number\n          total_revient?: number | null\n          total_ttc?: number\n          tva_rate?: number\n          updated_at?: string\n          version_actuelle?: number | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"devis_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"devis_client_id_fkey\"\n            columns: [\"client_id\"]\n            isOneToOne: false\n            referencedRelation: \"clients\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"devis_created_by_fkey\"\n            columns: [\"created_by\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"devis_devis_parent_id_fkey\"\n            columns: [\"devis_parent_id\"]\n            isOneToOne: false\n            referencedRelation: \"devis\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"fk_devis_template\"\n            columns: [\"template_id\"]\n            isOneToOne: false\n            referencedRelation: \"devis_templates\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      devis_templates: {\n        Row: {\n          atelier_id: string\n          config: Json\n          created_at: string\n          created_by: string | null\n          css_template: string | null\n          description: string | null\n          html_template: string | null\n          id: string\n          is_default: boolean | null\n          is_system: boolean | null\n          name: string\n          template_type: string\n          updated_at: string\n        }\n        Insert: {\n          atelier_id: string\n          config?: Json\n          created_at?: string\n          created_by?: string | null\n          css_template?: string | null\n          description?: string | null\n          html_template?: string | null\n          id?: string\n          is_default?: boolean | null\n          is_system?: boolean | null\n          name: string\n          template_type?: string\n          updated_at?: string\n        }\n        Update: {\n          atelier_id?: string\n          config?: Json\n          created_at?: string\n          created_by?: string | null\n          css_template?: string | null\n          description?: string | null\n          html_template?: string | null\n          id?: string\n          is_default?: boolean | null\n          is_system?: boolean | null\n          name?: string\n          template_type?: string\n          updated_at?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"devis_templates_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"devis_templates_created_by_fkey\"\n            columns: [\"created_by\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      devis_versions: {\n        Row: {\n          created_at: string | null\n          created_by: string | null\n          devis_id: string\n          id: string\n          items: Json\n          motif_modification: string | null\n          notes: string | null\n          total_ht: number\n          total_ttc: number\n          version_number: number\n        }\n        Insert: {\n          created_at?: string | null\n          created_by?: string | null\n          devis_id: string\n          id?: string\n          items: Json\n          motif_modification?: string | null\n          notes?: string | null\n          total_ht: number\n          total_ttc: number\n          version_number?: number\n        }\n        Update: {\n          created_at?: string | null\n          created_by?: string | null\n          devis_id?: string\n          id?: string\n          items?: Json\n          motif_modification?: string | null\n          notes?: string | null\n          total_ht?: number\n          total_ttc?: number\n          version_number?: number\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"devis_versions_created_by_fkey\"\n            columns: [\"created_by\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"devis_versions_devis_id_fkey\"\n            columns: [\"devis_id\"]\n            isOneToOne: false\n            referencedRelation: \"devis\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      email_config: {\n        Row: {\n          api_key: string | null\n          atelier_id: string\n          created_at: string\n          id: string\n          oauth_access_token: string | null\n          oauth_expires_at: string | null\n          oauth_refresh_token: string | null\n          provider: string\n          reply_to: string | null\n          sender_email: string | null\n          sender_name: string | null\n          smtp_host: string | null\n          smtp_password: string | null\n          smtp_port: number | null\n          smtp_secure: boolean | null\n          smtp_user: string | null\n          updated_at: string\n        }\n        Insert: {\n          api_key?: string | null\n          atelier_id: string\n          created_at?: string\n          id?: string\n          oauth_access_token?: string | null\n          oauth_expires_at?: string | null\n          oauth_refresh_token?: string | null\n          provider?: string\n          reply_to?: string | null\n          sender_email?: string | null\n          sender_name?: string | null\n          smtp_host?: string | null\n          smtp_password?: string | null\n          smtp_port?: number | null\n          smtp_secure?: boolean | null\n          smtp_user?: string | null\n          updated_at?: string\n        }\n        Update: {\n          api_key?: string | null\n          atelier_id?: string\n          created_at?: string\n          id?: string\n          oauth_access_token?: string | null\n          oauth_expires_at?: string | null\n          oauth_refresh_token?: string | null\n          provider?: string\n          reply_to?: string | null\n          sender_email?: string | null\n          sender_name?: string | null\n          smtp_host?: string | null\n          smtp_password?: string | null\n          smtp_port?: number | null\n          smtp_secure?: boolean | null\n          smtp_user?: string | null\n          updated_at?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"email_config_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: true\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      email_oauth_tokens: {\n        Row: {\n          access_token: string\n          atelier_id: string\n          created_at: string\n          expires_at: string | null\n          id: string\n          provider: string\n          refresh_token: string | null\n          scope: string | null\n          token_type: string | null\n          updated_at: string\n        }\n        Insert: {\n          access_token: string\n          atelier_id: string\n          created_at?: string\n          expires_at?: string | null\n          id?: string\n          provider: string\n          refresh_token?: string | null\n          scope?: string | null\n          token_type?: string | null\n          updated_at?: string\n        }\n        Update: {\n          access_token?: string\n          atelier_id?: string\n          created_at?: string\n          expires_at?: string | null\n          id?: string\n          provider?: string\n          refresh_token?: string | null\n          scope?: string | null\n          token_type?: string | null\n          updated_at?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"email_oauth_tokens_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      email_queue: {\n        Row: {\n          atelier_id: string\n          attachments: Json | null\n          created_at: string\n          error_message: string | null\n          html_content: string\n          id: string\n          max_retries: number | null\n          retry_count: number | null\n          sent_at: string | null\n          status: string\n          subject: string\n          text_content: string | null\n          to_email: string\n          to_name: string | null\n          updated_at: string\n        }\n        Insert: {\n          atelier_id: string\n          attachments?: Json | null\n          created_at?: string\n          error_message?: string | null\n          html_content: string\n          id?: string\n          max_retries?: number | null\n          retry_count?: number | null\n          sent_at?: string | null\n          status?: string\n          subject: string\n          text_content?: string | null\n          to_email: string\n          to_name?: string | null\n          updated_at?: string\n        }\n        Update: {\n          atelier_id?: string\n          attachments?: Json | null\n          created_at?: string\n          error_message?: string | null\n          html_content?: string\n          id?: string\n          max_retries?: number | null\n          retry_count?: number | null\n          sent_at?: string | null\n          status?: string\n          subject?: string\n          text_content?: string | null\n          to_email?: string\n          to_name?: string | null\n          updated_at?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"email_queue_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      equipements: {\n        Row: {\n          atelier_id: string\n          capacite_kg: number | null\n          created_at: string | null\n          disponible: boolean | null\n          hauteur_cm: number | null\n          horaires_ouverture: string | null\n          id: string\n          largeur_cm: number | null\n          longueur_cm: number | null\n          nom: string\n          notes: string | null\n          prochaine_maintenance: string | null\n          temp_max: number | null\n          type: string\n          updated_at: string | null\n        }\n        Insert: {\n          atelier_id: string\n          capacite_kg?: number | null\n          created_at?: string | null\n          disponible?: boolean | null\n          hauteur_cm?: number | null\n          horaires_ouverture?: string | null\n          id?: string\n          largeur_cm?: number | null\n          longueur_cm?: number | null\n          nom: string\n          notes?: string | null\n          prochaine_maintenance?: string | null\n          temp_max?: number | null\n          type: string\n          updated_at?: string | null\n        }\n        Update: {\n          atelier_id?: string\n          capacite_kg?: number | null\n          created_at?: string | null\n          disponible?: boolean | null\n          hauteur_cm?: number | null\n          horaires_ouverture?: string | null\n          id?: string\n          largeur_cm?: number | null\n          longueur_cm?: number | null\n          nom?: string\n          notes?: string | null\n          prochaine_maintenance?: string | null\n          temp_max?: number | null\n          type?: string\n          updated_at?: string | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"equipements_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      exports_comptables: {\n        Row: {\n          atelier_id: string\n          created_at: string | null\n          created_by: string | null\n          date_debut: string\n          date_fin: string\n          fichier_url: string | null\n          id: string\n          nb_ecritures: number | null\n          type_export: string\n        }\n        Insert: {\n          atelier_id: string\n          created_at?: string | null\n          created_by?: string | null\n          date_debut: string\n          date_fin: string\n          fichier_url?: string | null\n          id?: string\n          nb_ecritures?: number | null\n          type_export: string\n        }\n        Update: {\n          atelier_id?: string\n          created_at?: string | null\n          created_by?: string | null\n          date_debut?: string\n          date_fin?: string\n          fichier_url?: string | null\n          id?: string\n          nb_ecritures?: number | null\n          type_export?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"exports_comptables_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"exports_comptables_created_by_fkey\"\n            columns: [\"created_by\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      factures: {\n        Row: {\n          acompte_amount: number | null\n          atelier_id: string\n          auto_created: boolean | null\n          client_id: string\n          created_at: string\n          created_by: string | null\n          devis_id: string | null\n          devis_numero: string | null\n          due_date: string | null\n          fec_exported: boolean | null\n          fec_exported_at: string | null\n          format_numero: string | null\n          id: string\n          items: Json | null\n          notes: string | null\n          numero: string\n          paid_at: string | null\n          payment_initiated_at: string | null\n          payment_method: string | null\n          payment_ref: string | null\n          payment_status: string | null\n          pdf_url: string | null\n          pourcentage_acompte: number | null\n          projet_id: string | null\n          public_token: string | null\n          signature_url: string | null\n          signed_at: string | null\n          status: string\n          stripe_payment_intent_id: string | null\n          stripe_payment_link_id: string | null\n          stripe_session_id: string | null\n          total_ht: number\n          total_ttc: number\n          tva_rate: number\n          type: string\n          updated_at: string\n        }\n        Insert: {\n          acompte_amount?: number | null\n          atelier_id: string\n          auto_created?: boolean | null\n          client_id: string\n          created_at?: string\n          created_by?: string | null\n          devis_id?: string | null\n          devis_numero?: string | null\n          due_date?: string | null\n          fec_exported?: boolean | null\n          fec_exported_at?: string | null\n          format_numero?: string | null\n          id?: string\n          items?: Json | null\n          notes?: string | null\n          numero: string\n          paid_at?: string | null\n          payment_initiated_at?: string | null\n          payment_method?: string | null\n          payment_ref?: string | null\n          payment_status?: string | null\n          pdf_url?: string | null\n          pourcentage_acompte?: number | null\n          projet_id?: string | null\n          public_token?: string | null\n          signature_url?: string | null\n          signed_at?: string | null\n          status?: string\n          stripe_payment_intent_id?: string | null\n          stripe_payment_link_id?: string | null\n          stripe_session_id?: string | null\n          total_ht: number\n          total_ttc: number\n          tva_rate?: number\n          type: string\n          updated_at?: string\n        }\n        Update: {\n          acompte_amount?: number | null\n          atelier_id?: string\n          auto_created?: boolean | null\n          client_id?: string\n          created_at?: string\n          created_by?: string | null\n          devis_id?: string | null\n          devis_numero?: string | null\n          due_date?: string | null\n          fec_exported?: boolean | null\n          fec_exported_at?: string | null\n          format_numero?: string | null\n          id?: string\n          items?: Json | null\n          notes?: string | null\n          numero?: string\n          paid_at?: string | null\n          payment_initiated_at?: string | null\n          payment_method?: string | null\n          payment_ref?: string | null\n          payment_status?: string | null\n          pdf_url?: string | null\n          pourcentage_acompte?: number | null\n          projet_id?: string | null\n          public_token?: string | null\n          signature_url?: string | null\n          signed_at?: string | null\n          status?: string\n          stripe_payment_intent_id?: string | null\n          stripe_payment_link_id?: string | null\n          stripe_session_id?: string | null\n          total_ht?: number\n          total_ttc?: number\n          tva_rate?: number\n          type?: string\n          updated_at?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"factures_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"factures_client_id_fkey\"\n            columns: [\"client_id\"]\n            isOneToOne: false\n            referencedRelation: \"clients\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"factures_created_by_fkey\"\n            columns: [\"created_by\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"factures_devis_id_fkey\"\n            columns: [\"devis_id\"]\n            isOneToOne: false\n            referencedRelation: \"devis\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"factures_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"projets\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"factures_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"v_rentabilite_projets\"\n            referencedColumns: [\"projet_id\"]\n          },\n        ]\n      }\n      grilles_tarifaires: {\n        Row: {\n          atelier_id: string\n          complexite_complexe_coef: number | null\n          complexite_moyenne_coef: number | null\n          complexite_simple_coef: number | null\n          created_at: string | null\n          finition_brillant_coef: number | null\n          finition_mat_coef: number | null\n          finition_metallise_coef: number | null\n          finition_satine_coef: number | null\n          finition_texture_coef: number | null\n          forfait_minimum: number | null\n          id: string\n          is_default: boolean | null\n          nom: string\n          palier_1_coef: number | null\n          palier_1_max_m2: number | null\n          palier_2_coef: number | null\n          palier_2_max_m2: number | null\n          palier_3_coef: number | null\n          palier_3_max_m2: number | null\n          palier_4_coef: number | null\n          prix_base_m2: number | null\n          prix_couche_sup: number | null\n          prix_degraissage_m2: number | null\n          prix_primaire_m2: number | null\n          prix_sablage_m2: number | null\n          updated_at: string | null\n        }\n        Insert: {\n          atelier_id: string\n          complexite_complexe_coef?: number | null\n          complexite_moyenne_coef?: number | null\n          complexite_simple_coef?: number | null\n          created_at?: string | null\n          finition_brillant_coef?: number | null\n          finition_mat_coef?: number | null\n          finition_metallise_coef?: number | null\n          finition_satine_coef?: number | null\n          finition_texture_coef?: number | null\n          forfait_minimum?: number | null\n          id?: string\n          is_default?: boolean | null\n          nom?: string\n          palier_1_coef?: number | null\n          palier_1_max_m2?: number | null\n          palier_2_coef?: number | null\n          palier_2_max_m2?: number | null\n          palier_3_coef?: number | null\n          palier_3_max_m2?: number | null\n          palier_4_coef?: number | null\n          prix_base_m2?: number | null\n          prix_couche_sup?: number | null\n          prix_degraissage_m2?: number | null\n          prix_primaire_m2?: number | null\n          prix_sablage_m2?: number | null\n          updated_at?: string | null\n        }\n        Update: {\n          atelier_id?: string\n          complexite_complexe_coef?: number | null\n          complexite_moyenne_coef?: number | null\n          complexite_simple_coef?: number | null\n          created_at?: string | null\n          finition_brillant_coef?: number | null\n          finition_mat_coef?: number | null\n          finition_metallise_coef?: number | null\n          finition_satine_coef?: number | null\n          finition_texture_coef?: number | null\n          forfait_minimum?: number | null\n          id?: string\n          is_default?: boolean | null\n          nom?: string\n          palier_1_coef?: number | null\n          palier_1_max_m2?: number | null\n          palier_2_coef?: number | null\n          palier_2_max_m2?: number | null\n          palier_3_coef?: number | null\n          palier_3_max_m2?: number | null\n          palier_4_coef?: number | null\n          prix_base_m2?: number | null\n          prix_couche_sup?: number | null\n          prix_degraissage_m2?: number | null\n          prix_primaire_m2?: number | null\n          prix_sablage_m2?: number | null\n          updated_at?: string | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"grilles_tarifaires_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      interactions_client: {\n        Row: {\n          atelier_id: string\n          client_id: string\n          contenu: string | null\n          created_at: string | null\n          date_interaction: string | null\n          duree_minutes: number | null\n          id: string\n          relance_prevue: string | null\n          resultat: string | null\n          sujet: string | null\n          type: string\n          user_id: string | null\n        }\n        Insert: {\n          atelier_id: string\n          client_id: string\n          contenu?: string | null\n          created_at?: string | null\n          date_interaction?: string | null\n          duree_minutes?: number | null\n          id?: string\n          relance_prevue?: string | null\n          resultat?: string | null\n          sujet?: string | null\n          type: string\n          user_id?: string | null\n        }\n        Update: {\n          atelier_id?: string\n          client_id?: string\n          contenu?: string | null\n          created_at?: string | null\n          date_interaction?: string | null\n          duree_minutes?: number | null\n          id?: string\n          relance_prevue?: string | null\n          resultat?: string | null\n          sujet?: string | null\n          type?: string\n          user_id?: string | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"interactions_client_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"interactions_client_client_id_fkey\"\n            columns: [\"client_id\"]\n            isOneToOne: false\n            referencedRelation: \"clients\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"interactions_client_user_id_fkey\"\n            columns: [\"user_id\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      opportunites: {\n        Row: {\n          atelier_id: string\n          client_id: string\n          created_at: string | null\n          date_cloture_prevue: string | null\n          description: string | null\n          devis_id: string | null\n          id: string\n          montant_estime: number | null\n          notes: string | null\n          probabilite: number | null\n          responsable_id: string | null\n          source: string | null\n          statut: string | null\n          titre: string\n          updated_at: string | null\n        }\n        Insert: {\n          atelier_id: string\n          client_id: string\n          created_at?: string | null\n          date_cloture_prevue?: string | null\n          description?: string | null\n          devis_id?: string | null\n          id?: string\n          montant_estime?: number | null\n          notes?: string | null\n          probabilite?: number | null\n          responsable_id?: string | null\n          source?: string | null\n          statut?: string | null\n          titre: string\n          updated_at?: string | null\n        }\n        Update: {\n          atelier_id?: string\n          client_id?: string\n          created_at?: string | null\n          date_cloture_prevue?: string | null\n          description?: string | null\n          devis_id?: string | null\n          id?: string\n          montant_estime?: number | null\n          notes?: string | null\n          probabilite?: number | null\n          responsable_id?: string | null\n          source?: string | null\n          statut?: string | null\n          titre?: string\n          updated_at?: string | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"opportunites_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"opportunites_client_id_fkey\"\n            columns: [\"client_id\"]\n            isOneToOne: false\n            referencedRelation: \"clients\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"opportunites_devis_id_fkey\"\n            columns: [\"devis_id\"]\n            isOneToOne: false\n            referencedRelation: \"devis\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"opportunites_responsable_id_fkey\"\n            columns: [\"responsable_id\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      paiements: {\n        Row: {\n          amount: number\n          atelier_id: string\n          client_id: string\n          created_at: string\n          facture_id: string\n          id: string\n          notes: string | null\n          paid_at: string | null\n          payment_method: string\n          payment_ref: string | null\n          status: string\n          stripe_payment_intent_id: string | null\n          type: string\n          updated_at: string\n        }\n        Insert: {\n          amount: number\n          atelier_id: string\n          client_id: string\n          created_at?: string\n          facture_id: string\n          id?: string\n          notes?: string | null\n          paid_at?: string | null\n          payment_method: string\n          payment_ref?: string | null\n          status?: string\n          stripe_payment_intent_id?: string | null\n          type: string\n          updated_at?: string\n        }\n        Update: {\n          amount?: number\n          atelier_id?: string\n          client_id?: string\n          created_at?: string\n          facture_id?: string\n          id?: string\n          notes?: string | null\n          paid_at?: string | null\n          payment_method?: string\n          payment_ref?: string | null\n          status?: string\n          stripe_payment_intent_id?: string | null\n          type?: string\n          updated_at?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"paiements_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"paiements_client_id_fkey\"\n            columns: [\"client_id\"]\n            isOneToOne: false\n            referencedRelation: \"clients\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"paiements_facture_id_fkey\"\n            columns: [\"facture_id\"]\n            isOneToOne: false\n            referencedRelation: \"factures\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      photos: {\n        Row: {\n          atelier_id: string\n          created_at: string\n          created_by: string | null\n          id: string\n          metadata: Json | null\n          projet_id: string\n          size_bytes: number\n          step_index: number | null\n          storage_path: string\n          type: string\n          url: string\n        }\n        Insert: {\n          atelier_id: string\n          created_at?: string\n          created_by?: string | null\n          id?: string\n          metadata?: Json | null\n          projet_id: string\n          size_bytes: number\n          step_index?: number | null\n          storage_path: string\n          type: string\n          url: string\n        }\n        Update: {\n          atelier_id?: string\n          created_at?: string\n          created_by?: string | null\n          id?: string\n          metadata?: Json | null\n          projet_id?: string\n          size_bytes?: number\n          step_index?: number | null\n          storage_path?: string\n          type?: string\n          url?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"photos_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"photos_created_by_fkey\"\n            columns: [\"created_by\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"photos_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"projets\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"photos_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"v_rentabilite_projets\"\n            referencedColumns: [\"projet_id\"]\n          },\n        ]\n      }\n      pointages: {\n        Row: {\n          atelier_id: string\n          created_at: string | null\n          date_debut: string\n          date_fin: string | null\n          duree_minutes: number | null\n          etape: string\n          id: string\n          notes: string | null\n          pause_minutes: number | null\n          projet_id: string\n          user_id: string\n        }\n        Insert: {\n          atelier_id: string\n          created_at?: string | null\n          date_debut?: string\n          date_fin?: string | null\n          duree_minutes?: number | null\n          etape: string\n          id?: string\n          notes?: string | null\n          pause_minutes?: number | null\n          projet_id: string\n          user_id: string\n        }\n        Update: {\n          atelier_id?: string\n          created_at?: string | null\n          date_debut?: string\n          date_fin?: string | null\n          duree_minutes?: number | null\n          etape?: string\n          id?: string\n          notes?: string | null\n          pause_minutes?: number | null\n          projet_id?: string\n          user_id?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"pointages_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"pointages_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"projets\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"pointages_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"v_rentabilite_projets\"\n            referencedColumns: [\"projet_id\"]\n          },\n          {\n            foreignKeyName: \"pointages_user_id_fkey\"\n            columns: [\"user_id\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      poudres: {\n        Row: {\n          atelier_id: string\n          certifications: string[] | null\n          consommation_m2: number | null\n          created_at: string\n          date_peremption: string | null\n          date_reception: string | null\n          densite: number | null\n          duree_cuisson: number | null\n          epaisseur_conseillee: number | null\n          fds_url: string | null\n          fiche_technique_url: string | null\n          finition: string\n          fournisseur: string | null\n          id: string\n          marque: string\n          numero_lot: string | null\n          prix_kg: number | null\n          qualicoat_approved: boolean | null\n          qualimarine_approved: boolean | null\n          ral: string | null\n          reference: string\n          rendement_m2_kg: number | null\n          source: string | null\n          stock_min_kg: number | null\n          stock_reel_kg: number | null\n          stock_theorique_kg: number | null\n          temp_cuisson: number | null\n          type: string\n          updated_at: string\n        }\n        Insert: {\n          atelier_id: string\n          certifications?: string[] | null\n          consommation_m2?: number | null\n          created_at?: string\n          date_peremption?: string | null\n          date_reception?: string | null\n          densite?: number | null\n          duree_cuisson?: number | null\n          epaisseur_conseillee?: number | null\n          fds_url?: string | null\n          fiche_technique_url?: string | null\n          finition: string\n          fournisseur?: string | null\n          id?: string\n          marque: string\n          numero_lot?: string | null\n          prix_kg?: number | null\n          qualicoat_approved?: boolean | null\n          qualimarine_approved?: boolean | null\n          ral?: string | null\n          reference: string\n          rendement_m2_kg?: number | null\n          source?: string | null\n          stock_min_kg?: number | null\n          stock_reel_kg?: number | null\n          stock_theorique_kg?: number | null\n          temp_cuisson?: number | null\n          type: string\n          updated_at?: string\n        }\n        Update: {\n          atelier_id?: string\n          certifications?: string[] | null\n          consommation_m2?: number | null\n          created_at?: string\n          date_peremption?: string | null\n          date_reception?: string | null\n          densite?: number | null\n          duree_cuisson?: number | null\n          epaisseur_conseillee?: number | null\n          fds_url?: string | null\n          fiche_technique_url?: string | null\n          finition?: string\n          fournisseur?: string | null\n          id?: string\n          marque?: string\n          numero_lot?: string | null\n          prix_kg?: number | null\n          qualicoat_approved?: boolean | null\n          qualimarine_approved?: boolean | null\n          ral?: string | null\n          reference?: string\n          rendement_m2_kg?: number | null\n          source?: string | null\n          stock_min_kg?: number | null\n          stock_reel_kg?: number | null\n          stock_theorique_kg?: number | null\n          temp_cuisson?: number | null\n          type?: string\n          updated_at?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"poudres_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      predictions: {\n        Row: {\n          atelier_id: string\n          confidence: number | null\n          created_at: string | null\n          entite_id: string | null\n          entite_type: string | null\n          id: string\n          modele_version: string | null\n          prediction_value: Json\n          type: string\n          was_correct: boolean | null\n        }\n        Insert: {\n          atelier_id: string\n          confidence?: number | null\n          created_at?: string | null\n          entite_id?: string | null\n          entite_type?: string | null\n          id?: string\n          modele_version?: string | null\n          prediction_value: Json\n          type: string\n          was_correct?: boolean | null\n        }\n        Update: {\n          atelier_id?: string\n          confidence?: number | null\n          created_at?: string | null\n          entite_id?: string | null\n          entite_type?: string | null\n          id?: string\n          modele_version?: string | null\n          prediction_value?: Json\n          type?: string\n          was_correct?: boolean | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"predictions_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      prestations: {\n        Row: {\n          atelier_id: string\n          categorie: string | null\n          code: string\n          created_at: string | null\n          description: string | null\n          duree_estimee_min: number | null\n          id: string\n          is_active: boolean | null\n          nom: string\n          ordre_affichage: number | null\n          prix_unitaire_ht: number\n          tva_rate: number | null\n          unite: string | null\n          updated_at: string | null\n        }\n        Insert: {\n          atelier_id: string\n          categorie?: string | null\n          code: string\n          created_at?: string | null\n          description?: string | null\n          duree_estimee_min?: number | null\n          id?: string\n          is_active?: boolean | null\n          nom: string\n          ordre_affichage?: number | null\n          prix_unitaire_ht: number\n          tva_rate?: number | null\n          unite?: string | null\n          updated_at?: string | null\n        }\n        Update: {\n          atelier_id?: string\n          categorie?: string | null\n          code?: string\n          created_at?: string | null\n          description?: string | null\n          duree_estimee_min?: number | null\n          id?: string\n          is_active?: boolean | null\n          nom?: string\n          ordre_affichage?: number | null\n          prix_unitaire_ht?: number\n          tva_rate?: number | null\n          unite?: string | null\n          updated_at?: string | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"prestations_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      projet_racks: {\n        Row: {\n          created_at: string | null\n          date_chargement: string | null\n          date_dechargement: string | null\n          id: string\n          notes: string | null\n          photo_chargement_url: string | null\n          projet_id: string\n          rack_id: string\n        }\n        Insert: {\n          created_at?: string | null\n          date_chargement?: string | null\n          date_dechargement?: string | null\n          id?: string\n          notes?: string | null\n          photo_chargement_url?: string | null\n          projet_id: string\n          rack_id: string\n        }\n        Update: {\n          created_at?: string | null\n          date_chargement?: string | null\n          date_dechargement?: string | null\n          id?: string\n          notes?: string | null\n          photo_chargement_url?: string | null\n          projet_id?: string\n          rack_id?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"projet_racks_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"projets\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"projet_racks_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"v_rentabilite_projets\"\n            referencedColumns: [\"projet_id\"]\n          },\n          {\n            foreignKeyName: \"projet_racks_rack_id_fkey\"\n            columns: [\"rack_id\"]\n            isOneToOne: false\n            referencedRelation: \"racks\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      projets: {\n        Row: {\n          atelier_id: string\n          auto_created: boolean | null\n          auto_facture_created_at: string | null\n          auto_stock_decremented_at: string | null\n          bl_id: string | null\n          certification_requise: string | null\n          client_id: string\n          couches: number\n          created_at: string\n          created_by: string | null\n          current_step: number | null\n          date_depot: string | null\n          date_livre: string | null\n          date_promise: string | null\n          devis_id: string | null\n          duree_cuisson: number | null\n          facture_acompte_id: string | null\n          facture_solde_id: string | null\n          id: string\n          montant_acompte: number | null\n          montant_facture: number | null\n          montant_paye: number | null\n          montant_total: number | null\n          name: string\n          numero: string\n          parametres_cuisson: Json | null\n          photos_count: number | null\n          photos_size_mb: number | null\n          pieces: Json | null\n          poudre_id: string | null\n          poudre_quantite_kg: number | null\n          public_token: string | null\n          qr_generated_at: string | null\n          qr_token: string | null\n          status: string\n          temp_cuisson: number | null\n          temps_estime_min: number | null\n          temps_reel_min: number | null\n          updated_at: string\n          workflow_config: Json | null\n        }\n        Insert: {\n          atelier_id: string\n          auto_created?: boolean | null\n          auto_facture_created_at?: string | null\n          auto_stock_decremented_at?: string | null\n          bl_id?: string | null\n          certification_requise?: string | null\n          client_id: string\n          couches?: number\n          created_at?: string\n          created_by?: string | null\n          current_step?: number | null\n          date_depot?: string | null\n          date_livre?: string | null\n          date_promise?: string | null\n          devis_id?: string | null\n          duree_cuisson?: number | null\n          facture_acompte_id?: string | null\n          facture_solde_id?: string | null\n          id?: string\n          montant_acompte?: number | null\n          montant_facture?: number | null\n          montant_paye?: number | null\n          montant_total?: number | null\n          name: string\n          numero: string\n          parametres_cuisson?: Json | null\n          photos_count?: number | null\n          photos_size_mb?: number | null\n          pieces?: Json | null\n          poudre_id?: string | null\n          poudre_quantite_kg?: number | null\n          public_token?: string | null\n          qr_generated_at?: string | null\n          qr_token?: string | null\n          status?: string\n          temp_cuisson?: number | null\n          temps_estime_min?: number | null\n          temps_reel_min?: number | null\n          updated_at?: string\n          workflow_config?: Json | null\n        }\n        Update: {\n          atelier_id?: string\n          auto_created?: boolean | null\n          auto_facture_created_at?: string | null\n          auto_stock_decremented_at?: string | null\n          bl_id?: string | null\n          certification_requise?: string | null\n          client_id?: string\n          couches?: number\n          created_at?: string\n          created_by?: string | null\n          current_step?: number | null\n          date_depot?: string | null\n          date_livre?: string | null\n          date_promise?: string | null\n          devis_id?: string | null\n          duree_cuisson?: number | null\n          facture_acompte_id?: string | null\n          facture_solde_id?: string | null\n          id?: string\n          montant_acompte?: number | null\n          montant_facture?: number | null\n          montant_paye?: number | null\n          montant_total?: number | null\n          name?: string\n          numero?: string\n          parametres_cuisson?: Json | null\n          photos_count?: number | null\n          photos_size_mb?: number | null\n          pieces?: Json | null\n          poudre_id?: string | null\n          poudre_quantite_kg?: number | null\n          public_token?: string | null\n          qr_generated_at?: string | null\n          qr_token?: string | null\n          status?: string\n          temp_cuisson?: number | null\n          temps_estime_min?: number | null\n          temps_reel_min?: number | null\n          updated_at?: string\n          workflow_config?: Json | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"projets_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"projets_client_id_fkey\"\n            columns: [\"client_id\"]\n            isOneToOne: false\n            referencedRelation: \"clients\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"projets_created_by_fkey\"\n            columns: [\"created_by\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"projets_devis_id_fkey\"\n            columns: [\"devis_id\"]\n            isOneToOne: false\n            referencedRelation: \"devis\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"projets_facture_acompte_id_fkey\"\n            columns: [\"facture_acompte_id\"]\n            isOneToOne: false\n            referencedRelation: \"factures\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"projets_facture_solde_id_fkey\"\n            columns: [\"facture_solde_id\"]\n            isOneToOne: false\n            referencedRelation: \"factures\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"projets_poudre_id_fkey\"\n            columns: [\"poudre_id\"]\n            isOneToOne: false\n            referencedRelation: \"poudres\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      push_notifications: {\n        Row: {\n          atelier_id: string\n          badge: string | null\n          body: string\n          created_at: string\n          data: Json | null\n          error_message: string | null\n          icon: string | null\n          id: string\n          sent_at: string | null\n          status: string\n          subscription_id: string | null\n          title: string\n          user_id: string | null\n        }\n        Insert: {\n          atelier_id: string\n          badge?: string | null\n          body: string\n          created_at?: string\n          data?: Json | null\n          error_message?: string | null\n          icon?: string | null\n          id?: string\n          sent_at?: string | null\n          status?: string\n          subscription_id?: string | null\n          title: string\n          user_id?: string | null\n        }\n        Update: {\n          atelier_id?: string\n          badge?: string | null\n          body?: string\n          created_at?: string\n          data?: Json | null\n          error_message?: string | null\n          icon?: string | null\n          id?: string\n          sent_at?: string | null\n          status?: string\n          subscription_id?: string | null\n          title?: string\n          user_id?: string | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"push_notifications_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"push_notifications_subscription_id_fkey\"\n            columns: [\"subscription_id\"]\n            isOneToOne: false\n            referencedRelation: \"push_subscriptions\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"push_notifications_user_id_fkey\"\n            columns: [\"user_id\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      push_subscriptions: {\n        Row: {\n          atelier_id: string\n          auth: string\n          created_at: string\n          endpoint: string\n          id: string\n          p256dh: string\n          updated_at: string\n          user_agent: string | null\n          user_id: string\n        }\n        Insert: {\n          atelier_id: string\n          auth: string\n          created_at?: string\n          endpoint: string\n          id?: string\n          p256dh: string\n          updated_at?: string\n          user_agent?: string | null\n          user_id: string\n        }\n        Update: {\n          atelier_id?: string\n          auth?: string\n          created_at?: string\n          endpoint?: string\n          id?: string\n          p256dh?: string\n          updated_at?: string\n          user_agent?: string | null\n          user_id?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"push_subscriptions_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"push_subscriptions_user_id_fkey\"\n            columns: [\"user_id\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      racks: {\n        Row: {\n          atelier_id: string\n          capacite_kg: number | null\n          created_at: string | null\n          hauteur_cm: number | null\n          id: string\n          largeur_cm: number | null\n          longueur_cm: number | null\n          nb_crochets: number | null\n          nom: string | null\n          notes: string | null\n          numero: string\n          photo_url: string | null\n          status: string | null\n          type: string | null\n          updated_at: string | null\n        }\n        Insert: {\n          atelier_id: string\n          capacite_kg?: number | null\n          created_at?: string | null\n          hauteur_cm?: number | null\n          id?: string\n          largeur_cm?: number | null\n          longueur_cm?: number | null\n          nb_crochets?: number | null\n          nom?: string | null\n          notes?: string | null\n          numero: string\n          photo_url?: string | null\n          status?: string | null\n          type?: string | null\n          updated_at?: string | null\n        }\n        Update: {\n          atelier_id?: string\n          capacite_kg?: number | null\n          created_at?: string | null\n          hauteur_cm?: number | null\n          id?: string\n          largeur_cm?: number | null\n          longueur_cm?: number | null\n          nb_crochets?: number | null\n          nom?: string | null\n          notes?: string | null\n          numero?: string\n          photo_url?: string | null\n          status?: string | null\n          type?: string | null\n          updated_at?: string | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"racks_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      relances: {\n        Row: {\n          atelier_id: string\n          canal: string | null\n          client_id: string\n          contenu: string | null\n          created_at: string | null\n          date_relance: string | null\n          id: string\n          niveau: number | null\n          prochaine_relance: string | null\n          reference_id: string\n          reference_type: string\n          repondu_at: string | null\n          reponse: string | null\n          statut: string | null\n          type_relance: string\n        }\n        Insert: {\n          atelier_id: string\n          canal?: string | null\n          client_id: string\n          contenu?: string | null\n          created_at?: string | null\n          date_relance?: string | null\n          id?: string\n          niveau?: number | null\n          prochaine_relance?: string | null\n          reference_id: string\n          reference_type: string\n          repondu_at?: string | null\n          reponse?: string | null\n          statut?: string | null\n          type_relance: string\n        }\n        Update: {\n          atelier_id?: string\n          canal?: string | null\n          client_id?: string\n          contenu?: string | null\n          created_at?: string | null\n          date_relance?: string | null\n          id?: string\n          niveau?: number | null\n          prochaine_relance?: string | null\n          reference_id?: string\n          reference_type?: string\n          repondu_at?: string | null\n          reponse?: string | null\n          statut?: string | null\n          type_relance?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"relances_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"relances_client_id_fkey\"\n            columns: [\"client_id\"]\n            isOneToOne: false\n            referencedRelation: \"clients\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      reservations_equipement: {\n        Row: {\n          created_at: string | null\n          created_by: string | null\n          date_debut: string\n          date_fin: string\n          equipement_id: string\n          id: string\n          notes: string | null\n          projet_id: string | null\n          temperature: number | null\n        }\n        Insert: {\n          created_at?: string | null\n          created_by?: string | null\n          date_debut: string\n          date_fin: string\n          equipement_id: string\n          id?: string\n          notes?: string | null\n          projet_id?: string | null\n          temperature?: number | null\n        }\n        Update: {\n          created_at?: string | null\n          created_by?: string | null\n          date_debut?: string\n          date_fin?: string\n          equipement_id?: string\n          id?: string\n          notes?: string | null\n          projet_id?: string | null\n          temperature?: number | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"reservations_equipement_created_by_fkey\"\n            columns: [\"created_by\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"reservations_equipement_equipement_id_fkey\"\n            columns: [\"equipement_id\"]\n            isOneToOne: false\n            referencedRelation: \"equipements\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"reservations_equipement_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"projets\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"reservations_equipement_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"v_rentabilite_projets\"\n            referencedColumns: [\"projet_id\"]\n          },\n        ]\n      }\n      retouches: {\n        Row: {\n          action_corrective: string | null\n          atelier_id: string\n          cout_estime: number | null\n          created_at: string\n          created_by: string | null\n          date_validation: string | null\n          defaut_type_id: string | null\n          delai_induit_jours: number | null\n          description: string\n          gravite: string | null\n          id: string\n          photo_url: string | null\n          photos_apres: string[] | null\n          photos_avant: string[] | null\n          projet_id: string\n          resolved_at: string | null\n          resolved_by: string | null\n          status: string\n          step_index: number | null\n          temps_estime_min: number | null\n          temps_reel_min: number | null\n          type_defaut_id: string | null\n          updated_at: string\n          valide_par: string | null\n        }\n        Insert: {\n          action_corrective?: string | null\n          atelier_id: string\n          cout_estime?: number | null\n          created_at?: string\n          created_by?: string | null\n          date_validation?: string | null\n          defaut_type_id?: string | null\n          delai_induit_jours?: number | null\n          description: string\n          gravite?: string | null\n          id?: string\n          photo_url?: string | null\n          photos_apres?: string[] | null\n          photos_avant?: string[] | null\n          projet_id: string\n          resolved_at?: string | null\n          resolved_by?: string | null\n          status?: string\n          step_index?: number | null\n          temps_estime_min?: number | null\n          temps_reel_min?: number | null\n          type_defaut_id?: string | null\n          updated_at?: string\n          valide_par?: string | null\n        }\n        Update: {\n          action_corrective?: string | null\n          atelier_id?: string\n          cout_estime?: number | null\n          created_at?: string\n          created_by?: string | null\n          date_validation?: string | null\n          defaut_type_id?: string | null\n          delai_induit_jours?: number | null\n          description?: string\n          gravite?: string | null\n          id?: string\n          photo_url?: string | null\n          photos_apres?: string[] | null\n          photos_avant?: string[] | null\n          projet_id?: string\n          resolved_at?: string | null\n          resolved_by?: string | null\n          status?: string\n          step_index?: number | null\n          temps_estime_min?: number | null\n          temps_reel_min?: number | null\n          type_defaut_id?: string | null\n          updated_at?: string\n          valide_par?: string | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"retouches_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"retouches_created_by_fkey\"\n            columns: [\"created_by\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"retouches_defaut_type_id_fkey\"\n            columns: [\"defaut_type_id\"]\n            isOneToOne: false\n            referencedRelation: \"defaut_types\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"retouches_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"projets\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"retouches_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"v_rentabilite_projets\"\n            referencedColumns: [\"projet_id\"]\n          },\n          {\n            foreignKeyName: \"retouches_resolved_by_fkey\"\n            columns: [\"resolved_by\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"retouches_type_defaut_id_fkey\"\n            columns: [\"type_defaut_id\"]\n            isOneToOne: false\n            referencedRelation: \"types_defauts\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"retouches_valide_par_fkey\"\n            columns: [\"valide_par\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      review_requests: {\n        Row: {\n          atelier_id: string\n          clicked_at: string | null\n          client_id: string | null\n          created_at: string | null\n          email: string\n          id: string\n          projet_id: string | null\n          sent_at: string | null\n          tracking_token: string | null\n        }\n        Insert: {\n          atelier_id: string\n          clicked_at?: string | null\n          client_id?: string | null\n          created_at?: string | null\n          email: string\n          id?: string\n          projet_id?: string | null\n          sent_at?: string | null\n          tracking_token?: string | null\n        }\n        Update: {\n          atelier_id?: string\n          clicked_at?: string | null\n          client_id?: string | null\n          created_at?: string | null\n          email?: string\n          id?: string\n          projet_id?: string | null\n          sent_at?: string | null\n          tracking_token?: string | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"review_requests_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"review_requests_client_id_fkey\"\n            columns: [\"client_id\"]\n            isOneToOne: false\n            referencedRelation: \"clients\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"review_requests_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"projets\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"review_requests_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"v_rentabilite_projets\"\n            referencedColumns: [\"projet_id\"]\n          },\n        ]\n      }\n      series: {\n        Row: {\n          atelier_id: string\n          created_at: string\n          created_by: string | null\n          date_creation: string\n          date_cuisson: string | null\n          id: string\n          numero: string\n          poudre_id: string\n          projets_ids: string[]\n          status: string\n          updated_at: string\n        }\n        Insert: {\n          atelier_id: string\n          created_at?: string\n          created_by?: string | null\n          date_creation?: string\n          date_cuisson?: string | null\n          id?: string\n          numero: string\n          poudre_id: string\n          projets_ids: string[]\n          status?: string\n          updated_at?: string\n        }\n        Update: {\n          atelier_id?: string\n          created_at?: string\n          created_by?: string | null\n          date_creation?: string\n          date_cuisson?: string | null\n          id?: string\n          numero?: string\n          poudre_id?: string\n          projets_ids?: string[]\n          status?: string\n          updated_at?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"series_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"series_created_by_fkey\"\n            columns: [\"created_by\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"series_poudre_id_fkey\"\n            columns: [\"poudre_id\"]\n            isOneToOne: false\n            referencedRelation: \"poudres\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      sms_logs: {\n        Row: {\n          atelier_id: string\n          client_id: string | null\n          created_at: string | null\n          error_message: string | null\n          id: string\n          message: string\n          phone_number: string\n          projet_id: string | null\n          sent_at: string | null\n          status: string | null\n          twilio_sid: string | null\n          type: string | null\n        }\n        Insert: {\n          atelier_id: string\n          client_id?: string | null\n          created_at?: string | null\n          error_message?: string | null\n          id?: string\n          message: string\n          phone_number: string\n          projet_id?: string | null\n          sent_at?: string | null\n          status?: string | null\n          twilio_sid?: string | null\n          type?: string | null\n        }\n        Update: {\n          atelier_id?: string\n          client_id?: string | null\n          created_at?: string | null\n          error_message?: string | null\n          id?: string\n          message?: string\n          phone_number?: string\n          projet_id?: string | null\n          sent_at?: string | null\n          status?: string | null\n          twilio_sid?: string | null\n          type?: string | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"sms_logs_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"sms_logs_client_id_fkey\"\n            columns: [\"client_id\"]\n            isOneToOne: false\n            referencedRelation: \"clients\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"sms_logs_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"projets\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"sms_logs_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"v_rentabilite_projets\"\n            referencedColumns: [\"projet_id\"]\n          },\n        ]\n      }\n      stats_projets_historique: {\n        Row: {\n          atelier_id: string\n          ca_total: number | null\n          created_at: string | null\n          delai_moyen_jours: number | null\n          id: string\n          mois: string\n          nb_projets: number | null\n          surface_totale_m2: number | null\n          taux_retouche: number | null\n          temps_moyen_min: number | null\n        }\n        Insert: {\n          atelier_id: string\n          ca_total?: number | null\n          created_at?: string | null\n          delai_moyen_jours?: number | null\n          id?: string\n          mois: string\n          nb_projets?: number | null\n          surface_totale_m2?: number | null\n          taux_retouche?: number | null\n          temps_moyen_min?: number | null\n        }\n        Update: {\n          atelier_id?: string\n          ca_total?: number | null\n          created_at?: string | null\n          delai_moyen_jours?: number | null\n          id?: string\n          mois?: string\n          nb_projets?: number | null\n          surface_totale_m2?: number | null\n          taux_retouche?: number | null\n          temps_moyen_min?: number | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"stats_projets_historique_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      stock_mouvements: {\n        Row: {\n          atelier_id: string\n          created_at: string\n          created_by: string | null\n          id: string\n          motif: string | null\n          poudre_id: string\n          projet_id: string | null\n          quantite: number\n          quantite_apres: number | null\n          quantite_avant: number | null\n          type: string\n        }\n        Insert: {\n          atelier_id: string\n          created_at?: string\n          created_by?: string | null\n          id?: string\n          motif?: string | null\n          poudre_id: string\n          projet_id?: string | null\n          quantite: number\n          quantite_apres?: number | null\n          quantite_avant?: number | null\n          type: string\n        }\n        Update: {\n          atelier_id?: string\n          created_at?: string\n          created_by?: string | null\n          id?: string\n          motif?: string | null\n          poudre_id?: string\n          projet_id?: string | null\n          quantite?: number\n          quantite_apres?: number | null\n          quantite_avant?: number | null\n          type?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"stock_mouvements_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"stock_mouvements_created_by_fkey\"\n            columns: [\"created_by\"]\n            isOneToOne: false\n            referencedRelation: \"users\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"stock_mouvements_poudre_id_fkey\"\n            columns: [\"poudre_id\"]\n            isOneToOne: false\n            referencedRelation: \"poudres\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"stock_mouvements_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"projets\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"stock_mouvements_projet_id_fkey\"\n            columns: [\"projet_id\"]\n            isOneToOne: false\n            referencedRelation: \"v_rentabilite_projets\"\n            referencedColumns: [\"projet_id\"]\n          },\n        ]\n      }\n      stock_poudres: {\n        Row: {\n          alerte_active: boolean | null\n          atelier_id: string\n          created_at: string\n          dernier_pesee_at: string | null\n          derniere_alerte_at: string | null\n          historique_pesees: Json | null\n          id: string\n          poudre_id: string\n          seuil_alerte_kg: number | null\n          stock_reel_kg: number | null\n          stock_theorique_kg: number\n          tare_carton_kg: number | null\n          updated_at: string\n        }\n        Insert: {\n          alerte_active?: boolean | null\n          atelier_id: string\n          created_at?: string\n          dernier_pesee_at?: string | null\n          derniere_alerte_at?: string | null\n          historique_pesees?: Json | null\n          id?: string\n          poudre_id: string\n          seuil_alerte_kg?: number | null\n          stock_reel_kg?: number | null\n          stock_theorique_kg?: number\n          tare_carton_kg?: number | null\n          updated_at?: string\n        }\n        Update: {\n          alerte_active?: boolean | null\n          atelier_id?: string\n          created_at?: string\n          dernier_pesee_at?: string | null\n          derniere_alerte_at?: string | null\n          historique_pesees?: Json | null\n          id?: string\n          poudre_id?: string\n          seuil_alerte_kg?: number | null\n          stock_reel_kg?: number | null\n          stock_theorique_kg?: number\n          tare_carton_kg?: number | null\n          updated_at?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"stock_poudres_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"stock_poudres_poudre_id_fkey\"\n            columns: [\"poudre_id\"]\n            isOneToOne: false\n            referencedRelation: \"poudres\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      tarifs_client: {\n        Row: {\n          contrat_id: string\n          created_at: string | null\n          description: string | null\n          id: string\n          prestation_id: string | null\n          prix_unitaire_ht: number\n          remise_pourcent: number | null\n        }\n        Insert: {\n          contrat_id: string\n          created_at?: string | null\n          description?: string | null\n          id?: string\n          prestation_id?: string | null\n          prix_unitaire_ht: number\n          remise_pourcent?: number | null\n        }\n        Update: {\n          contrat_id?: string\n          created_at?: string | null\n          description?: string | null\n          id?: string\n          prestation_id?: string | null\n          prix_unitaire_ht?: number\n          remise_pourcent?: number | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"tarifs_client_contrat_id_fkey\"\n            columns: [\"contrat_id\"]\n            isOneToOne: false\n            referencedRelation: \"contrats_clients\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"tarifs_client_prestation_id_fkey\"\n            columns: [\"prestation_id\"]\n            isOneToOne: false\n            referencedRelation: \"prestations\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      tarifs_clients: {\n        Row: {\n          atelier_id: string\n          client_id: string\n          conditions_paiement: string | null\n          created_at: string | null\n          grille_id: string | null\n          id: string\n          notes: string | null\n          remise_globale_pct: number | null\n          updated_at: string | null\n        }\n        Insert: {\n          atelier_id: string\n          client_id: string\n          conditions_paiement?: string | null\n          created_at?: string | null\n          grille_id?: string | null\n          id?: string\n          notes?: string | null\n          remise_globale_pct?: number | null\n          updated_at?: string | null\n        }\n        Update: {\n          atelier_id?: string\n          client_id?: string\n          conditions_paiement?: string | null\n          created_at?: string | null\n          grille_id?: string | null\n          id?: string\n          notes?: string | null\n          remise_globale_pct?: number | null\n          updated_at?: string | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"tarifs_clients_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"tarifs_clients_client_id_fkey\"\n            columns: [\"client_id\"]\n            isOneToOne: false\n            referencedRelation: \"clients\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"tarifs_clients_grille_id_fkey\"\n            columns: [\"grille_id\"]\n            isOneToOne: false\n            referencedRelation: \"grilles_tarifaires\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      team_invitations: {\n        Row: {\n          accepted_at: string | null\n          atelier_id: string\n          created_at: string | null\n          email: string\n          expires_at: string | null\n          id: string\n          invited_by: string | null\n          role: string\n          status: string | null\n          token: string | null\n        }\n        Insert: {\n          accepted_at?: string | null\n          atelier_id: string\n          created_at?: string | null\n          email: string\n          expires_at?: string | null\n          id?: string\n          invited_by?: string | null\n          role?: string\n          status?: string | null\n          token?: string | null\n        }\n        Update: {\n          accepted_at?: string | null\n          atelier_id?: string\n          created_at?: string | null\n          email?: string\n          expires_at?: string | null\n          id?: string\n          invited_by?: string | null\n          role?: string\n          status?: string | null\n          token?: string | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"team_invitations_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      types_defauts: {\n        Row: {\n          action_corrective: string | null\n          atelier_id: string\n          code: string\n          created_at: string | null\n          description: string | null\n          gravite: string | null\n          id: string\n          is_active: boolean | null\n          nom: string\n        }\n        Insert: {\n          action_corrective?: string | null\n          atelier_id: string\n          code: string\n          created_at?: string | null\n          description?: string | null\n          gravite?: string | null\n          id?: string\n          is_active?: boolean | null\n          nom: string\n        }\n        Update: {\n          action_corrective?: string | null\n          atelier_id?: string\n          code?: string\n          created_at?: string | null\n          description?: string | null\n          gravite?: string | null\n          id?: string\n          is_active?: boolean | null\n          nom?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"types_defauts_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      users: {\n        Row: {\n          atelier_id: string\n          created_at: string\n          email: string\n          full_name: string | null\n          id: string\n          last_login_at: string | null\n          phone: string | null\n          role: string\n          two_factor_enabled: boolean | null\n          two_factor_secret: string | null\n          updated_at: string\n        }\n        Insert: {\n          atelier_id: string\n          created_at?: string\n          email: string\n          full_name?: string | null\n          id: string\n          last_login_at?: string | null\n          phone?: string | null\n          role?: string\n          two_factor_enabled?: boolean | null\n          two_factor_secret?: string | null\n          updated_at?: string\n        }\n        Update: {\n          atelier_id?: string\n          created_at?: string\n          email?: string\n          full_name?: string | null\n          id?: string\n          last_login_at?: string | null\n          phone?: string | null\n          role?: string\n          two_factor_enabled?: boolean | null\n          two_factor_secret?: string | null\n          updated_at?: string\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"users_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n    }\n    Views: {\n      v_charge_travail: {\n        Row: {\n          atelier_id: string | null\n          date_prevue: string | null\n          nb_projets: number | null\n          surface_totale_m2: number | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"projets_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      v_devis_stats: {\n        Row: {\n          annee: number | null\n          atelier_id: string | null\n          delai_moyen_signature_jours: number | null\n          devis_acceptes: number | null\n          devis_en_attente: number | null\n          devis_expires: number | null\n          devis_refuses: number | null\n          mois: number | null\n          montant_accepte_ht: number | null\n          montant_total_ht: number | null\n          taux_conversion: number | null\n          total_devis: number | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"devis_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n      v_rentabilite_projets: {\n        Row: {\n          atelier_id: string | null\n          client_id: string | null\n          client_name: string | null\n          cout_reel_total: number | null\n          created_at: string | null\n          marge_brute: number | null\n          marge_pourcent: number | null\n          montant_devis_ht: number | null\n          montant_devis_ttc: number | null\n          name: string | null\n          numero: string | null\n          projet_id: string | null\n          status: string | null\n        }\n        Relationships: [\n          {\n            foreignKeyName: \"projets_atelier_id_fkey\"\n            columns: [\"atelier_id\"]\n            isOneToOne: false\n            referencedRelation: \"ateliers\"\n            referencedColumns: [\"id\"]\n          },\n          {\n            foreignKeyName: \"projets_client_id_fkey\"\n            columns: [\"client_id\"]\n            isOneToOne: false\n            referencedRelation: \"clients\"\n            referencedColumns: [\"id\"]\n          },\n        ]\n      }\n    }\n    Functions: {\n      calculate_nc_rate: {\n        Args: { p_atelier_id: string; p_end_date: string; p_start_date: string }\n        Returns: {\n          projets_avec_nc: number\n          taux_nc: number\n          total_projets: number\n          total_retouches: number\n        }[]\n      }\n      client_has_portal_account: {\n        Args: { p_client_id: string }\n        Returns: boolean\n      }\n      create_default_devis_templates: {\n        Args: { p_atelier_id: string }\n        Returns: undefined\n      }\n      generate_bl_numero: { Args: { p_atelier_id: string }; Returns: string }\n      generate_facture_numero: {\n        Args: { p_atelier_id: string }\n        Returns: string\n      }\n      get_main_nc_causes: {\n        Args: {\n          p_atelier_id: string\n          p_end_date: string\n          p_limit?: number\n          p_start_date: string\n        }\n        Returns: {\n          count: number\n          defaut_name: string\n          defaut_type_id: string\n          percentage: number\n        }[]\n      }\n      get_projets_ready_for_avis: {\n        Args: { p_atelier_id: string; p_delay_days?: number }\n        Returns: {\n          client_email: string\n          client_id: string\n          date_livre: string\n          projet_id: string\n          projet_name: string\n          projet_numero: string\n        }[]\n      }\n      get_user_atelier_id: { Args: never; Returns: string }\n    }\n    Enums: {\n      [_ in never]: never\n    }\n    CompositeTypes: {\n      [_ in never]: never\n    }\n  }\n}\n\ntype DatabaseWithoutInternals = Omit<Database, \"__InternalSupabase\">\n\ntype DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, \"public\">]\n\nexport type Tables<\n  DefaultSchemaTableNameOrOptions extends\n    | keyof (DefaultSchema[\"Tables\"] & DefaultSchema[\"Views\"])\n    | { schema: keyof DatabaseWithoutInternals },\n  TableName extends DefaultSchemaTableNameOrOptions extends {\n    schema: keyof DatabaseWithoutInternals\n  }\n    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions[\"schema\"]][\"Tables\"] &\n        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions[\"schema\"]][\"Views\"])\n    : never = never,\n> = DefaultSchemaTableNameOrOptions extends {\n  schema: keyof DatabaseWithoutInternals\n}\n  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions[\"schema\"]][\"Tables\"] &\n      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions[\"schema\"]][\"Views\"])[TableName] extends {\n      Row: infer R\n    }\n    ? R\n    : never\n  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema[\"Tables\"] &\n        DefaultSchema[\"Views\"])\n    ? (DefaultSchema[\"Tables\"] &\n        DefaultSchema[\"Views\"])[DefaultSchemaTableNameOrOptions] extends {\n        Row: infer R\n      }\n      ? R\n      : never\n    : never\n\nexport type TablesInsert<\n  DefaultSchemaTableNameOrOptions extends\n    | keyof DefaultSchema[\"Tables\"]\n    | { schema: keyof DatabaseWithoutInternals },\n  TableName extends DefaultSchemaTableNameOrOptions extends {\n    schema: keyof DatabaseWithoutInternals\n  }\n    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions[\"schema\"]][\"Tables\"]\n    : never = never,\n> = DefaultSchemaTableNameOrOptions extends {\n  schema: keyof DatabaseWithoutInternals\n}\n  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions[\"schema\"]][\"Tables\"][TableName] extends {\n      Insert: infer I\n    }\n    ? I\n    : never\n  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema[\"Tables\"]\n    ? DefaultSchema[\"Tables\"][DefaultSchemaTableNameOrOptions] extends {\n        Insert: infer I\n      }\n      ? I\n      : never\n    : never\n\nexport type TablesUpdate<\n  DefaultSchemaTableNameOrOptions extends\n    | keyof DefaultSchema[\"Tables\"]\n    | { schema: keyof DatabaseWithoutInternals },\n  TableName extends DefaultSchemaTableNameOrOptions extends {\n    schema: keyof DatabaseWithoutInternals\n  }\n    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions[\"schema\"]][\"Tables\"]\n    : never = never,\n> = DefaultSchemaTableNameOrOptions extends {\n  schema: keyof DatabaseWithoutInternals\n}\n  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions[\"schema\"]][\"Tables\"][TableName] extends {\n      Update: infer U\n    }\n    ? U\n    : never\n  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema[\"Tables\"]\n    ? DefaultSchema[\"Tables\"][DefaultSchemaTableNameOrOptions] extends {\n        Update: infer U\n      }\n      ? U\n      : never\n    : never\n\nexport type Enums<\n  DefaultSchemaEnumNameOrOptions extends\n    | keyof DefaultSchema[\"Enums\"]\n    | { schema: keyof DatabaseWithoutInternals },\n  EnumName extends DefaultSchemaEnumNameOrOptions extends {\n    schema: keyof DatabaseWithoutInternals\n  }\n    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions[\"schema\"]][\"Enums\"]\n    : never = never,\n> = DefaultSchemaEnumNameOrOptions extends {\n  schema: keyof DatabaseWithoutInternals\n}\n  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions[\"schema\"]][\"Enums\"][EnumName]\n  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema[\"Enums\"]\n    ? DefaultSchema[\"Enums\"][DefaultSchemaEnumNameOrOptions]\n    : never\n\nexport type CompositeTypes<\n  PublicCompositeTypeNameOrOptions extends\n    | keyof DefaultSchema[\"CompositeTypes\"]\n    | { schema: keyof DatabaseWithoutInternals },\n  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {\n    schema: keyof DatabaseWithoutInternals\n  }\n    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions[\"schema\"]][\"CompositeTypes\"]\n    : never = never,\n> = PublicCompositeTypeNameOrOptions extends {\n  schema: keyof DatabaseWithoutInternals\n}\n  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions[\"schema\"]][\"CompositeTypes\"][CompositeTypeName]\n  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema[\"CompositeTypes\"]\n    ? DefaultSchema[\"CompositeTypes\"][PublicCompositeTypeNameOrOptions]\n    : never\n\nexport const Constants = {\n  public: {\n    Enums: {},\n  },\n} as const\n"}
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.1"
+  }
+  public: {
+    Tables: {
+      alertes: {
+        Row: {
+          atelier_id: string
+          created_at: string | null
+          data: Json | null
+          id: string
+          lien: string | null
+          lu: boolean | null
+          lu_at: string | null
+          lu_par: string | null
+          message: string | null
+          titre: string
+          type: string
+        }
+        Insert: {
+          atelier_id: string
+          created_at?: string | null
+          data?: Json | null
+          id?: string
+          lien?: string | null
+          lu?: boolean | null
+          lu_at?: string | null
+          lu_par?: string | null
+          message?: string | null
+          titre: string
+          type: string
+        }
+        Update: {
+          atelier_id?: string
+          created_at?: string | null
+          data?: Json | null
+          id?: string
+          lien?: string | null
+          lu?: boolean | null
+          lu_at?: string | null
+          lu_par?: string | null
+          message?: string | null
+          titre?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alertes_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alertes_lu_par_fkey"
+            columns: ["lu_par"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ateliers: {
+        Row: {
+          address: string | null
+          assujetti_tva: boolean | null
+          auto_review_enabled: boolean | null
+          avis_google_api_key: string | null
+          avis_google_delay_days: number | null
+          avis_google_enabled: boolean | null
+          avis_google_location_id: string | null
+          avis_google_relance_days: number | null
+          bic: string | null
+          bl_numero_counter: number | null
+          bl_numero_format: string | null
+          capacite_m2_jour: number | null
+          capital_social: string | null
+          created_at: string
+          ecran_atelier_config: Json | null
+          email: string | null
+          facture_numero_counter: number | null
+          facture_numero_format: string | null
+          forme_juridique: string | null
+          google_calendar_connected: boolean | null
+          google_calendar_id: string | null
+          google_review_link: string | null
+          iban: string | null
+          id: string
+          name: string
+          nb_cabines: number | null
+          nb_fours: number | null
+          numero_rm: string | null
+          outlook_connected: boolean | null
+          paypal_email: string | null
+          paypal_merchant_id: string | null
+          phone: string | null
+          plan: string
+          rcs: string | null
+          review_delay_days: number | null
+          settings: Json | null
+          siret: string | null
+          sms_enabled: boolean | null
+          sms_templates: Json | null
+          storage_quota_gb: number
+          storage_used_gb: number
+          stripe_account_status: string | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          subscription_status: string | null
+          trial_ends_at: string | null
+          tva_intra: string | null
+          twilio_account_sid: string | null
+          twilio_auth_token: string | null
+          twilio_phone_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          assujetti_tva?: boolean | null
+          auto_review_enabled?: boolean | null
+          avis_google_api_key?: string | null
+          avis_google_delay_days?: number | null
+          avis_google_enabled?: boolean | null
+          avis_google_location_id?: string | null
+          avis_google_relance_days?: number | null
+          bic?: string | null
+          bl_numero_counter?: number | null
+          bl_numero_format?: string | null
+          capacite_m2_jour?: number | null
+          capital_social?: string | null
+          created_at?: string
+          ecran_atelier_config?: Json | null
+          email?: string | null
+          facture_numero_counter?: number | null
+          facture_numero_format?: string | null
+          forme_juridique?: string | null
+          google_calendar_connected?: boolean | null
+          google_calendar_id?: string | null
+          google_review_link?: string | null
+          iban?: string | null
+          id?: string
+          name: string
+          nb_cabines?: number | null
+          nb_fours?: number | null
+          numero_rm?: string | null
+          outlook_connected?: boolean | null
+          paypal_email?: string | null
+          paypal_merchant_id?: string | null
+          phone?: string | null
+          plan?: string
+          rcs?: string | null
+          review_delay_days?: number | null
+          settings?: Json | null
+          siret?: string | null
+          sms_enabled?: boolean | null
+          sms_templates?: Json | null
+          storage_quota_gb?: number
+          storage_used_gb?: number
+          stripe_account_status?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_status?: string | null
+          trial_ends_at?: string | null
+          tva_intra?: string | null
+          twilio_account_sid?: string | null
+          twilio_auth_token?: string | null
+          twilio_phone_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          assujetti_tva?: boolean | null
+          auto_review_enabled?: boolean | null
+          avis_google_api_key?: string | null
+          avis_google_delay_days?: number | null
+          avis_google_enabled?: boolean | null
+          avis_google_location_id?: string | null
+          avis_google_relance_days?: number | null
+          bic?: string | null
+          bl_numero_counter?: number | null
+          bl_numero_format?: string | null
+          capacite_m2_jour?: number | null
+          capital_social?: string | null
+          created_at?: string
+          ecran_atelier_config?: Json | null
+          email?: string | null
+          facture_numero_counter?: number | null
+          facture_numero_format?: string | null
+          forme_juridique?: string | null
+          google_calendar_connected?: boolean | null
+          google_calendar_id?: string | null
+          google_review_link?: string | null
+          iban?: string | null
+          id?: string
+          name?: string
+          nb_cabines?: number | null
+          nb_fours?: number | null
+          numero_rm?: string | null
+          outlook_connected?: boolean | null
+          paypal_email?: string | null
+          paypal_merchant_id?: string | null
+          phone?: string | null
+          plan?: string
+          rcs?: string | null
+          review_delay_days?: number | null
+          settings?: Json | null
+          siret?: string | null
+          sms_enabled?: boolean | null
+          sms_templates?: Json | null
+          storage_quota_gb?: number
+          storage_used_gb?: number
+          stripe_account_status?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_status?: string | null
+          trial_ends_at?: string | null
+          tva_intra?: string | null
+          twilio_account_sid?: string | null
+          twilio_auth_token?: string | null
+          twilio_phone_number?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      audit_logs: {
+        Row: {
+          action: string
+          atelier_id: string
+          created_at: string
+          id: string
+          ip_address: string | null
+          new_data: Json | null
+          old_data: Json | null
+          record_id: string | null
+          table_name: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          atelier_id: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          record_id?: string | null
+          table_name: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          atelier_id?: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          record_id?: string | null
+          table_name?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_logs_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      avis_google: {
+        Row: {
+          atelier_id: string
+          avis_rating: number | null
+          avis_received_at: string | null
+          avis_text: string | null
+          avis_url: string | null
+          client_id: string
+          created_at: string
+          email_relance_sent_at: string | null
+          email_sent_at: string | null
+          id: string
+          projet_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          atelier_id: string
+          avis_rating?: number | null
+          avis_received_at?: string | null
+          avis_text?: string | null
+          avis_url?: string | null
+          client_id: string
+          created_at?: string
+          email_relance_sent_at?: string | null
+          email_sent_at?: string | null
+          id?: string
+          projet_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          atelier_id?: string
+          avis_rating?: number | null
+          avis_received_at?: string | null
+          avis_text?: string | null
+          avis_url?: string | null
+          client_id?: string
+          created_at?: string
+          email_relance_sent_at?: string | null
+          email_sent_at?: string | null
+          id?: string
+          projet_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "avis_google_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "avis_google_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "avis_google_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "projets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "avis_google_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "v_rentabilite_projets"
+            referencedColumns: ["projet_id"]
+          },
+        ]
+      }
+      avoirs: {
+        Row: {
+          atelier_id: string
+          client_id: string
+          created_at: string
+          created_by: string | null
+          facture_id: string
+          id: string
+          items: Json | null
+          montant_ht: number
+          montant_ttc: number
+          montant_tva: number
+          motif: string
+          motif_detail: string | null
+          notes: string | null
+          numero: string
+          remboursement_date: string | null
+          remboursement_method: string | null
+          status: string
+          stripe_refund_id: string | null
+          tva_rate: number | null
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          atelier_id: string
+          client_id: string
+          created_at?: string
+          created_by?: string | null
+          facture_id: string
+          id?: string
+          items?: Json | null
+          montant_ht: number
+          montant_ttc: number
+          montant_tva?: number
+          motif: string
+          motif_detail?: string | null
+          notes?: string | null
+          numero: string
+          remboursement_date?: string | null
+          remboursement_method?: string | null
+          status?: string
+          stripe_refund_id?: string | null
+          tva_rate?: number | null
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          atelier_id?: string
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          facture_id?: string
+          id?: string
+          items?: Json | null
+          montant_ht?: number
+          montant_ttc?: number
+          montant_tva?: number
+          motif?: string
+          motif_detail?: string | null
+          notes?: string | null
+          numero?: string
+          remboursement_date?: string | null
+          remboursement_method?: string | null
+          status?: string
+          stripe_refund_id?: string | null
+          tva_rate?: number | null
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "avoirs_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "avoirs_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "avoirs_facture_id_fkey"
+            columns: ["facture_id"]
+            isOneToOne: false
+            referencedRelation: "factures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bons_livraison: {
+        Row: {
+          adresse_livraison: string | null
+          atelier_id: string
+          client_id: string
+          created_at: string
+          created_by: string | null
+          date_livraison: string
+          etat_pieces: string | null
+          id: string
+          items: Json
+          numero: string
+          observations: string | null
+          pdf_url: string | null
+          projet_id: string
+          reserves: string | null
+          signature_client: string | null
+          signature_client_data: string | null
+          signe_par_client: boolean | null
+          signed_at: string | null
+          transporteur: string | null
+          updated_at: string
+        }
+        Insert: {
+          adresse_livraison?: string | null
+          atelier_id: string
+          client_id: string
+          created_at?: string
+          created_by?: string | null
+          date_livraison?: string
+          etat_pieces?: string | null
+          id?: string
+          items?: Json
+          numero: string
+          observations?: string | null
+          pdf_url?: string | null
+          projet_id: string
+          reserves?: string | null
+          signature_client?: string | null
+          signature_client_data?: string | null
+          signe_par_client?: boolean | null
+          signed_at?: string | null
+          transporteur?: string | null
+          updated_at?: string
+        }
+        Update: {
+          adresse_livraison?: string | null
+          atelier_id?: string
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          date_livraison?: string
+          etat_pieces?: string | null
+          id?: string
+          items?: Json
+          numero?: string
+          observations?: string | null
+          pdf_url?: string | null
+          projet_id?: string
+          reserves?: string | null
+          signature_client?: string | null
+          signature_client_data?: string | null
+          signe_par_client?: boolean | null
+          signed_at?: string | null
+          transporteur?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bons_livraison_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bons_livraison_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bons_livraison_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bons_livraison_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "projets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bons_livraison_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "v_rentabilite_projets"
+            referencedColumns: ["projet_id"]
+          },
+        ]
+      }
+      certifications_atelier: {
+        Row: {
+          atelier_id: string
+          created_at: string | null
+          date_expiration: string | null
+          date_obtention: string | null
+          document_url: string | null
+          id: string
+          is_active: boolean | null
+          numero_certification: string | null
+          rappel_renouvellement_jours: number | null
+          type: string
+        }
+        Insert: {
+          atelier_id: string
+          created_at?: string | null
+          date_expiration?: string | null
+          date_obtention?: string | null
+          document_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          numero_certification?: string | null
+          rappel_renouvellement_jours?: number | null
+          type: string
+        }
+        Update: {
+          atelier_id?: string
+          created_at?: string | null
+          date_expiration?: string | null
+          date_obtention?: string | null
+          document_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          numero_certification?: string | null
+          rappel_renouvellement_jours?: number | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certifications_atelier_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      certificats_conformite: {
+        Row: {
+          adherence_conforme: boolean | null
+          aspect_conforme: boolean | null
+          atelier_id: string
+          brillance_conforme: boolean | null
+          controleur_nom: string | null
+          controleur_signature: string | null
+          couleur_conforme: boolean | null
+          created_at: string | null
+          date_cuisson: string | null
+          date_emission: string | null
+          duree_cuisson: number | null
+          epaisseur_mesuree_um: number | null
+          id: string
+          norme_reference: string | null
+          numero: string
+          observations: string | null
+          pdf_url: string | null
+          poudre_fabricant: string | null
+          poudre_lot: string | null
+          poudre_reference: string | null
+          projet_id: string
+          temperature_cuisson: number | null
+        }
+        Insert: {
+          adherence_conforme?: boolean | null
+          aspect_conforme?: boolean | null
+          atelier_id: string
+          brillance_conforme?: boolean | null
+          controleur_nom?: string | null
+          controleur_signature?: string | null
+          couleur_conforme?: boolean | null
+          created_at?: string | null
+          date_cuisson?: string | null
+          date_emission?: string | null
+          duree_cuisson?: number | null
+          epaisseur_mesuree_um?: number | null
+          id?: string
+          norme_reference?: string | null
+          numero: string
+          observations?: string | null
+          pdf_url?: string | null
+          poudre_fabricant?: string | null
+          poudre_lot?: string | null
+          poudre_reference?: string | null
+          projet_id: string
+          temperature_cuisson?: number | null
+        }
+        Update: {
+          adherence_conforme?: boolean | null
+          aspect_conforme?: boolean | null
+          atelier_id?: string
+          brillance_conforme?: boolean | null
+          controleur_nom?: string | null
+          controleur_signature?: string | null
+          couleur_conforme?: boolean | null
+          created_at?: string | null
+          date_cuisson?: string | null
+          date_emission?: string | null
+          duree_cuisson?: number | null
+          epaisseur_mesuree_um?: number | null
+          id?: string
+          norme_reference?: string | null
+          numero?: string
+          observations?: string | null
+          pdf_url?: string | null
+          poudre_fabricant?: string | null
+          poudre_lot?: string | null
+          poudre_reference?: string | null
+          projet_id?: string
+          temperature_cuisson?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certificats_conformite_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "certificats_conformite_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "projets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "certificats_conformite_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "v_rentabilite_projets"
+            referencedColumns: ["projet_id"]
+          },
+        ]
+      }
+      client_confirmations: {
+        Row: {
+          client_user_id: string | null
+          confirmation_code: string | null
+          confirmed_at: string
+          created_at: string
+          id: string
+          notes: string | null
+          projet_id: string
+          type: string
+        }
+        Insert: {
+          client_user_id?: string | null
+          confirmation_code?: string | null
+          confirmed_at?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          projet_id: string
+          type: string
+        }
+        Update: {
+          client_user_id?: string | null
+          confirmation_code?: string | null
+          confirmed_at?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          projet_id?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_confirmations_client_user_id_fkey"
+            columns: ["client_user_id"]
+            isOneToOne: false
+            referencedRelation: "client_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_confirmations_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "projets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_confirmations_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "v_rentabilite_projets"
+            referencedColumns: ["projet_id"]
+          },
+        ]
+      }
+      client_invitations: {
+        Row: {
+          atelier_id: string | null
+          client_id: string | null
+          created_at: string | null
+          email: string
+          expires_at: string | null
+          id: string
+          token: string
+          used_at: string | null
+        }
+        Insert: {
+          atelier_id?: string | null
+          client_id?: string | null
+          created_at?: string | null
+          email: string
+          expires_at?: string | null
+          id?: string
+          token?: string
+          used_at?: string | null
+        }
+        Update: {
+          atelier_id?: string | null
+          client_id?: string | null
+          created_at?: string | null
+          email?: string
+          expires_at?: string | null
+          id?: string
+          token?: string
+          used_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_invitations_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_invitations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_users: {
+        Row: {
+          atelier_id: string
+          client_id: string
+          created_at: string
+          email: string
+          email_verified: boolean | null
+          full_name: string | null
+          id: string
+          last_login_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          atelier_id: string
+          client_id: string
+          created_at?: string
+          email: string
+          email_verified?: boolean | null
+          full_name?: string | null
+          id: string
+          last_login_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          atelier_id?: string
+          client_id?: string
+          created_at?: string
+          email?: string
+          email_verified?: boolean | null
+          full_name?: string | null
+          id?: string
+          last_login_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_users_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_users_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: true
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clients: {
+        Row: {
+          address: string | null
+          adresse_livraison: string | null
+          atelier_id: string
+          ca_total: number | null
+          categorie: string | null
+          created_at: string
+          date_dernier_contact: string | null
+          date_premier_contact: string | null
+          email: string
+          facture_trigger: string | null
+          full_name: string
+          horaires_contact: string | null
+          id: string
+          nb_projets: number | null
+          notes: string | null
+          phone: string | null
+          preferences_contact: string | null
+          score_fidelite: number | null
+          siret: string | null
+          sms_notifications: Json | null
+          sms_optin: boolean | null
+          source_acquisition: string | null
+          tags: string[] | null
+          tva_intra: string | null
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          adresse_livraison?: string | null
+          atelier_id: string
+          ca_total?: number | null
+          categorie?: string | null
+          created_at?: string
+          date_dernier_contact?: string | null
+          date_premier_contact?: string | null
+          email: string
+          facture_trigger?: string | null
+          full_name: string
+          horaires_contact?: string | null
+          id?: string
+          nb_projets?: number | null
+          notes?: string | null
+          phone?: string | null
+          preferences_contact?: string | null
+          score_fidelite?: number | null
+          siret?: string | null
+          sms_notifications?: Json | null
+          sms_optin?: boolean | null
+          source_acquisition?: string | null
+          tags?: string[] | null
+          tva_intra?: string | null
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          adresse_livraison?: string | null
+          atelier_id?: string
+          ca_total?: number | null
+          categorie?: string | null
+          created_at?: string
+          date_dernier_contact?: string | null
+          date_premier_contact?: string | null
+          email?: string
+          facture_trigger?: string | null
+          full_name?: string
+          horaires_contact?: string | null
+          id?: string
+          nb_projets?: number | null
+          notes?: string | null
+          phone?: string | null
+          preferences_contact?: string | null
+          score_fidelite?: number | null
+          siret?: string | null
+          sms_notifications?: Json | null
+          sms_optin?: boolean | null
+          source_acquisition?: string | null
+          tags?: string[] | null
+          tva_intra?: string | null
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clients_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      config_relances: {
+        Row: {
+          actif: boolean | null
+          atelier_id: string
+          canal_j1: string | null
+          canal_j2: string | null
+          canal_j3: string | null
+          created_at: string | null
+          delai_j1: number | null
+          delai_j2: number | null
+          delai_j3: number | null
+          id: string
+          template_email: string | null
+          template_sms: string | null
+          type_relance: string
+          updated_at: string | null
+        }
+        Insert: {
+          actif?: boolean | null
+          atelier_id: string
+          canal_j1?: string | null
+          canal_j2?: string | null
+          canal_j3?: string | null
+          created_at?: string | null
+          delai_j1?: number | null
+          delai_j2?: number | null
+          delai_j3?: number | null
+          id?: string
+          template_email?: string | null
+          template_sms?: string | null
+          type_relance: string
+          updated_at?: string | null
+        }
+        Update: {
+          actif?: boolean | null
+          atelier_id?: string
+          canal_j1?: string | null
+          canal_j2?: string | null
+          canal_j3?: string | null
+          created_at?: string | null
+          delai_j1?: number | null
+          delai_j2?: number | null
+          delai_j3?: number | null
+          id?: string
+          template_email?: string | null
+          template_sms?: string | null
+          type_relance?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "config_relances_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contrats_clients: {
+        Row: {
+          actif: boolean | null
+          atelier_id: string
+          client_id: string
+          conditions_paiement: string | null
+          created_at: string | null
+          date_debut: string
+          date_fin: string | null
+          delai_paiement_jours: number | null
+          id: string
+          notes: string | null
+          numero: string | null
+          prix_m2_negocie: number | null
+          remise_globale_pourcent: number | null
+          updated_at: string | null
+          volume_engagement_m2: number | null
+        }
+        Insert: {
+          actif?: boolean | null
+          atelier_id: string
+          client_id: string
+          conditions_paiement?: string | null
+          created_at?: string | null
+          date_debut: string
+          date_fin?: string | null
+          delai_paiement_jours?: number | null
+          id?: string
+          notes?: string | null
+          numero?: string | null
+          prix_m2_negocie?: number | null
+          remise_globale_pourcent?: number | null
+          updated_at?: string | null
+          volume_engagement_m2?: number | null
+        }
+        Update: {
+          actif?: boolean | null
+          atelier_id?: string
+          client_id?: string
+          conditions_paiement?: string | null
+          created_at?: string | null
+          date_debut?: string
+          date_fin?: string | null
+          delai_paiement_jours?: number | null
+          id?: string
+          notes?: string | null
+          numero?: string | null
+          prix_m2_negocie?: number | null
+          remise_globale_pourcent?: number | null
+          updated_at?: string | null
+          volume_engagement_m2?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contrats_clients_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contrats_clients_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      controles_qualite: {
+        Row: {
+          adherence_ok: boolean | null
+          aspect_visuel_ok: boolean | null
+          atelier_id: string
+          brillance_ok: boolean | null
+          commentaires: string | null
+          controleur_id: string | null
+          created_at: string | null
+          date_controle: string | null
+          epaisseur_mesure: number | null
+          epaisseur_ok: boolean | null
+          etape: string
+          id: string
+          photos: string[] | null
+          projet_id: string
+          resultat: string | null
+          teinte_conforme: boolean | null
+        }
+        Insert: {
+          adherence_ok?: boolean | null
+          aspect_visuel_ok?: boolean | null
+          atelier_id: string
+          brillance_ok?: boolean | null
+          commentaires?: string | null
+          controleur_id?: string | null
+          created_at?: string | null
+          date_controle?: string | null
+          epaisseur_mesure?: number | null
+          epaisseur_ok?: boolean | null
+          etape: string
+          id?: string
+          photos?: string[] | null
+          projet_id: string
+          resultat?: string | null
+          teinte_conforme?: boolean | null
+        }
+        Update: {
+          adherence_ok?: boolean | null
+          aspect_visuel_ok?: boolean | null
+          atelier_id?: string
+          brillance_ok?: boolean | null
+          commentaires?: string | null
+          controleur_id?: string | null
+          created_at?: string | null
+          date_controle?: string | null
+          epaisseur_mesure?: number | null
+          epaisseur_ok?: boolean | null
+          etape?: string
+          id?: string
+          photos?: string[] | null
+          projet_id?: string
+          resultat?: string | null
+          teinte_conforme?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "controles_qualite_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "controles_qualite_controleur_id_fkey"
+            columns: ["controleur_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "controles_qualite_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "projets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "controles_qualite_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "v_rentabilite_projets"
+            referencedColumns: ["projet_id"]
+          },
+        ]
+      }
+      couts_projet: {
+        Row: {
+          atelier_id: string
+          cout_total: number
+          cout_unitaire: number | null
+          created_at: string | null
+          created_by: string | null
+          date_cout: string | null
+          description: string | null
+          id: string
+          projet_id: string
+          quantite: number | null
+          type_cout: string
+          unite: string | null
+        }
+        Insert: {
+          atelier_id: string
+          cout_total: number
+          cout_unitaire?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          date_cout?: string | null
+          description?: string | null
+          id?: string
+          projet_id: string
+          quantite?: number | null
+          type_cout: string
+          unite?: string | null
+        }
+        Update: {
+          atelier_id?: string
+          cout_total?: number
+          cout_unitaire?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          date_cout?: string | null
+          description?: string | null
+          id?: string
+          projet_id?: string
+          quantite?: number | null
+          type_cout?: string
+          unite?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "couts_projet_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "couts_projet_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "couts_projet_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "projets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "couts_projet_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "v_rentabilite_projets"
+            referencedColumns: ["projet_id"]
+          },
+        ]
+      }
+      dashboard_widgets: {
+        Row: {
+          created_at: string | null
+          height: number | null
+          id: string
+          position_x: number | null
+          position_y: number | null
+          updated_at: string | null
+          user_id: string
+          visible: boolean | null
+          widget_config: Json | null
+          widget_type: string
+          width: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          height?: number | null
+          id?: string
+          position_x?: number | null
+          position_y?: number | null
+          updated_at?: string | null
+          user_id: string
+          visible?: boolean | null
+          widget_config?: Json | null
+          widget_type: string
+          width?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          height?: number | null
+          id?: string
+          position_x?: number | null
+          position_y?: number | null
+          updated_at?: string | null
+          user_id?: string
+          visible?: boolean | null
+          widget_config?: Json | null
+          widget_type?: string
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dashboard_widgets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      defaut_types: {
+        Row: {
+          atelier_id: string
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          atelier_id: string
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          atelier_id?: string
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "defaut_types_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      demandes_devis: {
+        Row: {
+          atelier_id: string
+          client_id: string
+          couleur_souhaitee: string | null
+          created_at: string | null
+          date_souhaitee: string | null
+          description: string | null
+          devis_id: string | null
+          finition: string | null
+          id: string
+          notes: string | null
+          quantite: number | null
+          status: string | null
+          titre: string
+          traite_at: string | null
+          traite_par: string | null
+          type_pieces: string | null
+          updated_at: string | null
+          urgence: string | null
+        }
+        Insert: {
+          atelier_id: string
+          client_id: string
+          couleur_souhaitee?: string | null
+          created_at?: string | null
+          date_souhaitee?: string | null
+          description?: string | null
+          devis_id?: string | null
+          finition?: string | null
+          id?: string
+          notes?: string | null
+          quantite?: number | null
+          status?: string | null
+          titre: string
+          traite_at?: string | null
+          traite_par?: string | null
+          type_pieces?: string | null
+          updated_at?: string | null
+          urgence?: string | null
+        }
+        Update: {
+          atelier_id?: string
+          client_id?: string
+          couleur_souhaitee?: string | null
+          created_at?: string | null
+          date_souhaitee?: string | null
+          description?: string | null
+          devis_id?: string | null
+          finition?: string | null
+          id?: string
+          notes?: string | null
+          quantite?: number | null
+          status?: string | null
+          titre?: string
+          traite_at?: string | null
+          traite_par?: string | null
+          type_pieces?: string | null
+          updated_at?: string | null
+          urgence?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "demandes_devis_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "demandes_devis_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "demandes_devis_devis_id_fkey"
+            columns: ["devis_id"]
+            isOneToOne: false
+            referencedRelation: "devis"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "demandes_devis_traite_par_fkey"
+            columns: ["traite_par"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      devis: {
+        Row: {
+          atelier_id: string
+          auto_projet_created_at: string | null
+          client_id: string
+          created_at: string
+          created_by: string | null
+          derniere_relance_at: string | null
+          devis_parent_id: string | null
+          id: string
+          items: Json
+          marge_pct: number | null
+          numero: string
+          pdf_url: string | null
+          public_token: string | null
+          relance_count: number | null
+          relance_desactivee: boolean | null
+          remise: Json | null
+          signature_data: Json | null
+          signature_ip: string | null
+          signature_user_agent: string | null
+          signed_at: string | null
+          signed_by: string | null
+          signed_ip: string | null
+          status: string
+          template_id: string | null
+          total_ht: number
+          total_revient: number | null
+          total_ttc: number
+          tva_rate: number
+          updated_at: string
+          version_actuelle: number | null
+        }
+        Insert: {
+          atelier_id: string
+          auto_projet_created_at?: string | null
+          client_id: string
+          created_at?: string
+          created_by?: string | null
+          derniere_relance_at?: string | null
+          devis_parent_id?: string | null
+          id?: string
+          items?: Json
+          marge_pct?: number | null
+          numero: string
+          pdf_url?: string | null
+          public_token?: string | null
+          relance_count?: number | null
+          relance_desactivee?: boolean | null
+          remise?: Json | null
+          signature_data?: Json | null
+          signature_ip?: string | null
+          signature_user_agent?: string | null
+          signed_at?: string | null
+          signed_by?: string | null
+          signed_ip?: string | null
+          status?: string
+          template_id?: string | null
+          total_ht: number
+          total_revient?: number | null
+          total_ttc: number
+          tva_rate?: number
+          updated_at?: string
+          version_actuelle?: number | null
+        }
+        Update: {
+          atelier_id?: string
+          auto_projet_created_at?: string | null
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          derniere_relance_at?: string | null
+          devis_parent_id?: string | null
+          id?: string
+          items?: Json
+          marge_pct?: number | null
+          numero?: string
+          pdf_url?: string | null
+          public_token?: string | null
+          relance_count?: number | null
+          relance_desactivee?: boolean | null
+          remise?: Json | null
+          signature_data?: Json | null
+          signature_ip?: string | null
+          signature_user_agent?: string | null
+          signed_at?: string | null
+          signed_by?: string | null
+          signed_ip?: string | null
+          status?: string
+          template_id?: string | null
+          total_ht?: number
+          total_revient?: number | null
+          total_ttc?: number
+          tva_rate?: number
+          updated_at?: string
+          version_actuelle?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "devis_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "devis_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "devis_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "devis_devis_parent_id_fkey"
+            columns: ["devis_parent_id"]
+            isOneToOne: false
+            referencedRelation: "devis"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_devis_template"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "devis_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      devis_templates: {
+        Row: {
+          atelier_id: string
+          config: Json
+          created_at: string
+          created_by: string | null
+          css_template: string | null
+          description: string | null
+          html_template: string | null
+          id: string
+          is_default: boolean | null
+          is_system: boolean | null
+          name: string
+          template_type: string
+          updated_at: string
+        }
+        Insert: {
+          atelier_id: string
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          css_template?: string | null
+          description?: string | null
+          html_template?: string | null
+          id?: string
+          is_default?: boolean | null
+          is_system?: boolean | null
+          name: string
+          template_type?: string
+          updated_at?: string
+        }
+        Update: {
+          atelier_id?: string
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          css_template?: string | null
+          description?: string | null
+          html_template?: string | null
+          id?: string
+          is_default?: boolean | null
+          is_system?: boolean | null
+          name?: string
+          template_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "devis_templates_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "devis_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      devis_versions: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          devis_id: string
+          id: string
+          items: Json
+          motif_modification: string | null
+          notes: string | null
+          total_ht: number
+          total_ttc: number
+          version_number: number
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          devis_id: string
+          id?: string
+          items: Json
+          motif_modification?: string | null
+          notes?: string | null
+          total_ht: number
+          total_ttc: number
+          version_number?: number
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          devis_id?: string
+          id?: string
+          items?: Json
+          motif_modification?: string | null
+          notes?: string | null
+          total_ht?: number
+          total_ttc?: number
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "devis_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "devis_versions_devis_id_fkey"
+            columns: ["devis_id"]
+            isOneToOne: false
+            referencedRelation: "devis"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_config: {
+        Row: {
+          api_key: string | null
+          atelier_id: string
+          created_at: string
+          id: string
+          oauth_access_token: string | null
+          oauth_expires_at: string | null
+          oauth_refresh_token: string | null
+          provider: string
+          reply_to: string | null
+          sender_email: string | null
+          sender_name: string | null
+          smtp_host: string | null
+          smtp_password: string | null
+          smtp_port: number | null
+          smtp_secure: boolean | null
+          smtp_user: string | null
+          updated_at: string
+        }
+        Insert: {
+          api_key?: string | null
+          atelier_id: string
+          created_at?: string
+          id?: string
+          oauth_access_token?: string | null
+          oauth_expires_at?: string | null
+          oauth_refresh_token?: string | null
+          provider?: string
+          reply_to?: string | null
+          sender_email?: string | null
+          sender_name?: string | null
+          smtp_host?: string | null
+          smtp_password?: string | null
+          smtp_port?: number | null
+          smtp_secure?: boolean | null
+          smtp_user?: string | null
+          updated_at?: string
+        }
+        Update: {
+          api_key?: string | null
+          atelier_id?: string
+          created_at?: string
+          id?: string
+          oauth_access_token?: string | null
+          oauth_expires_at?: string | null
+          oauth_refresh_token?: string | null
+          provider?: string
+          reply_to?: string | null
+          sender_email?: string | null
+          sender_name?: string | null
+          smtp_host?: string | null
+          smtp_password?: string | null
+          smtp_port?: number | null
+          smtp_secure?: boolean | null
+          smtp_user?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_config_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: true
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_oauth_tokens: {
+        Row: {
+          access_token: string
+          atelier_id: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          provider: string
+          refresh_token: string | null
+          scope: string | null
+          token_type: string | null
+          updated_at: string
+        }
+        Insert: {
+          access_token: string
+          atelier_id: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          provider: string
+          refresh_token?: string | null
+          scope?: string | null
+          token_type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string
+          atelier_id?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          provider?: string
+          refresh_token?: string | null
+          scope?: string | null
+          token_type?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_oauth_tokens_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_queue: {
+        Row: {
+          atelier_id: string
+          attachments: Json | null
+          created_at: string
+          error_message: string | null
+          html_content: string
+          id: string
+          max_retries: number | null
+          retry_count: number | null
+          sent_at: string | null
+          status: string
+          subject: string
+          text_content: string | null
+          to_email: string
+          to_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          atelier_id: string
+          attachments?: Json | null
+          created_at?: string
+          error_message?: string | null
+          html_content: string
+          id?: string
+          max_retries?: number | null
+          retry_count?: number | null
+          sent_at?: string | null
+          status?: string
+          subject: string
+          text_content?: string | null
+          to_email: string
+          to_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          atelier_id?: string
+          attachments?: Json | null
+          created_at?: string
+          error_message?: string | null
+          html_content?: string
+          id?: string
+          max_retries?: number | null
+          retry_count?: number | null
+          sent_at?: string | null
+          status?: string
+          subject?: string
+          text_content?: string | null
+          to_email?: string
+          to_name?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_queue_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      equipements: {
+        Row: {
+          atelier_id: string
+          capacite_kg: number | null
+          created_at: string | null
+          disponible: boolean | null
+          hauteur_cm: number | null
+          horaires_ouverture: string | null
+          id: string
+          largeur_cm: number | null
+          longueur_cm: number | null
+          nom: string
+          notes: string | null
+          prochaine_maintenance: string | null
+          temp_max: number | null
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          atelier_id: string
+          capacite_kg?: number | null
+          created_at?: string | null
+          disponible?: boolean | null
+          hauteur_cm?: number | null
+          horaires_ouverture?: string | null
+          id?: string
+          largeur_cm?: number | null
+          longueur_cm?: number | null
+          nom: string
+          notes?: string | null
+          prochaine_maintenance?: string | null
+          temp_max?: number | null
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          atelier_id?: string
+          capacite_kg?: number | null
+          created_at?: string | null
+          disponible?: boolean | null
+          hauteur_cm?: number | null
+          horaires_ouverture?: string | null
+          id?: string
+          largeur_cm?: number | null
+          longueur_cm?: number | null
+          nom?: string
+          notes?: string | null
+          prochaine_maintenance?: string | null
+          temp_max?: number | null
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipements_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exports_comptables: {
+        Row: {
+          atelier_id: string
+          created_at: string | null
+          created_by: string | null
+          date_debut: string
+          date_fin: string
+          fichier_url: string | null
+          id: string
+          nb_ecritures: number | null
+          type_export: string
+        }
+        Insert: {
+          atelier_id: string
+          created_at?: string | null
+          created_by?: string | null
+          date_debut: string
+          date_fin: string
+          fichier_url?: string | null
+          id?: string
+          nb_ecritures?: number | null
+          type_export: string
+        }
+        Update: {
+          atelier_id?: string
+          created_at?: string | null
+          created_by?: string | null
+          date_debut?: string
+          date_fin?: string
+          fichier_url?: string | null
+          id?: string
+          nb_ecritures?: number | null
+          type_export?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exports_comptables_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exports_comptables_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      factures: {
+        Row: {
+          acompte_amount: number | null
+          atelier_id: string
+          auto_created: boolean | null
+          categorie_operation: string | null
+          client_id: string
+          created_at: string
+          created_by: string | null
+          devis_id: string | null
+          devis_numero: string | null
+          due_date: string | null
+          fec_exported: boolean | null
+          fec_exported_at: string | null
+          format_numero: string | null
+          id: string
+          items: Json | null
+          notes: string | null
+          numero: string
+          paid_at: string | null
+          payment_initiated_at: string | null
+          payment_method: string | null
+          payment_ref: string | null
+          payment_status: string | null
+          pdf_url: string | null
+          pourcentage_acompte: number | null
+          projet_id: string | null
+          public_token: string | null
+          signature_url: string | null
+          signed_at: string | null
+          status: string
+          stripe_payment_intent_id: string | null
+          stripe_payment_link_id: string | null
+          stripe_session_id: string | null
+          total_ht: number
+          total_ttc: number
+          tva_rate: number
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          acompte_amount?: number | null
+          atelier_id: string
+          auto_created?: boolean | null
+          categorie_operation?: string | null
+          client_id: string
+          created_at?: string
+          created_by?: string | null
+          devis_id?: string | null
+          devis_numero?: string | null
+          due_date?: string | null
+          fec_exported?: boolean | null
+          fec_exported_at?: string | null
+          format_numero?: string | null
+          id?: string
+          items?: Json | null
+          notes?: string | null
+          numero: string
+          paid_at?: string | null
+          payment_initiated_at?: string | null
+          payment_method?: string | null
+          payment_ref?: string | null
+          payment_status?: string | null
+          pdf_url?: string | null
+          pourcentage_acompte?: number | null
+          projet_id?: string | null
+          public_token?: string | null
+          signature_url?: string | null
+          signed_at?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_payment_link_id?: string | null
+          stripe_session_id?: string | null
+          total_ht: number
+          total_ttc: number
+          tva_rate?: number
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          acompte_amount?: number | null
+          atelier_id?: string
+          auto_created?: boolean | null
+          categorie_operation?: string | null
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          devis_id?: string | null
+          devis_numero?: string | null
+          due_date?: string | null
+          fec_exported?: boolean | null
+          fec_exported_at?: string | null
+          format_numero?: string | null
+          id?: string
+          items?: Json | null
+          notes?: string | null
+          numero?: string
+          paid_at?: string | null
+          payment_initiated_at?: string | null
+          payment_method?: string | null
+          payment_ref?: string | null
+          payment_status?: string | null
+          pdf_url?: string | null
+          pourcentage_acompte?: number | null
+          projet_id?: string | null
+          public_token?: string | null
+          signature_url?: string | null
+          signed_at?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_payment_link_id?: string | null
+          stripe_session_id?: string | null
+          total_ht?: number
+          total_ttc?: number
+          tva_rate?: number
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "factures_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "factures_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "factures_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "factures_devis_id_fkey"
+            columns: ["devis_id"]
+            isOneToOne: false
+            referencedRelation: "devis"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "factures_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "projets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "factures_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "v_rentabilite_projets"
+            referencedColumns: ["projet_id"]
+          },
+        ]
+      }
+      grilles_tarifaires: {
+        Row: {
+          atelier_id: string
+          complexite_complexe_coef: number | null
+          complexite_moyenne_coef: number | null
+          complexite_simple_coef: number | null
+          created_at: string | null
+          finition_brillant_coef: number | null
+          finition_mat_coef: number | null
+          finition_metallise_coef: number | null
+          finition_satine_coef: number | null
+          finition_texture_coef: number | null
+          forfait_minimum: number | null
+          id: string
+          is_default: boolean | null
+          nom: string
+          palier_1_coef: number | null
+          palier_1_max_m2: number | null
+          palier_2_coef: number | null
+          palier_2_max_m2: number | null
+          palier_3_coef: number | null
+          palier_3_max_m2: number | null
+          palier_4_coef: number | null
+          prix_base_m2: number | null
+          prix_couche_sup: number | null
+          prix_degraissage_m2: number | null
+          prix_primaire_m2: number | null
+          prix_sablage_m2: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          atelier_id: string
+          complexite_complexe_coef?: number | null
+          complexite_moyenne_coef?: number | null
+          complexite_simple_coef?: number | null
+          created_at?: string | null
+          finition_brillant_coef?: number | null
+          finition_mat_coef?: number | null
+          finition_metallise_coef?: number | null
+          finition_satine_coef?: number | null
+          finition_texture_coef?: number | null
+          forfait_minimum?: number | null
+          id?: string
+          is_default?: boolean | null
+          nom?: string
+          palier_1_coef?: number | null
+          palier_1_max_m2?: number | null
+          palier_2_coef?: number | null
+          palier_2_max_m2?: number | null
+          palier_3_coef?: number | null
+          palier_3_max_m2?: number | null
+          palier_4_coef?: number | null
+          prix_base_m2?: number | null
+          prix_couche_sup?: number | null
+          prix_degraissage_m2?: number | null
+          prix_primaire_m2?: number | null
+          prix_sablage_m2?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          atelier_id?: string
+          complexite_complexe_coef?: number | null
+          complexite_moyenne_coef?: number | null
+          complexite_simple_coef?: number | null
+          created_at?: string | null
+          finition_brillant_coef?: number | null
+          finition_mat_coef?: number | null
+          finition_metallise_coef?: number | null
+          finition_satine_coef?: number | null
+          finition_texture_coef?: number | null
+          forfait_minimum?: number | null
+          id?: string
+          is_default?: boolean | null
+          nom?: string
+          palier_1_coef?: number | null
+          palier_1_max_m2?: number | null
+          palier_2_coef?: number | null
+          palier_2_max_m2?: number | null
+          palier_3_coef?: number | null
+          palier_3_max_m2?: number | null
+          palier_4_coef?: number | null
+          prix_base_m2?: number | null
+          prix_couche_sup?: number | null
+          prix_degraissage_m2?: number | null
+          prix_primaire_m2?: number | null
+          prix_sablage_m2?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grilles_tarifaires_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interactions_client: {
+        Row: {
+          atelier_id: string
+          client_id: string
+          contenu: string | null
+          created_at: string | null
+          date_interaction: string | null
+          duree_minutes: number | null
+          id: string
+          relance_prevue: string | null
+          resultat: string | null
+          sujet: string | null
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          atelier_id: string
+          client_id: string
+          contenu?: string | null
+          created_at?: string | null
+          date_interaction?: string | null
+          duree_minutes?: number | null
+          id?: string
+          relance_prevue?: string | null
+          resultat?: string | null
+          sujet?: string | null
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          atelier_id?: string
+          client_id?: string
+          contenu?: string | null
+          created_at?: string | null
+          date_interaction?: string | null
+          duree_minutes?: number | null
+          id?: string
+          relance_prevue?: string | null
+          resultat?: string | null
+          sujet?: string | null
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interactions_client_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interactions_client_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interactions_client_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      opportunites: {
+        Row: {
+          atelier_id: string
+          client_id: string
+          created_at: string | null
+          date_cloture_prevue: string | null
+          description: string | null
+          devis_id: string | null
+          id: string
+          montant_estime: number | null
+          notes: string | null
+          probabilite: number | null
+          responsable_id: string | null
+          source: string | null
+          statut: string | null
+          titre: string
+          updated_at: string | null
+        }
+        Insert: {
+          atelier_id: string
+          client_id: string
+          created_at?: string | null
+          date_cloture_prevue?: string | null
+          description?: string | null
+          devis_id?: string | null
+          id?: string
+          montant_estime?: number | null
+          notes?: string | null
+          probabilite?: number | null
+          responsable_id?: string | null
+          source?: string | null
+          statut?: string | null
+          titre: string
+          updated_at?: string | null
+        }
+        Update: {
+          atelier_id?: string
+          client_id?: string
+          created_at?: string | null
+          date_cloture_prevue?: string | null
+          description?: string | null
+          devis_id?: string | null
+          id?: string
+          montant_estime?: number | null
+          notes?: string | null
+          probabilite?: number | null
+          responsable_id?: string | null
+          source?: string | null
+          statut?: string | null
+          titre?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "opportunites_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opportunites_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opportunites_devis_id_fkey"
+            columns: ["devis_id"]
+            isOneToOne: false
+            referencedRelation: "devis"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opportunites_responsable_id_fkey"
+            columns: ["responsable_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      paiements: {
+        Row: {
+          amount: number
+          atelier_id: string
+          client_id: string
+          created_at: string
+          facture_id: string
+          id: string
+          notes: string | null
+          paid_at: string | null
+          payment_method: string
+          payment_ref: string | null
+          status: string
+          stripe_payment_intent_id: string | null
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          atelier_id: string
+          client_id: string
+          created_at?: string
+          facture_id: string
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          payment_method: string
+          payment_ref?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          atelier_id?: string
+          client_id?: string
+          created_at?: string
+          facture_id?: string
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          payment_method?: string
+          payment_ref?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "paiements_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "paiements_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "paiements_facture_id_fkey"
+            columns: ["facture_id"]
+            isOneToOne: false
+            referencedRelation: "factures"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      photos: {
+        Row: {
+          atelier_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          metadata: Json | null
+          projet_id: string
+          size_bytes: number
+          step_index: number | null
+          storage_path: string
+          type: string
+          url: string
+        }
+        Insert: {
+          atelier_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          metadata?: Json | null
+          projet_id: string
+          size_bytes: number
+          step_index?: number | null
+          storage_path: string
+          type: string
+          url: string
+        }
+        Update: {
+          atelier_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          metadata?: Json | null
+          projet_id?: string
+          size_bytes?: number
+          step_index?: number | null
+          storage_path?: string
+          type?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "photos_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "photos_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "photos_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "projets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "photos_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "v_rentabilite_projets"
+            referencedColumns: ["projet_id"]
+          },
+        ]
+      }
+      pointages: {
+        Row: {
+          atelier_id: string
+          created_at: string | null
+          date_debut: string
+          date_fin: string | null
+          duree_minutes: number | null
+          etape: string
+          id: string
+          notes: string | null
+          pause_minutes: number | null
+          projet_id: string
+          user_id: string
+        }
+        Insert: {
+          atelier_id: string
+          created_at?: string | null
+          date_debut?: string
+          date_fin?: string | null
+          duree_minutes?: number | null
+          etape: string
+          id?: string
+          notes?: string | null
+          pause_minutes?: number | null
+          projet_id: string
+          user_id: string
+        }
+        Update: {
+          atelier_id?: string
+          created_at?: string | null
+          date_debut?: string
+          date_fin?: string | null
+          duree_minutes?: number | null
+          etape?: string
+          id?: string
+          notes?: string | null
+          pause_minutes?: number | null
+          projet_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pointages_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pointages_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "projets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pointages_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "v_rentabilite_projets"
+            referencedColumns: ["projet_id"]
+          },
+          {
+            foreignKeyName: "pointages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      poudres: {
+        Row: {
+          atelier_id: string
+          certifications: string[] | null
+          consommation_m2: number | null
+          created_at: string
+          date_peremption: string | null
+          date_reception: string | null
+          densite: number | null
+          duree_cuisson: number | null
+          epaisseur_conseillee: number | null
+          fds_url: string | null
+          fiche_technique_url: string | null
+          finition: string
+          fournisseur: string | null
+          id: string
+          marque: string
+          numero_lot: string | null
+          prix_kg: number | null
+          qualicoat_approved: boolean | null
+          qualimarine_approved: boolean | null
+          ral: string | null
+          reference: string
+          rendement_m2_kg: number | null
+          source: string | null
+          stock_min_kg: number | null
+          stock_reel_kg: number | null
+          stock_theorique_kg: number | null
+          temp_cuisson: number | null
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          atelier_id: string
+          certifications?: string[] | null
+          consommation_m2?: number | null
+          created_at?: string
+          date_peremption?: string | null
+          date_reception?: string | null
+          densite?: number | null
+          duree_cuisson?: number | null
+          epaisseur_conseillee?: number | null
+          fds_url?: string | null
+          fiche_technique_url?: string | null
+          finition: string
+          fournisseur?: string | null
+          id?: string
+          marque: string
+          numero_lot?: string | null
+          prix_kg?: number | null
+          qualicoat_approved?: boolean | null
+          qualimarine_approved?: boolean | null
+          ral?: string | null
+          reference: string
+          rendement_m2_kg?: number | null
+          source?: string | null
+          stock_min_kg?: number | null
+          stock_reel_kg?: number | null
+          stock_theorique_kg?: number | null
+          temp_cuisson?: number | null
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          atelier_id?: string
+          certifications?: string[] | null
+          consommation_m2?: number | null
+          created_at?: string
+          date_peremption?: string | null
+          date_reception?: string | null
+          densite?: number | null
+          duree_cuisson?: number | null
+          epaisseur_conseillee?: number | null
+          fds_url?: string | null
+          fiche_technique_url?: string | null
+          finition?: string
+          fournisseur?: string | null
+          id?: string
+          marque?: string
+          numero_lot?: string | null
+          prix_kg?: number | null
+          qualicoat_approved?: boolean | null
+          qualimarine_approved?: boolean | null
+          ral?: string | null
+          reference?: string
+          rendement_m2_kg?: number | null
+          source?: string | null
+          stock_min_kg?: number | null
+          stock_reel_kg?: number | null
+          stock_theorique_kg?: number | null
+          temp_cuisson?: number | null
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "poudres_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      predictions: {
+        Row: {
+          atelier_id: string
+          confidence: number | null
+          created_at: string | null
+          entite_id: string | null
+          entite_type: string | null
+          id: string
+          modele_version: string | null
+          prediction_value: Json
+          type: string
+          was_correct: boolean | null
+        }
+        Insert: {
+          atelier_id: string
+          confidence?: number | null
+          created_at?: string | null
+          entite_id?: string | null
+          entite_type?: string | null
+          id?: string
+          modele_version?: string | null
+          prediction_value: Json
+          type: string
+          was_correct?: boolean | null
+        }
+        Update: {
+          atelier_id?: string
+          confidence?: number | null
+          created_at?: string | null
+          entite_id?: string | null
+          entite_type?: string | null
+          id?: string
+          modele_version?: string | null
+          prediction_value?: Json
+          type?: string
+          was_correct?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "predictions_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prestations: {
+        Row: {
+          atelier_id: string
+          categorie: string | null
+          code: string
+          created_at: string | null
+          description: string | null
+          duree_estimee_min: number | null
+          id: string
+          is_active: boolean | null
+          nom: string
+          ordre_affichage: number | null
+          prix_unitaire_ht: number
+          tva_rate: number | null
+          unite: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          atelier_id: string
+          categorie?: string | null
+          code: string
+          created_at?: string | null
+          description?: string | null
+          duree_estimee_min?: number | null
+          id?: string
+          is_active?: boolean | null
+          nom: string
+          ordre_affichage?: number | null
+          prix_unitaire_ht: number
+          tva_rate?: number | null
+          unite?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          atelier_id?: string
+          categorie?: string | null
+          code?: string
+          created_at?: string | null
+          description?: string | null
+          duree_estimee_min?: number | null
+          id?: string
+          is_active?: boolean | null
+          nom?: string
+          ordre_affichage?: number | null
+          prix_unitaire_ht?: number
+          tva_rate?: number | null
+          unite?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prestations_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projet_racks: {
+        Row: {
+          created_at: string | null
+          date_chargement: string | null
+          date_dechargement: string | null
+          id: string
+          notes: string | null
+          photo_chargement_url: string | null
+          projet_id: string
+          rack_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          date_chargement?: string | null
+          date_dechargement?: string | null
+          id?: string
+          notes?: string | null
+          photo_chargement_url?: string | null
+          projet_id: string
+          rack_id: string
+        }
+        Update: {
+          created_at?: string | null
+          date_chargement?: string | null
+          date_dechargement?: string | null
+          id?: string
+          notes?: string | null
+          photo_chargement_url?: string | null
+          projet_id?: string
+          rack_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projet_racks_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "projets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projet_racks_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "v_rentabilite_projets"
+            referencedColumns: ["projet_id"]
+          },
+          {
+            foreignKeyName: "projet_racks_rack_id_fkey"
+            columns: ["rack_id"]
+            isOneToOne: false
+            referencedRelation: "racks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projets: {
+        Row: {
+          atelier_id: string
+          auto_created: boolean | null
+          auto_facture_created_at: string | null
+          auto_stock_decremented_at: string | null
+          bl_id: string | null
+          certification_requise: string | null
+          client_id: string
+          couches: number
+          created_at: string
+          created_by: string | null
+          current_step: number | null
+          date_depot: string | null
+          date_livre: string | null
+          date_promise: string | null
+          devis_id: string | null
+          duree_cuisson: number | null
+          facture_acompte_id: string | null
+          facture_solde_id: string | null
+          id: string
+          montant_acompte: number | null
+          montant_facture: number | null
+          montant_paye: number | null
+          montant_total: number | null
+          name: string
+          numero: string
+          parametres_cuisson: Json | null
+          photos_count: number | null
+          photos_size_mb: number | null
+          pieces: Json | null
+          poudre_id: string | null
+          poudre_quantite_kg: number | null
+          public_token: string | null
+          qr_generated_at: string | null
+          qr_token: string | null
+          status: string
+          temp_cuisson: number | null
+          temps_estime_min: number | null
+          temps_reel_min: number | null
+          updated_at: string
+          workflow_config: Json | null
+        }
+        Insert: {
+          atelier_id: string
+          auto_created?: boolean | null
+          auto_facture_created_at?: string | null
+          auto_stock_decremented_at?: string | null
+          bl_id?: string | null
+          certification_requise?: string | null
+          client_id: string
+          couches?: number
+          created_at?: string
+          created_by?: string | null
+          current_step?: number | null
+          date_depot?: string | null
+          date_livre?: string | null
+          date_promise?: string | null
+          devis_id?: string | null
+          duree_cuisson?: number | null
+          facture_acompte_id?: string | null
+          facture_solde_id?: string | null
+          id?: string
+          montant_acompte?: number | null
+          montant_facture?: number | null
+          montant_paye?: number | null
+          montant_total?: number | null
+          name: string
+          numero: string
+          parametres_cuisson?: Json | null
+          photos_count?: number | null
+          photos_size_mb?: number | null
+          pieces?: Json | null
+          poudre_id?: string | null
+          poudre_quantite_kg?: number | null
+          public_token?: string | null
+          qr_generated_at?: string | null
+          qr_token?: string | null
+          status?: string
+          temp_cuisson?: number | null
+          temps_estime_min?: number | null
+          temps_reel_min?: number | null
+          updated_at?: string
+          workflow_config?: Json | null
+        }
+        Update: {
+          atelier_id?: string
+          auto_created?: boolean | null
+          auto_facture_created_at?: string | null
+          auto_stock_decremented_at?: string | null
+          bl_id?: string | null
+          certification_requise?: string | null
+          client_id?: string
+          couches?: number
+          created_at?: string
+          created_by?: string | null
+          current_step?: number | null
+          date_depot?: string | null
+          date_livre?: string | null
+          date_promise?: string | null
+          devis_id?: string | null
+          duree_cuisson?: number | null
+          facture_acompte_id?: string | null
+          facture_solde_id?: string | null
+          id?: string
+          montant_acompte?: number | null
+          montant_facture?: number | null
+          montant_paye?: number | null
+          montant_total?: number | null
+          name?: string
+          numero?: string
+          parametres_cuisson?: Json | null
+          photos_count?: number | null
+          photos_size_mb?: number | null
+          pieces?: Json | null
+          poudre_id?: string | null
+          poudre_quantite_kg?: number | null
+          public_token?: string | null
+          qr_generated_at?: string | null
+          qr_token?: string | null
+          status?: string
+          temp_cuisson?: number | null
+          temps_estime_min?: number | null
+          temps_reel_min?: number | null
+          updated_at?: string
+          workflow_config?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projets_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projets_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projets_devis_id_fkey"
+            columns: ["devis_id"]
+            isOneToOne: false
+            referencedRelation: "devis"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projets_facture_acompte_id_fkey"
+            columns: ["facture_acompte_id"]
+            isOneToOne: false
+            referencedRelation: "factures"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projets_facture_solde_id_fkey"
+            columns: ["facture_solde_id"]
+            isOneToOne: false
+            referencedRelation: "factures"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projets_poudre_id_fkey"
+            columns: ["poudre_id"]
+            isOneToOne: false
+            referencedRelation: "poudres"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      push_notifications: {
+        Row: {
+          atelier_id: string
+          badge: string | null
+          body: string
+          created_at: string
+          data: Json | null
+          error_message: string | null
+          icon: string | null
+          id: string
+          sent_at: string | null
+          status: string
+          subscription_id: string | null
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          atelier_id: string
+          badge?: string | null
+          body: string
+          created_at?: string
+          data?: Json | null
+          error_message?: string | null
+          icon?: string | null
+          id?: string
+          sent_at?: string | null
+          status?: string
+          subscription_id?: string | null
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          atelier_id?: string
+          badge?: string | null
+          body?: string
+          created_at?: string
+          data?: Json | null
+          error_message?: string | null
+          icon?: string | null
+          id?: string
+          sent_at?: string | null
+          status?: string
+          subscription_id?: string | null
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_notifications_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "push_notifications_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "push_subscriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "push_notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      push_subscriptions: {
+        Row: {
+          atelier_id: string
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          updated_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          atelier_id: string
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          atelier_id?: string
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_subscriptions_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "push_subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      racks: {
+        Row: {
+          atelier_id: string
+          capacite_kg: number | null
+          created_at: string | null
+          hauteur_cm: number | null
+          id: string
+          largeur_cm: number | null
+          longueur_cm: number | null
+          nb_crochets: number | null
+          nom: string | null
+          notes: string | null
+          numero: string
+          photo_url: string | null
+          status: string | null
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          atelier_id: string
+          capacite_kg?: number | null
+          created_at?: string | null
+          hauteur_cm?: number | null
+          id?: string
+          largeur_cm?: number | null
+          longueur_cm?: number | null
+          nb_crochets?: number | null
+          nom?: string | null
+          notes?: string | null
+          numero: string
+          photo_url?: string | null
+          status?: string | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          atelier_id?: string
+          capacite_kg?: number | null
+          created_at?: string | null
+          hauteur_cm?: number | null
+          id?: string
+          largeur_cm?: number | null
+          longueur_cm?: number | null
+          nb_crochets?: number | null
+          nom?: string | null
+          notes?: string | null
+          numero?: string
+          photo_url?: string | null
+          status?: string | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "racks_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rate_limits: {
+        Row: {
+          count: number
+          key: string
+          window_seconds: number
+          window_start: string
+        }
+        Insert: {
+          count?: number
+          key: string
+          window_seconds?: number
+          window_start?: string
+        }
+        Update: {
+          count?: number
+          key?: string
+          window_seconds?: number
+          window_start?: string
+        }
+        Relationships: []
+      }
+      relances: {
+        Row: {
+          atelier_id: string
+          canal: string | null
+          client_id: string
+          contenu: string | null
+          created_at: string | null
+          date_relance: string | null
+          id: string
+          niveau: number | null
+          prochaine_relance: string | null
+          reference_id: string
+          reference_type: string
+          repondu_at: string | null
+          reponse: string | null
+          statut: string | null
+          type_relance: string
+        }
+        Insert: {
+          atelier_id: string
+          canal?: string | null
+          client_id: string
+          contenu?: string | null
+          created_at?: string | null
+          date_relance?: string | null
+          id?: string
+          niveau?: number | null
+          prochaine_relance?: string | null
+          reference_id: string
+          reference_type: string
+          repondu_at?: string | null
+          reponse?: string | null
+          statut?: string | null
+          type_relance: string
+        }
+        Update: {
+          atelier_id?: string
+          canal?: string | null
+          client_id?: string
+          contenu?: string | null
+          created_at?: string | null
+          date_relance?: string | null
+          id?: string
+          niveau?: number | null
+          prochaine_relance?: string | null
+          reference_id?: string
+          reference_type?: string
+          repondu_at?: string | null
+          reponse?: string | null
+          statut?: string | null
+          type_relance?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "relances_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "relances_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reservations_equipement: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          date_debut: string
+          date_fin: string
+          equipement_id: string
+          id: string
+          notes: string | null
+          projet_id: string | null
+          temperature: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          date_debut: string
+          date_fin: string
+          equipement_id: string
+          id?: string
+          notes?: string | null
+          projet_id?: string | null
+          temperature?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          date_debut?: string
+          date_fin?: string
+          equipement_id?: string
+          id?: string
+          notes?: string | null
+          projet_id?: string | null
+          temperature?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservations_equipement_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservations_equipement_equipement_id_fkey"
+            columns: ["equipement_id"]
+            isOneToOne: false
+            referencedRelation: "equipements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservations_equipement_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "projets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservations_equipement_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "v_rentabilite_projets"
+            referencedColumns: ["projet_id"]
+          },
+        ]
+      }
+      retouches: {
+        Row: {
+          action_corrective: string | null
+          atelier_id: string
+          cout_estime: number | null
+          created_at: string
+          created_by: string | null
+          date_validation: string | null
+          defaut_type_id: string | null
+          delai_induit_jours: number | null
+          description: string
+          gravite: string | null
+          id: string
+          photo_url: string | null
+          photos_apres: string[] | null
+          photos_avant: string[] | null
+          projet_id: string
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+          step_index: number | null
+          temps_estime_min: number | null
+          temps_reel_min: number | null
+          type_defaut_id: string | null
+          updated_at: string
+          valide_par: string | null
+        }
+        Insert: {
+          action_corrective?: string | null
+          atelier_id: string
+          cout_estime?: number | null
+          created_at?: string
+          created_by?: string | null
+          date_validation?: string | null
+          defaut_type_id?: string | null
+          delai_induit_jours?: number | null
+          description: string
+          gravite?: string | null
+          id?: string
+          photo_url?: string | null
+          photos_apres?: string[] | null
+          photos_avant?: string[] | null
+          projet_id: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          step_index?: number | null
+          temps_estime_min?: number | null
+          temps_reel_min?: number | null
+          type_defaut_id?: string | null
+          updated_at?: string
+          valide_par?: string | null
+        }
+        Update: {
+          action_corrective?: string | null
+          atelier_id?: string
+          cout_estime?: number | null
+          created_at?: string
+          created_by?: string | null
+          date_validation?: string | null
+          defaut_type_id?: string | null
+          delai_induit_jours?: number | null
+          description?: string
+          gravite?: string | null
+          id?: string
+          photo_url?: string | null
+          photos_apres?: string[] | null
+          photos_avant?: string[] | null
+          projet_id?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          step_index?: number | null
+          temps_estime_min?: number | null
+          temps_reel_min?: number | null
+          type_defaut_id?: string | null
+          updated_at?: string
+          valide_par?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "retouches_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "retouches_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "retouches_defaut_type_id_fkey"
+            columns: ["defaut_type_id"]
+            isOneToOne: false
+            referencedRelation: "defaut_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "retouches_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "projets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "retouches_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "v_rentabilite_projets"
+            referencedColumns: ["projet_id"]
+          },
+          {
+            foreignKeyName: "retouches_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "retouches_type_defaut_id_fkey"
+            columns: ["type_defaut_id"]
+            isOneToOne: false
+            referencedRelation: "types_defauts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "retouches_valide_par_fkey"
+            columns: ["valide_par"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      review_requests: {
+        Row: {
+          atelier_id: string
+          clicked_at: string | null
+          client_id: string | null
+          created_at: string | null
+          email: string
+          id: string
+          projet_id: string | null
+          sent_at: string | null
+          tracking_token: string | null
+        }
+        Insert: {
+          atelier_id: string
+          clicked_at?: string | null
+          client_id?: string | null
+          created_at?: string | null
+          email: string
+          id?: string
+          projet_id?: string | null
+          sent_at?: string | null
+          tracking_token?: string | null
+        }
+        Update: {
+          atelier_id?: string
+          clicked_at?: string | null
+          client_id?: string | null
+          created_at?: string | null
+          email?: string
+          id?: string
+          projet_id?: string | null
+          sent_at?: string | null
+          tracking_token?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_requests_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_requests_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_requests_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "projets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_requests_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "v_rentabilite_projets"
+            referencedColumns: ["projet_id"]
+          },
+        ]
+      }
+      saas_invoices: {
+        Row: {
+          amount_ht: number
+          amount_ttc: number
+          amount_tva: number | null
+          atelier_id: string
+          created_at: string | null
+          hosted_url: string | null
+          id: string
+          numero: string
+          paid_at: string | null
+          pdf_url: string | null
+          period_end: string | null
+          period_start: string | null
+          status: string
+          stripe_invoice_id: string | null
+          subscription_id: string | null
+          tva_rate: number | null
+        }
+        Insert: {
+          amount_ht: number
+          amount_ttc: number
+          amount_tva?: number | null
+          atelier_id: string
+          created_at?: string | null
+          hosted_url?: string | null
+          id?: string
+          numero: string
+          paid_at?: string | null
+          pdf_url?: string | null
+          period_end?: string | null
+          period_start?: string | null
+          status?: string
+          stripe_invoice_id?: string | null
+          subscription_id?: string | null
+          tva_rate?: number | null
+        }
+        Update: {
+          amount_ht?: number
+          amount_ttc?: number
+          amount_tva?: number | null
+          atelier_id?: string
+          created_at?: string | null
+          hosted_url?: string | null
+          id?: string
+          numero?: string
+          paid_at?: string | null
+          pdf_url?: string | null
+          period_end?: string | null
+          period_start?: string | null
+          status?: string
+          stripe_invoice_id?: string | null
+          subscription_id?: string | null
+          tva_rate?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saas_invoices_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saas_invoices_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      series: {
+        Row: {
+          atelier_id: string
+          created_at: string
+          created_by: string | null
+          date_creation: string
+          date_cuisson: string | null
+          id: string
+          numero: string
+          poudre_id: string
+          projets_ids: string[]
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          atelier_id: string
+          created_at?: string
+          created_by?: string | null
+          date_creation?: string
+          date_cuisson?: string | null
+          id?: string
+          numero: string
+          poudre_id: string
+          projets_ids: string[]
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          atelier_id?: string
+          created_at?: string
+          created_by?: string | null
+          date_creation?: string
+          date_cuisson?: string | null
+          id?: string
+          numero?: string
+          poudre_id?: string
+          projets_ids?: string[]
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "series_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "series_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "series_poudre_id_fkey"
+            columns: ["poudre_id"]
+            isOneToOne: false
+            referencedRelation: "poudres"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sms_logs: {
+        Row: {
+          atelier_id: string
+          client_id: string | null
+          created_at: string | null
+          error_message: string | null
+          id: string
+          message: string
+          phone_number: string
+          projet_id: string | null
+          sent_at: string | null
+          status: string | null
+          twilio_sid: string | null
+          type: string | null
+        }
+        Insert: {
+          atelier_id: string
+          client_id?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          message: string
+          phone_number: string
+          projet_id?: string | null
+          sent_at?: string | null
+          status?: string | null
+          twilio_sid?: string | null
+          type?: string | null
+        }
+        Update: {
+          atelier_id?: string
+          client_id?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          message?: string
+          phone_number?: string
+          projet_id?: string | null
+          sent_at?: string | null
+          status?: string | null
+          twilio_sid?: string | null
+          type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sms_logs_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sms_logs_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sms_logs_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "projets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sms_logs_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "v_rentabilite_projets"
+            referencedColumns: ["projet_id"]
+          },
+        ]
+      }
+      stats_projets_historique: {
+        Row: {
+          atelier_id: string
+          ca_total: number | null
+          created_at: string | null
+          delai_moyen_jours: number | null
+          id: string
+          mois: string
+          nb_projets: number | null
+          surface_totale_m2: number | null
+          taux_retouche: number | null
+          temps_moyen_min: number | null
+        }
+        Insert: {
+          atelier_id: string
+          ca_total?: number | null
+          created_at?: string | null
+          delai_moyen_jours?: number | null
+          id?: string
+          mois: string
+          nb_projets?: number | null
+          surface_totale_m2?: number | null
+          taux_retouche?: number | null
+          temps_moyen_min?: number | null
+        }
+        Update: {
+          atelier_id?: string
+          ca_total?: number | null
+          created_at?: string | null
+          delai_moyen_jours?: number | null
+          id?: string
+          mois?: string
+          nb_projets?: number | null
+          surface_totale_m2?: number | null
+          taux_retouche?: number | null
+          temps_moyen_min?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stats_projets_historique_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stock_mouvements: {
+        Row: {
+          atelier_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          motif: string | null
+          poudre_id: string
+          projet_id: string | null
+          quantite: number
+          quantite_apres: number | null
+          quantite_avant: number | null
+          type: string
+        }
+        Insert: {
+          atelier_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          motif?: string | null
+          poudre_id: string
+          projet_id?: string | null
+          quantite: number
+          quantite_apres?: number | null
+          quantite_avant?: number | null
+          type: string
+        }
+        Update: {
+          atelier_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          motif?: string | null
+          poudre_id?: string
+          projet_id?: string | null
+          quantite?: number
+          quantite_apres?: number | null
+          quantite_avant?: number | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_mouvements_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_mouvements_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_mouvements_poudre_id_fkey"
+            columns: ["poudre_id"]
+            isOneToOne: false
+            referencedRelation: "poudres"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_mouvements_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "projets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_mouvements_projet_id_fkey"
+            columns: ["projet_id"]
+            isOneToOne: false
+            referencedRelation: "v_rentabilite_projets"
+            referencedColumns: ["projet_id"]
+          },
+        ]
+      }
+      stock_poudres: {
+        Row: {
+          alerte_active: boolean | null
+          atelier_id: string
+          created_at: string
+          dernier_pesee_at: string | null
+          derniere_alerte_at: string | null
+          historique_pesees: Json | null
+          id: string
+          poudre_id: string
+          seuil_alerte_kg: number | null
+          stock_reel_kg: number | null
+          stock_theorique_kg: number
+          tare_carton_kg: number | null
+          updated_at: string
+        }
+        Insert: {
+          alerte_active?: boolean | null
+          atelier_id: string
+          created_at?: string
+          dernier_pesee_at?: string | null
+          derniere_alerte_at?: string | null
+          historique_pesees?: Json | null
+          id?: string
+          poudre_id: string
+          seuil_alerte_kg?: number | null
+          stock_reel_kg?: number | null
+          stock_theorique_kg?: number
+          tare_carton_kg?: number | null
+          updated_at?: string
+        }
+        Update: {
+          alerte_active?: boolean | null
+          atelier_id?: string
+          created_at?: string
+          dernier_pesee_at?: string | null
+          derniere_alerte_at?: string | null
+          historique_pesees?: Json | null
+          id?: string
+          poudre_id?: string
+          seuil_alerte_kg?: number | null
+          stock_reel_kg?: number | null
+          stock_theorique_kg?: number
+          tare_carton_kg?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_poudres_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_poudres_poudre_id_fkey"
+            columns: ["poudre_id"]
+            isOneToOne: false
+            referencedRelation: "poudres"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscriptions: {
+        Row: {
+          atelier_id: string
+          cancel_at_period_end: boolean | null
+          created_at: string | null
+          current_period_end: string | null
+          current_period_start: string | null
+          id: string
+          plan: string
+          price_monthly: number | null
+          status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          trial_end: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          atelier_id: string
+          cancel_at_period_end?: boolean | null
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          plan?: string
+          price_monthly?: number | null
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          trial_end?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          atelier_id?: string
+          cancel_at_period_end?: boolean | null
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          plan?: string
+          price_monthly?: number | null
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          trial_end?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: true
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tarifs_client: {
+        Row: {
+          contrat_id: string
+          created_at: string | null
+          description: string | null
+          id: string
+          prestation_id: string | null
+          prix_unitaire_ht: number
+          remise_pourcent: number | null
+        }
+        Insert: {
+          contrat_id: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          prestation_id?: string | null
+          prix_unitaire_ht: number
+          remise_pourcent?: number | null
+        }
+        Update: {
+          contrat_id?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          prestation_id?: string | null
+          prix_unitaire_ht?: number
+          remise_pourcent?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tarifs_client_contrat_id_fkey"
+            columns: ["contrat_id"]
+            isOneToOne: false
+            referencedRelation: "contrats_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tarifs_client_prestation_id_fkey"
+            columns: ["prestation_id"]
+            isOneToOne: false
+            referencedRelation: "prestations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tarifs_clients: {
+        Row: {
+          atelier_id: string
+          client_id: string
+          conditions_paiement: string | null
+          created_at: string | null
+          grille_id: string | null
+          id: string
+          notes: string | null
+          remise_globale_pct: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          atelier_id: string
+          client_id: string
+          conditions_paiement?: string | null
+          created_at?: string | null
+          grille_id?: string | null
+          id?: string
+          notes?: string | null
+          remise_globale_pct?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          atelier_id?: string
+          client_id?: string
+          conditions_paiement?: string | null
+          created_at?: string | null
+          grille_id?: string | null
+          id?: string
+          notes?: string | null
+          remise_globale_pct?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tarifs_clients_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tarifs_clients_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tarifs_clients_grille_id_fkey"
+            columns: ["grille_id"]
+            isOneToOne: false
+            referencedRelation: "grilles_tarifaires"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_invitations: {
+        Row: {
+          accepted_at: string | null
+          atelier_id: string
+          created_at: string | null
+          email: string
+          expires_at: string | null
+          id: string
+          invited_by: string | null
+          role: string
+          status: string | null
+          token: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          atelier_id: string
+          created_at?: string | null
+          email: string
+          expires_at?: string | null
+          id?: string
+          invited_by?: string | null
+          role?: string
+          status?: string | null
+          token?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          atelier_id?: string
+          created_at?: string | null
+          email?: string
+          expires_at?: string | null
+          id?: string
+          invited_by?: string | null
+          role?: string
+          status?: string | null
+          token?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_invitations_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      types_defauts: {
+        Row: {
+          action_corrective: string | null
+          atelier_id: string
+          code: string
+          created_at: string | null
+          description: string | null
+          gravite: string | null
+          id: string
+          is_active: boolean | null
+          nom: string
+        }
+        Insert: {
+          action_corrective?: string | null
+          atelier_id: string
+          code: string
+          created_at?: string | null
+          description?: string | null
+          gravite?: string | null
+          id?: string
+          is_active?: boolean | null
+          nom: string
+        }
+        Update: {
+          action_corrective?: string | null
+          atelier_id?: string
+          code?: string
+          created_at?: string | null
+          description?: string | null
+          gravite?: string | null
+          id?: string
+          is_active?: boolean | null
+          nom?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "types_defauts_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          atelier_id: string
+          backup_codes: Json | null
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          last_login_at: string | null
+          phone: string | null
+          role: string
+          two_factor_enabled: boolean | null
+          two_factor_secret: string | null
+          updated_at: string
+        }
+        Insert: {
+          atelier_id: string
+          backup_codes?: Json | null
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id: string
+          last_login_at?: string | null
+          phone?: string | null
+          role?: string
+          two_factor_enabled?: boolean | null
+          two_factor_secret?: string | null
+          updated_at?: string
+        }
+        Update: {
+          atelier_id?: string
+          backup_codes?: Json | null
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          last_login_at?: string | null
+          phone?: string | null
+          role?: string
+          two_factor_enabled?: boolean | null
+          two_factor_secret?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "users_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Views: {
+      v_charge_travail: {
+        Row: {
+          atelier_id: string | null
+          date_prevue: string | null
+          nb_projets: number | null
+          surface_totale_m2: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projets_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_devis_stats: {
+        Row: {
+          annee: number | null
+          atelier_id: string | null
+          delai_moyen_signature_jours: number | null
+          devis_acceptes: number | null
+          devis_en_attente: number | null
+          devis_expires: number | null
+          devis_refuses: number | null
+          mois: number | null
+          montant_accepte_ht: number | null
+          montant_total_ht: number | null
+          taux_conversion: number | null
+          total_devis: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "devis_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_rentabilite_projets: {
+        Row: {
+          atelier_id: string | null
+          client_id: string | null
+          client_name: string | null
+          cout_reel_total: number | null
+          created_at: string | null
+          marge_brute: number | null
+          marge_pourcent: number | null
+          montant_devis_ht: number | null
+          montant_devis_ttc: number | null
+          name: string | null
+          numero: string | null
+          projet_id: string | null
+          status: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projets_atelier_id_fkey"
+            columns: ["atelier_id"]
+            isOneToOne: false
+            referencedRelation: "ateliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projets_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Functions: {
+      calculate_nc_rate: {
+        Args: { p_atelier_id: string; p_end_date: string; p_start_date: string }
+        Returns: {
+          projets_avec_nc: number
+          taux_nc: number
+          total_projets: number
+          total_retouches: number
+        }[]
+      }
+      check_rate_limit: {
+        Args: {
+          p_key: string
+          p_max_attempts: number
+          p_window_seconds: number
+        }
+        Returns: Json
+      }
+      cleanup_rate_limits: { Args: never; Returns: number }
+      client_has_portal_account: {
+        Args: { p_client_id: string }
+        Returns: boolean
+      }
+      create_default_devis_templates: {
+        Args: { p_atelier_id: string }
+        Returns: undefined
+      }
+      decrement_poudre_stock: {
+        Args: { p_poudre_id: string; p_quantite: number }
+        Returns: {
+          stock_apres: number
+          stock_avant: number
+        }[]
+      }
+      generate_avoir_numero: { Args: { p_atelier_id: string }; Returns: string }
+      generate_bl_numero: { Args: { p_atelier_id: string }; Returns: string }
+      generate_facture_numero: {
+        Args: { p_atelier_id: string }
+        Returns: string
+      }
+      generate_projet_numero: {
+        Args: { p_atelier_id: string }
+        Returns: string
+      }
+      get_main_nc_causes: {
+        Args: {
+          p_atelier_id: string
+          p_end_date: string
+          p_limit?: number
+          p_start_date: string
+        }
+        Returns: {
+          count: number
+          defaut_name: string
+          defaut_type_id: string
+          percentage: number
+        }[]
+      }
+      get_projets_ready_for_avis: {
+        Args: { p_atelier_id: string; p_delay_days?: number }
+        Returns: {
+          client_email: string
+          client_id: string
+          date_livre: string
+          projet_id: string
+          projet_name: string
+          projet_numero: string
+        }[]
+      }
+      get_user_atelier_id: { Args: never; Returns: string }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {},
+  },
+} as const

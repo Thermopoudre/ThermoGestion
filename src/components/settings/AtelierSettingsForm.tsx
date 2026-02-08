@@ -34,6 +34,8 @@ interface AtelierSettingsFormProps {
     capital_social?: string | null
     iban?: string | null
     bic?: string | null
+    numero_rm?: string | null
+    assujetti_tva?: boolean
     settings?: {
       devis?: DevisSettings
       devis_relance?: RelanceSettings
@@ -71,6 +73,8 @@ export function AtelierSettingsForm({ atelier }: AtelierSettingsFormProps) {
     capital_social: atelier.capital_social || '',
     iban: atelier.iban || '',
     bic: atelier.bic || '',
+    numero_rm: atelier.numero_rm || '',
+    assujetti_tva: atelier.assujetti_tva !== false,
   })
 
   const [devisSettings, setDevisSettings] = useState<DevisSettings>({
@@ -112,6 +116,8 @@ export function AtelierSettingsForm({ atelier }: AtelierSettingsFormProps) {
           capital_social: formData.capital_social || null,
           iban: formData.iban || null,
           bic: formData.bic || null,
+          numero_rm: formData.numero_rm || null,
+          assujetti_tva: formData.assujetti_tva,
           settings: {
             ...atelier.settings,
             devis: devisSettings,
@@ -320,7 +326,36 @@ export function AtelierSettingsForm({ atelier }: AtelierSettingsFormProps) {
               className={inputClasses}
               placeholder="RCS Paris B 123 456 789"
             />
-            <p className={helpTextClasses}>Ville + numéro d'immatriculation</p>
+            <p className={helpTextClasses}>Ville + numéro d&apos;immatriculation</p>
+          </div>
+
+          <div className="md:col-span-2">
+            <label className={labelClasses}>
+              N° Répertoire des Métiers (RM)
+            </label>
+            <input
+              type="text"
+              value={formData.numero_rm}
+              onChange={(e) => setFormData({ ...formData, numero_rm: e.target.value })}
+              className={inputClasses}
+              placeholder="RM 75 123456789"
+            />
+            <p className={helpTextClasses}>Obligatoire pour les artisans (thermolaqueurs). Format : RM + département + numéro.</p>
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.assujetti_tva}
+                onChange={(e) => setFormData({ ...formData, assujetti_tva: e.target.checked })}
+                className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className={labelClasses + ' mb-0'}>
+                Assujetti à la TVA
+              </span>
+            </label>
+            <p className={helpTextClasses}>Si décoché, la mention &quot;TVA non applicable, article 293 B du CGI&quot; sera affichée sur vos factures (micro-entreprises).</p>
           </div>
         </div>
       </div>

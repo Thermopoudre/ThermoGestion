@@ -2,13 +2,13 @@
 const nextConfig = {
   reactStrictMode: true,
   typescript: {
-    // ⚠️ Temporaire : désactiver le type checking pour permettre le build
+    // TODO: Résoudre les erreurs de types Supabase strictes (deep instantiation)
+    // Les types générés automatiquement par Supabase v2+ causent des erreurs
+    // "Type instantiation is excessively deep" dans les routes API dynamiques.
+    // À corriger progressivement fichier par fichier.
     ignoreBuildErrors: true,
   },
-  eslint: {
-    // ⚠️ Temporaire : désactiver ESLint pour permettre le build
-    ignoreDuringBuilds: true,
-  },
+  // ESLint activé — toutes les erreurs ESLint sont corrigées
   images: {
     domains: ['localhost'],
     remotePatterns: [

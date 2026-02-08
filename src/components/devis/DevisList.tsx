@@ -1,8 +1,10 @@
 'use client'
 
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { FileText, User, Calendar, CheckCircle2, ChevronRight } from 'lucide-react'
+import { FileText, User, Calendar, CheckCircle2, ChevronRight, Search, X, Filter } from 'lucide-react'
 import { StatusBadge } from '@/components/ui/StatusBadge'
+import { Pagination, usePagination } from '@/components/ui/Pagination'
 import { formatCurrency } from '@/lib/utils'
 import type { Database } from '@/types/database.types'
 
@@ -31,6 +33,33 @@ const statusMap: Record<string, string> = {
 }
 
 export function DevisList({ devis }: DevisListProps) {
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filterStatus, setFilterStatus] = useState<string>('all')
+
+  const filteredDevis = useMemo(() => {
+    let result = devis
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase()
+      result = result.filter(d =>
+        d.numero?.toLowerCase().includes(q) ||
+        d.clients?.full_name?.toLowerCase().includes(q) ||
+        d.clients?.email?.toLowerCase().includes(q)
+      )
+    }
+
+    if (filterStatus !== 'all') {
+      result = result.filter(d => d.status === filterStatus)
+    }
+
+    return result
+  }, [devis, searchQuery, filterStatus])
+
+  const {
+    currentPage, totalPages, totalItems, itemsPerPage,
+    paginatedItems: paginatedDevis, setCurrentPage, setItemsPerPage,
+  } = usePagination(filteredDevis, 25)
+
   if (devis.length === 0) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 sm:p-12 text-center">
@@ -59,9 +88,50 @@ export function DevisList({ devis }: DevisListProps) {
 
   return (
     <>
+      {/* Barre de filtres */}
+      <div className="mb-4 flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Rechercher par numéro, client..."
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1) }}
+            className="w-full pl-10 pr-8 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            aria-label="Rechercher un devis"
+          />
+          {searchQuery && (
+            <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" aria-label="Effacer">
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+        <select
+          value={filterStatus}
+          onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1) }}
+          className="px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-orange-500"
+          aria-label="Filtrer par statut"
+        >
+          <option value="all">Tous les statuts</option>
+          <option value="brouillon">Brouillon</option>
+          <option value="envoye">Envoyé</option>
+          <option value="accepte">Accepté</option>
+          <option value="refuse">Refusé</option>
+        </select>
+      </div>
+
+      {filteredDevis.length === 0 && devis.length > 0 && (
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center">
+          <p className="text-gray-500 dark:text-gray-400">Aucun devis ne correspond à vos critères</p>
+          <button onClick={() => { setSearchQuery(''); setFilterStatus('all') }} className="mt-2 text-orange-500 hover:text-orange-600 text-sm font-medium">
+            Réinitialiser les filtres
+          </button>
+        </div>
+      )}
+
       {/* Vue mobile - Cartes */}
       <div className="md:hidden space-y-3">
-        {devis.map((devi) => (
+        {paginatedDevis.map((devi) => (
           <Link
             key={devi.id}
             href={`/app/devis/${devi.id}`}
@@ -140,7 +210,7 @@ export function DevisList({ devis }: DevisListProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-              {devis.map((devi) => (
+              {paginatedDevis.map((devi) => (
                 <tr key={devi.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group">
                   <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-semibold text-purple-600 dark:text-purple-400">#{devi.numero}</div>
@@ -190,6 +260,20 @@ export function DevisList({ devis }: DevisListProps) {
           </table>
         </div>
       </div>
+
+      {/* Pagination */}
+      {filteredDevis.length > 0 && (
+        <div className="mt-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={setItemsPerPage}
+          />
+        </div>
+      )}
     </>
   )
 }

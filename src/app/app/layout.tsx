@@ -25,8 +25,13 @@ export default async function AppLayout({
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+      {/* Skip link pour accessibilité */}
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-orange-500 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg">
+        Aller au contenu principal
+      </a>
+
       {/* Navigation - Charte thermolaquage orange/rouge */}
-      <nav className="bg-white dark:bg-gray-800 border-b border-orange-200 dark:border-orange-900/50 sticky top-0 z-30">
+      <nav className="bg-white dark:bg-gray-800 border-b border-orange-200 dark:border-orange-900/50 sticky top-0 z-30" aria-label="Navigation principale">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Logo et menu hamburger mobile */}
@@ -34,10 +39,10 @@ export default async function AppLayout({
               <MobileNav userEmail={user.email || ''} />
               
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center shadow-lg shadow-orange-500/30">
-                  <span className="text-xl">🔥</span>
+                <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center shadow-lg shadow-orange-500/30" aria-hidden="true">
+                  <span className="text-xl" role="img" aria-label="Flamme">🔥</span>
                 </div>
-                <a href="/app/dashboard" className="text-gray-900 dark:text-white font-bold text-lg">
+                <a href="/app/dashboard" className="text-gray-900 dark:text-white font-bold text-lg" aria-label="ThermoGestion - Retour au tableau de bord">
                   Thermo<span className="text-orange-500 dark:text-orange-400">Gestion</span>
                 </a>
               </div>
@@ -103,7 +108,7 @@ export default async function AppLayout({
       </nav>
 
       {/* Contenu avec AppShell (breadcrumbs, FAB, toasts) */}
-      <main className="dark:bg-gray-900 transition-colors">
+      <main id="main-content" className="dark:bg-gray-900 transition-colors" role="main">
         <AppShell>{children}</AppShell>
       </main>
     </div>

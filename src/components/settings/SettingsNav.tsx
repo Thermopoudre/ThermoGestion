@@ -11,6 +11,7 @@ const tabs = [
   { href: '/app/parametres/langue', label: 'Langue' },
   { href: '/app/parametres/abonnement', label: 'Abonnement' },
   { href: '/app/parametres/paiement', label: 'Paiement' },
+  { href: '/app/parametres/donnees', label: 'Données & RGPD' },
 ]
 
 export function SettingsNav() {

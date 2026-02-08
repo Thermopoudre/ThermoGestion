@@ -1,34 +1,18 @@
-import { createServerClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+import { createServerClient, getAuthorizedUser } from '@/lib/supabase/server'
 import { FacturesList } from '@/components/factures/FacturesList'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export default async function FacturesPage() {
+  const { atelierId } = await getAuthorizedUser()
   const supabase = await createServerClient()
 
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    redirect('/auth/login')
-  }
-
-  // Get user's atelier
-  const { data: userData } = await supabase
-    .from('users')
-    .select('atelier_id')
-    .eq('id', user.id)
-    .single()
-
-  if (!userData?.atelier_id) {
-    redirect('/app/complete-profile')
-  }
-
-  // Get factures - query simple sans jointures
+  // Get factures - isolation par atelier garantie
   const { data: facturesData, error } = await supabase
     .from('factures')
     .select('id, numero, client_id, projet_id, type, status, payment_status, total_ht, total_ttc, tva_rate, due_date, paid_at, items, notes, created_at')
-    .eq('atelier_id', userData.atelier_id)
+    .eq('atelier_id', atelierId)
     .order('created_at', { ascending: false })
 
   // Get clients separately
@@ -63,7 +47,7 @@ export default async function FacturesPage() {
           </div>
           <a
             href="/app/factures/new"
-            className="w-full sm:w-auto text-center bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all"
+            className="w-full sm:w-auto text-center bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-orange-400 hover:to-red-500 transition-all"
           >
             + Nouvelle facture
           </a>

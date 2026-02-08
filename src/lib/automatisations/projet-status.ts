@@ -81,7 +81,7 @@ export async function changeProjetStatus(
     const poudre = projet.poudres as Poudre | null
 
     // 2. Mettre à jour le statut du projet
-    const updateData: any = { 
+    const updateData: Record<string, string | number | null> = { 
       status: newStatus,
       current_step: STATUS_WORKFLOW_MAP[newStatus] ?? projet.current_step
     }
@@ -103,17 +103,19 @@ export async function changeProjetStatus(
     const result: StatusChangeResult = { success: true }
 
     // 3. Décrémenter le stock si passage à "en_cuisson"
-    if (newStatus === 'en_cuisson' && oldStatus !== 'en_cuisson' && poudre) {
+    // Protection double exécution via flag auto_stock_decremented_at
+    if (newStatus === 'en_cuisson' && oldStatus !== 'en_cuisson' && poudre && !projet.auto_stock_decremented_at) {
       const stockResult = await decrementStock(supabase, projet, poudre, userId)
       result.stockUpdated = stockResult.success
     }
 
-    // 4. Créer facture si nécessaire
+    // 4. Créer facture si nécessaire (protection double exécution via auto_facture_created_at)
     // Par défaut, facture_trigger = 'pret' si non défini
     const clientFactureTrigger = client.facture_trigger || 'pret'
     const shouldCreateFacture = 
-      (newStatus === 'pret' && clientFactureTrigger === 'pret') ||
-      (newStatus === 'livre' && clientFactureTrigger === 'livre')
+      !projet.auto_facture_created_at &&
+      ((newStatus === 'pret' && clientFactureTrigger === 'pret') ||
+      (newStatus === 'livre' && clientFactureTrigger === 'livre'))
 
     // Vérifier si le projet a déjà une facture d'acompte (montant_acompte > 0)
     const hasAcompte = (projet.montant_acompte || 0) > 0
@@ -162,9 +164,9 @@ export async function changeProjetStatus(
 
     return result
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Erreur changeProjetStatus:', error)
-    return { success: false, error: error.message }
+    return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
   }
 }
 
@@ -210,19 +212,32 @@ async function decrementStock(
       quantiteUtilisee = 0.5 // Minimum 500g par projet
     }
 
-    // Récupérer le stock actuel directement depuis la table poudres
-    const stockAvant = poudre.stock_reel_kg || 0
-    const stockApres = Math.max(0, stockAvant - quantiteUtilisee)
+    // Décrément atomique via fonction RPC (évite les race conditions)
+    let stockAvant = poudre.stock_reel_kg || 0
+    let stockApres = Math.max(0, stockAvant - quantiteUtilisee)
 
-    // Mettre à jour le stock directement dans la table poudres
-    const { error: updateError } = await supabase
-      .from('poudres')
-      .update({ stock_reel_kg: stockApres })
-      .eq('id', poudre.id)
+    const { data: stockResult, error: rpcError } = await supabase
+      .rpc('decrement_poudre_stock', {
+        p_poudre_id: poudre.id,
+        p_quantite: quantiteUtilisee,
+      })
 
-    if (updateError) {
-      console.error('Erreur mise à jour stock poudre:', updateError)
-      return { success: false, error: updateError.message }
+    if (rpcError) {
+      // Fallback : mise à jour directe si la RPC échoue
+      console.warn('RPC decrement_poudre_stock indisponible, fallback direct:', rpcError.message)
+      const { error: updateError } = await supabase
+        .from('poudres')
+        .update({ stock_reel_kg: stockApres })
+        .eq('id', poudre.id)
+
+      if (updateError) {
+        console.error('Erreur mise à jour stock poudre:', updateError)
+        return { success: false, error: updateError.message }
+      }
+    } else if (stockResult && stockResult.length > 0) {
+      // Utiliser les valeurs retournées par la RPC (valeurs réelles atomiques)
+      stockAvant = stockResult[0].stock_avant
+      stockApres = stockResult[0].stock_apres
     }
 
     // Enregistrer le mouvement de stock pour traçabilité

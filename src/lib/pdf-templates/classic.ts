@@ -1,5 +1,6 @@
 // Template Classic - Design professionnel et épuré
 import type { TemplateData } from './index'
+import { getRetractationHTML, getDefaultCGV } from './index'
 import type { CustomColors } from './generator'
 
 const formatMoney = (amount: number): string => {
@@ -459,8 +460,10 @@ export function generateClassicTemplate(data: TemplateData, customColors?: Custo
     </div>
   ` : ''}
 
+  ${isDevis ? getRetractationHTML(data.client.type) : ''}
+
   <div class="footer">
-    <div class="cgv">${data.cgv || 'Devis valable 30 jours. Paiement à réception de facture. En cas de retard de paiement, une pénalité de 3 fois le taux d\'intérêt légal sera appliquée.'}</div>
+    <div class="cgv">${data.cgv || getDefaultCGV(data.type)}</div>
     <div class="legal-info">
       ${data.atelier.siret ? `<span class="legal-item">SIRET: ${data.atelier.siret}</span>` : ''}
       ${data.atelier.tvaIntra ? `<span class="legal-item">TVA: ${data.atelier.tvaIntra}</span>` : ''}

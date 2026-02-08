@@ -4,6 +4,7 @@
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import type { Database } from '@/types/database.types'
+import { getUnsubscribeFooterHTML } from './unsubscribe'
 
 type Atelier = Database['public']['Tables']['ateliers']['Row']
 type Client = Database['public']['Tables']['clients']['Row']
@@ -234,6 +235,7 @@ export function generateProjetUpdateEmail(
               <p style="margin: 0; color: #9ca3af; font-size: 13px;">
                 ${atelier.name} ${atelier.phone ? `• ${atelier.phone}` : ''} ${atelier.email ? `• ${atelier.email}` : ''}
               </p>
+              ${client.email ? getUnsubscribeFooterHTML(client.email, (atelier as any).id || '', atelier.name) : ''}
             </td>
           </tr>
         </table>

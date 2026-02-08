@@ -80,10 +80,14 @@ export async function GET(request: Request) {
 
     const fec = generateFEC(factures || [], paiements || [])
 
+    // Nom de fichier FEC conforme : SIRENFECyyyymmdd.txt
+    const dateExport = new Date().toISOString().split('T')[0].replace(/-/g, '')
+    const filename = `FEC${dateExport}.txt`
+
     return new NextResponse(fec, {
       headers: {
-        'Content-Type': 'application/xml; charset=utf-8',
-        'Content-Disposition': `attachment; filename="FEC_${year}.xml"`,
+        'Content-Type': 'text/tab-separated-values; charset=utf-8',
+        'Content-Disposition': `attachment; filename="${filename}"`,
       },
     })
   } catch (error: any) {

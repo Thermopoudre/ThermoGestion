@@ -1,17 +1,25 @@
+import { Skeleton, SkeletonTable } from '@/components/ui/Skeleton'
+
 export default function ClientsLoading() {
   return (
-    <div className="p-6 animate-pulse">
-      <div className="flex items-center justify-between mb-8">
-        <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded-lg" />
-        <div className="flex gap-2">
-          <div className="h-10 w-28 bg-gray-200 dark:bg-gray-700 rounded-lg" />
-          <div className="h-10 w-36 bg-gray-200 dark:bg-gray-700 rounded-lg" />
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
+        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <Skeleton className="h-8 w-32 mb-2" variant="rounded" />
+            <Skeleton className="h-4 w-64" />
+          </div>
+          <div className="flex gap-2 sm:gap-4">
+            <Skeleton className="h-11 w-28" variant="rounded" />
+            <Skeleton className="h-11 w-36" variant="rounded" />
+          </div>
         </div>
-      </div>
-      <div className="space-y-3">
-        {[1, 2, 3, 4, 5].map(i => (
-          <div key={i} className="bg-white dark:bg-gray-800 rounded-xl h-20 shadow" />
-        ))}
+        {/* Barre de filtres skeleton */}
+        <div className="mb-4 flex flex-col sm:flex-row gap-3">
+          <Skeleton className="h-10 flex-1" variant="rounded" />
+          <Skeleton className="h-10 w-40" variant="rounded" />
+        </div>
+        <SkeletonTable rows={8} cols={5} />
       </div>
     </div>
   )

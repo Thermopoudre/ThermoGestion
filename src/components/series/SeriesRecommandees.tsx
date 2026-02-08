@@ -32,7 +32,9 @@ interface GroupePoudre {
 export function SeriesRecommandees({ projets, series, atelierId }: SeriesRecommandeesProps) {
   const router = useRouter()
 
-  // Grouper les projets par poudre exacte (référence + finition + type + couches)
+  // Grouper les projets par poudre STRICTEMENT identique
+  // Règle PLAN.md §2.3 : même référence + même type + même finition + même RAL + mêmes couches
+  // RAL 7016 brillant ≠ RAL 7016 mat → regroupement interdit
   const groupesPoudres = useMemo(() => {
     const groupes = new Map<string, GroupePoudre>()
 
@@ -40,8 +42,17 @@ export function SeriesRecommandees({ projets, series, atelierId }: SeriesRecomma
       if (!projet.poudre_id || !projet.poudres) return
 
       const poudre = projet.poudres
-      // Clé unique : poudre_id + couches (même poudre mais couches différentes = groupes différents)
-      const cle = `${projet.poudre_id}_${projet.couches || 1}`
+      // Clé STRICTE : référence + type + finition + RAL + couches
+      // Garantit qu'aucune poudre incompatible ne soit regroupée
+      const cle = [
+        projet.poudre_id,
+        poudre.type || 'unknown',
+        poudre.finition || 'unknown',
+        poudre.ral || 'no-ral',
+        projet.couches || 1,
+        projet.primaire ? 'primaire' : 'no-primaire',
+        projet.vernis ? 'vernis' : 'no-vernis',
+      ].join('__')
 
       if (!groupes.has(cle)) {
         groupes.set(cle, {
@@ -188,7 +199,7 @@ export function SeriesRecommandees({ projets, series, atelierId }: SeriesRecomma
 
                 <button
                   onClick={() => handleCreateSerie(groupe)}
-                  className="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all"
+                  className="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-3 px-6 rounded-lg hover:from-orange-400 hover:to-red-500 transition-all"
                 >
                   Créer une série
                 </button>

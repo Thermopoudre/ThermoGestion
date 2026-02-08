@@ -147,3 +147,39 @@ const getCouchesDisplay = (couches: number | Array<{ type: string }> | undefined
   if (Array.isArray(couches)) return couches.length.toString()
   return couches.toString()
 }
+
+/**
+ * CGV par défaut — Devis
+ * Texte affiché en bas des devis si aucun texte personnalisé n'est configuré
+ */
+export const DEFAULT_CGV_DEVIS = 'Devis valable 30 jours à compter de sa date d\'émission. Acompte de 30% à la commande, solde à la livraison. Pas d\'escompte pour paiement anticipé.'
+
+/**
+ * CGV par défaut — Factures
+ * Mentions obligatoires : pénalités de retard + indemnité forfaitaire (art. L441-10 et D441-5 C. com.)
+ */
+export const DEFAULT_CGV_FACTURE = 'Paiement à réception de facture. En cas de retard de paiement, des pénalités au taux de 3 fois le taux d\'intérêt légal seront appliquées (art. L441-10 C. com.), ainsi qu\'une indemnité forfaitaire de recouvrement de 40 € (art. D441-5 C. com.). Pas d\'escompte pour paiement anticipé.'
+
+/**
+ * Retourner les CGV adaptées au type de document
+ */
+export function getDefaultCGV(type: 'devis' | 'facture'): string {
+  return type === 'facture' ? DEFAULT_CGV_FACTURE : DEFAULT_CGV_DEVIS
+}
+
+/**
+ * Mention légale droit de rétractation (obligatoire B2C)
+ * Art. L221-18 du Code de la consommation : 14 jours calendaires
+ * À afficher UNIQUEMENT pour les clients particuliers
+ */
+export function getRetractationHTML(clientType?: string): string {
+  if (clientType === 'professionnel') return ''
+  return `
+    <div style="margin-top: 12px; padding: 10px 14px; background: #fffbeb; border: 1px solid #fbbf24; border-radius: 6px; font-size: 8.5px; line-height: 1.4; color: #92400e;">
+      <strong>Droit de rétractation (art. L221-18 du Code de la consommation) :</strong>
+      Conformément aux articles L221-18 et suivants du Code de la consommation, vous disposez d'un délai de <strong>14 jours calendaires</strong> à compter de l'acceptation de ce devis pour exercer votre droit de rétractation, sans avoir à justifier de motifs ni à payer de pénalités.
+      Pour exercer ce droit, vous devez notifier votre décision par courrier recommandé ou email à l'adresse de l'entreprise.
+      <em>Exception : ce droit ne s'applique pas si les travaux ont commencé avec votre accord exprès avant la fin du délai de rétractation (art. L221-28).</em>
+    </div>
+  `
+}

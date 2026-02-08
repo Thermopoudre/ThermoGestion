@@ -1,5 +1,6 @@
 // Template Industrial - Conçu pour ateliers de thermolaquage
 import type { TemplateData } from './index'
+import { getRetractationHTML, getDefaultCGV } from './index'
 import type { CustomColors } from './generator'
 
 const formatMoney = (amount: number): string => {
@@ -555,10 +556,12 @@ export function generateIndustrialTemplate(data: TemplateData, customColors?: Cu
         </div>
       ` : ''}
 
+      ${isDevis ? getRetractationHTML(data.client.type) : ''}
+
       <div class="footer">
         <div class="footer-content">
           <div class="footer-legal">
-            ${data.cgv || 'Devis valable 30 jours. Acompte de 30% à la commande. Solde à la livraison. Conditions générales disponibles sur demande.'}
+            ${data.cgv || getDefaultCGV(data.type)}
           </div>
           <div class="footer-info">
             ${data.atelier.siret ? `<span class="footer-item"><span class="footer-icon">🏭</span> SIRET ${data.atelier.siret}</span>` : ''}

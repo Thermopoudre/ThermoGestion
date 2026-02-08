@@ -112,7 +112,10 @@ export async function uploadPhoto(
 
   // Générer nom fichier unique
   const extension = compressedFile.name.split('.').pop() || 'webp'
-  const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${extension}`
+  const randomBytes = new Uint8Array(8)
+  crypto.getRandomValues(randomBytes)
+  const randomStr = Array.from(randomBytes).map(b => b.toString(36)).join('').slice(0, 10)
+  const fileName = `${Date.now()}-${randomStr}.${extension}`
   const filePath = `${atelierId}/${projetId}/${fileName}`
 
   // Upload

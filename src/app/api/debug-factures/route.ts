@@ -2,6 +2,11 @@ import { createServerClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 export async function GET() {
+  // Désactivé en production — endpoint de debug uniquement
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({ error: 'Endpoint désactivé en production' }, { status: 403 })
+  }
+
   try {
     const supabase = await createServerClient()
 

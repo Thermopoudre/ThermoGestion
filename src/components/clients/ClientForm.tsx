@@ -32,8 +32,10 @@ export function ClientForm({ atelierId, clientId, initialData }: ClientFormProps
     email: initialData?.email || '',
     phone: initialData?.phone || '',
     address: initialData?.address || '',
+    adresse_livraison: (initialData as any)?.adresse_livraison || '',
     type: initialData?.type || ('particulier' as 'particulier' | 'professionnel'),
     siret: initialData?.siret || '',
+    tva_intra: (initialData as any)?.tva_intra || '',
     tags: initialData?.tags?.join(', ') || '',
     notes: initialData?.notes || '',
     facture_trigger: initialData?.facture_trigger || ('pret' as 'pret' | 'livre'),
@@ -55,8 +57,10 @@ export function ClientForm({ atelierId, clientId, initialData }: ClientFormProps
         email: formData.email,
         phone: formData.phone || null,
         address: formData.address || null,
+        adresse_livraison: formData.adresse_livraison || null,
         type: formData.type,
         siret: formData.type === 'professionnel' ? (formData.siret || null) : null,
+        tva_intra: formData.type === 'professionnel' ? (formData.tva_intra || null) : null,
         tags: tagsArray.length > 0 ? tagsArray : null,
         notes: formData.notes || null,
         facture_trigger: formData.facture_trigger,
@@ -156,6 +160,21 @@ export function ClientForm({ atelierId, clientId, initialData }: ClientFormProps
             />
           </div>
 
+          <div className="sm:col-span-2">
+            <label htmlFor="adresse_livraison" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Adresse de livraison
+              <span className="text-xs text-gray-400 ml-1">(si différente de l&apos;adresse ci-dessus)</span>
+            </label>
+            <textarea
+              id="adresse_livraison"
+              value={formData.adresse_livraison || ''}
+              onChange={(e) => setFormData({ ...formData, adresse_livraison: e.target.value })}
+              rows={2}
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
+              placeholder="Laisser vide si identique à l'adresse principale"
+            />
+          </div>
+
           <div>
             <label htmlFor="type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Type *
@@ -172,19 +191,35 @@ export function ClientForm({ atelierId, clientId, initialData }: ClientFormProps
           </div>
 
           {formData.type === 'professionnel' && (
-            <div>
-              <label htmlFor="siret" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                SIRET
-              </label>
-              <input
-                id="siret"
-                type="text"
-                value={formData.siret}
-                onChange={(e) => setFormData({ ...formData, siret: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
-                placeholder="123 456 789 00012"
-              />
-            </div>
+            <>
+              <div>
+                <label htmlFor="siret" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  SIRET
+                </label>
+                <input
+                  id="siret"
+                  type="text"
+                  value={formData.siret}
+                  onChange={(e) => setFormData({ ...formData, siret: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
+                  placeholder="123 456 789 00012"
+                />
+              </div>
+              <div>
+                <label htmlFor="tva_intra" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  N° TVA Intracommunautaire
+                  <span className="text-xs text-gray-400 ml-1">(obligatoire sur factures)</span>
+                </label>
+                <input
+                  id="tva_intra"
+                  type="text"
+                  value={formData.tva_intra || ''}
+                  onChange={(e) => setFormData({ ...formData, tva_intra: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
+                  placeholder="FR 12 345678901"
+                />
+              </div>
+            </>
           )}
 
           <div className="sm:col-span-2">

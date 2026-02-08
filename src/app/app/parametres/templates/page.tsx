@@ -38,7 +38,8 @@ export default async function TemplatesPage() {
     accentColor: settings.pdf_accent_color || '#f97316',
     showLogo: settings.pdf_show_logo !== false,
     fontFamily: settings.pdf_font_family || 'inter',
-    cgvText: settings.pdf_cgv_text || 'Devis valable 30 jours. Paiement à réception de facture.',
+    cgvDevis: settings.cgv_devis || settings.pdf_cgv_text || '',
+    cgvFacture: settings.cgv_facture || '',
     paymentTerms: settings.pdf_payment_terms || '30 jours',
     footerText: settings.pdf_footer_text || '',
   }

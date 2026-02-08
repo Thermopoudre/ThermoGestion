@@ -1,34 +1,15 @@
-import { createServerClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+import { createServerClient, getAuthorizedUser } from '@/lib/supabase/server'
 import { ClientsList } from '@/components/clients/ClientsList'
 
 export default async function ClientsPage() {
+  const { atelierId } = await getAuthorizedUser()
   const supabase = await createServerClient()
-  
-  const {
-    data: { user: authUser },
-  } = await supabase.auth.getUser()
 
-  if (!authUser) {
-    redirect('/auth/login')
-  }
-
-  // Charger l'atelier de l'utilisateur
-  const { data: userData } = await supabase
-    .from('users')
-    .select('atelier_id')
-    .eq('id', authUser.id)
-    .single()
-
-  if (!userData) {
-    redirect('/app/complete-profile')
-  }
-
-  // Charger les clients
+  // Charger les clients - isolation par atelier garantie
   const { data: clients, error } = await supabase
     .from('clients')
     .select('*')
-    .eq('atelier_id', userData.atelier_id)
+    .eq('atelier_id', atelierId)
     .order('created_at', { ascending: false })
 
   if (error) {
@@ -57,7 +38,7 @@ export default async function ClientsPage() {
             </a>
             <a
               href="/app/clients/new"
-              className="flex-1 sm:flex-none text-center bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-2 sm:py-3 px-3 sm:px-6 rounded-lg hover:from-blue-500 hover:to-cyan-400 transition-all text-sm sm:text-base"
+              className="flex-1 sm:flex-none text-center bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold py-2 sm:py-3 px-3 sm:px-6 rounded-lg hover:from-orange-400 hover:to-red-500 transition-all text-sm sm:text-base"
             >
               <span className="hidden sm:inline">+ Nouveau client</span>
               <span className="sm:hidden">+ Ajouter</span>

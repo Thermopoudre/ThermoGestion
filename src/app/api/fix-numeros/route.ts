@@ -2,6 +2,7 @@ import { createServerClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
 // API endpoint to fix NaN numeros in the database
+// Restreint aux owners uniquement
 export async function POST() {
   try {
     const supabase = await createServerClient()
@@ -12,12 +13,16 @@ export async function POST() {
       return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
     }
 
-    // Récupérer l'atelier de l'utilisateur
+    // Récupérer l'atelier de l'utilisateur + vérifier le rôle
     const { data: userData } = await supabase
       .from('users')
-      .select('atelier_id')
+      .select('atelier_id, role')
       .eq('id', user.id)
       .single()
+
+    if (userData && userData.role !== 'owner') {
+      return NextResponse.json({ error: 'Réservé au propriétaire du compte' }, { status: 403 })
+    }
 
     if (!userData) {
       return NextResponse.json({ error: 'Utilisateur non trouvé' }, { status: 404 })

@@ -1,4 +1,4 @@
-import { createServerClient } from '@/lib/supabase/server'
+import { createServerClient, getAuthorizedUser } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { KPICards } from '@/components/dashboard/KPICards'
 import { ChartCA } from '@/components/dashboard/ChartCA'

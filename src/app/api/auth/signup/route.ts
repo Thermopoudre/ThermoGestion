@@ -1,8 +1,21 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { NextResponse } from 'next/server'
+import { sanitizeHtml, validateInput } from '@/lib/utils'
+import { authLimiter, getClientIP } from '@/lib/security/rate-limit'
 
 export async function POST(request: Request) {
   try {
+    // Rate limiting (serverless-compatible via Supabase)
+    const ip = getClientIP(request)
+    const rateLimitResult = await authLimiter.check(ip)
+    
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { error: 'Trop de tentatives. Veuillez réessayer dans 15 minutes.' },
+        { status: 429 }
+      )
+    }
+
     const body = await request.json()
     const { email, password, atelierName } = body
 
@@ -12,6 +25,36 @@ export async function POST(request: Request) {
         { status: 400 }
       )
     }
+
+    // Validation et sanitization des entrées
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: 'Format d\'email invalide' },
+        { status: 400 }
+      )
+    }
+
+    if (password.length < 8) {
+      return NextResponse.json(
+        { error: 'Le mot de passe doit contenir au moins 8 caractères' },
+        { status: 400 }
+      )
+    }
+
+    const nameValidation = validateInput(atelierName, {
+      required: true,
+      minLength: 2,
+      maxLength: 100,
+    })
+    if (!nameValidation.valid) {
+      return NextResponse.json(
+        { error: `Nom d'atelier invalide : ${nameValidation.error}` },
+        { status: 400 }
+      )
+    }
+
+    const sanitizedAtelierName = sanitizeHtml(atelierName.trim())
 
     const supabase = createAdminClient()
 
@@ -35,33 +78,37 @@ export async function POST(request: Request) {
       )
     }
 
-      // 2. Créer l'atelier
-      const trialEndsAt = new Date()
-      trialEndsAt.setDate(trialEndsAt.getDate() + 30) // Essai gratuit 30 jours
+    // 2. Créer l'atelier
+    const trialEndsAt = new Date()
+    trialEndsAt.setDate(trialEndsAt.getDate() + 30) // Essai gratuit 30 jours
 
-      const { data: atelier, error: atelierError } = await supabase
-        .from('ateliers')
-        .insert({
-          name: atelierName,
-          email,
-          plan: 'pro', // Mode Pro complet pour l'essai gratuit
-          trial_ends_at: trialEndsAt.toISOString(),
-          storage_quota_gb: 20,
-          storage_used_gb: 0,
-          settings: {},
-        })
-        .select()
-        .single()
+    const { data: atelier, error: atelierError } = await supabase
+      .from('ateliers')
+      .insert({
+        name: sanitizedAtelierName,
+        email: email.trim().toLowerCase(),
+        plan: 'pro', // Mode Pro complet pour l'essai gratuit
+        trial_ends_at: trialEndsAt.toISOString(),
+        storage_quota_gb: 20,
+        storage_used_gb: 0,
+        settings: {},
+      })
+      .select()
+      .single()
 
-      if (atelierError) {
-        // Si erreur création atelier, ne pas supprimer l'utilisateur auth car on n'a pas accès admin ici
-        // Le nettoyage devra être fait manuellement si nécessaire
-        console.error('Erreur création atelier:', atelierError)
-        return NextResponse.json(
-          { error: `Erreur lors de la création de l'atelier: ${atelierError.message}` },
-          { status: 500 }
-        )
+    if (atelierError) {
+      // Rollback : supprimer l'utilisateur auth avec le service role
+      console.error('Erreur création atelier:', atelierError)
+      try {
+        await supabase.auth.admin.deleteUser(authData.user.id)
+      } catch (deleteError) {
+        console.error('Erreur rollback auth user:', deleteError)
       }
+      return NextResponse.json(
+        { error: 'Erreur lors de la création de l\'atelier. Veuillez réessayer.' },
+        { status: 500 }
+      )
+    }
 
     // 3. Créer l'utilisateur dans la table users
     const { error: userError } = await supabase
@@ -69,43 +116,51 @@ export async function POST(request: Request) {
       .insert({
         id: authData.user.id,
         atelier_id: atelier.id,
-        email,
+        email: email.trim().toLowerCase(),
         role: 'owner', // Premier utilisateur = owner
         full_name: null,
       })
 
     if (userError) {
-      // Si erreur création user, nettoyer l'atelier
-      await supabase.from('ateliers').delete().eq('id', atelier.id)
-      // Note: On ne peut pas supprimer l'utilisateur auth sans service role key
-      // Il faudra le faire manuellement si nécessaire
+      // Rollback complet : supprimer atelier + auth user
       console.error('Erreur création user:', userError)
+      try {
+        await supabase.from('ateliers').delete().eq('id', atelier.id)
+        await supabase.auth.admin.deleteUser(authData.user.id)
+      } catch (deleteError) {
+        console.error('Erreur rollback:', deleteError)
+      }
       return NextResponse.json(
-        { error: `Erreur lors de la création de l'utilisateur: ${userError.message}` },
+        { error: 'Erreur lors de la création du compte. Veuillez réessayer.' },
         { status: 500 }
       )
     }
 
     // 4. Journal d'audit
-    await supabase.from('audit_logs').insert({
-      atelier_id: atelier.id,
-      user_id: authData.user.id,
-      action: 'create',
-      table_name: 'ateliers',
-      record_id: atelier.id,
-      new_data: { name: atelierName, email, plan: 'pro' },
-    })
+    try {
+      await supabase.from('audit_logs').insert({
+        atelier_id: atelier.id,
+        user_id: authData.user.id,
+        action: 'create',
+        table_name: 'ateliers',
+        record_id: atelier.id,
+        new_data: { name: sanitizedAtelierName, email: email.trim().toLowerCase(), plan: 'pro' },
+      })
+    } catch (auditError) {
+      // L'audit log ne doit pas bloquer l'inscription
+      console.error('Erreur audit log (non bloquant):', auditError)
+    }
 
     return NextResponse.json({
       success: true,
       message: 'Compte créé avec succès. Vérifiez votre email pour confirmer.',
-      user: authData.user,
-      atelier,
+      user: { id: authData.user.id, email: authData.user.email },
+      atelier: { id: atelier.id, name: atelier.name },
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Erreur inscription:', error)
     return NextResponse.json(
-      { error: error.message || 'Erreur serveur' },
+      { error: 'Une erreur est survenue lors de l\'inscription. Veuillez réessayer.' },
       { status: 500 }
     )
   }

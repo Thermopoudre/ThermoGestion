@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { generateUnsubscribeToken } from '@/lib/email/unsubscribe'
 
 // Cron job pour envoyer les demandes d'avis Google
 // Doit être appelé quotidiennement
@@ -10,7 +11,8 @@ export async function GET(request: Request) {
   try {
     // Vérifier le secret cron
     const authHeader = request.headers.get('authorization')
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    const cronSecret = process.env.CRON_SECRET
+    if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
       return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
     }
 
@@ -134,7 +136,7 @@ export async function GET(request: Request) {
               lien_avis: trackingLink,
               atelier_nom: atelier.name,
               atelier_phone: atelier.phone,
-              lien_desinscription: `${baseUrl}/unsubscribe/${client.id}`,
+              lien_desinscription: `${baseUrl}/unsubscribe?token=${generateUnsubscribeToken(client.email, atelier.id)}`,
             },
             priority: 'low',
           })

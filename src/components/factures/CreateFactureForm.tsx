@@ -35,10 +35,11 @@ export function CreateFactureForm({
   // Modal de création rapide
   const [showClientModal, setShowClientModal] = useState(false)
 
-  const [formData, setFormData] = useState<Partial<FactureFormData>>({
+  const [formData, setFormData] = useState<Partial<FactureFormData> & { categorie_operation?: string }>({
     client_id: projetInitial?.client_id || '',
     projet_id: projetInitial?.id || '',
     type: 'complete',
+    categorie_operation: 'services',
     items: projetInitial?.devis?.items
       ? (projetInitial.devis.items as FactureItem[])
       : [
@@ -173,6 +174,7 @@ export function CreateFactureForm({
           projet_id: formData.projet_id || null,
           numero,
           type: formData.type,
+          categorie_operation: formData.categorie_operation || 'services',
           items: formData.items,
           total_ht: formData.total_ht,
           total_ttc: formData.total_ttc,
@@ -295,6 +297,49 @@ export function CreateFactureForm({
                 className="mr-2"
               />
               Solde
+            </label>
+          </div>
+        </div>
+
+        {/* Catégorie d'opération (obligation légale Décret 2022-1299) */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Nature de l&apos;opération *
+            <span className="text-xs text-gray-400 ml-1">(mention légale obligatoire)</span>
+          </label>
+          <div className="flex gap-4">
+            <label className="flex items-center">
+              <input
+                type="radio"
+                name="categorie_operation"
+                value="services"
+                checked={formData.categorie_operation === 'services'}
+                onChange={(e) => setFormData({ ...formData, categorie_operation: e.target.value })}
+                className="mr-2"
+              />
+              Prestations de services
+            </label>
+            <label className="flex items-center">
+              <input
+                type="radio"
+                name="categorie_operation"
+                value="biens"
+                checked={formData.categorie_operation === 'biens'}
+                onChange={(e) => setFormData({ ...formData, categorie_operation: e.target.value })}
+                className="mr-2"
+              />
+              Livraison de biens
+            </label>
+            <label className="flex items-center">
+              <input
+                type="radio"
+                name="categorie_operation"
+                value="mixte"
+                checked={formData.categorie_operation === 'mixte'}
+                onChange={(e) => setFormData({ ...formData, categorie_operation: e.target.value })}
+                className="mr-2"
+              />
+              Biens et services
             </label>
           </div>
         </div>

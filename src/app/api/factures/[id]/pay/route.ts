@@ -1,6 +1,7 @@
 import { createServerClient } from '@/lib/supabase/server'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
+import { paymentLimiter, getClientIP } from '@/lib/security/rate-limit'
 
 // Initialiser Stripe seulement si la clé est disponible
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
@@ -12,10 +13,20 @@ const stripe = stripeSecretKey
 
 // Créer une session de paiement Stripe pour une facture
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
+    // Rate limiting (serverless-compatible via Supabase)
+    const ip = getClientIP(request)
+    const rateLimitResult = await paymentLimiter.check(ip)
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { error: 'Trop de tentatives. Réessayez dans une minute.' },
+        { status: 429 }
+      )
+    }
+
     // Vérifier que Stripe est configuré
     if (!stripe) {
       return NextResponse.json(
@@ -24,7 +35,16 @@ export async function POST(
       )
     }
 
+    // Validation UUID
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    if (!uuidRegex.test(params.id)) {
+      return NextResponse.json({ error: 'ID facture invalide' }, { status: 400 })
+    }
+
     const supabase = await createServerClient()
+
+    // Vérifier l'authentification (optionnelle pour les paiements clients)
+    const { data: { user } } = await supabase.auth.getUser()
 
     // Récupérer la facture avec client et atelier
     const { data: facture, error: factureError } = await supabase
@@ -48,6 +68,26 @@ export async function POST(
     if (factureError || !facture) {
       return NextResponse.json({ error: 'Facture non trouvée' }, { status: 404 })
     }
+
+    // Vérification d'autorisation : l'utilisateur doit être soit le client, 
+    // soit un membre de l'atelier, soit la facture doit avoir un token public valide
+    if (user) {
+      const client = facture.clients as any
+      const isClient = client?.email && user.email === client.email
+      const { data: atelierUser } = await supabase
+        .from('users')
+        .select('atelier_id')
+        .eq('id', user.id)
+        .eq('atelier_id', facture.atelier_id)
+        .maybeSingle()
+      
+      if (!isClient && !atelierUser) {
+        return NextResponse.json({ error: 'Non autorisé' }, { status: 403 })
+      }
+    }
+    // Note : si pas authentifié, on laisse passer car le paiement peut être
+    // initié via un lien partagé (le client paie sans compte).
+    // La sécurité repose sur l'UUID non devinable de la facture.
 
     // Vérifier que la facture n'est pas déjà payée
     if (facture.status === 'payee') {

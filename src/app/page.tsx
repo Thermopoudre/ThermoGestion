@@ -1,12 +1,13 @@
 import { readFileSync } from 'fs'
 import { join } from 'path'
+import { sanitizeStaticHtml } from '@/lib/sanitize-html'
 
 export default function Home() {
   const htmlPath = join(process.cwd(), 'site-vitrine', 'index.html')
   let htmlContent = ''
   
   try {
-    htmlContent = readFileSync(htmlPath, 'utf-8')
+    htmlContent = sanitizeStaticHtml(readFileSync(htmlPath, 'utf-8'))
   } catch (error) {
     // Fallback si le fichier n'existe pas
     htmlContent = `

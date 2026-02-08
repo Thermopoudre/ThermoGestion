@@ -1,15 +1,9 @@
-import { readFileSync } from 'fs'
 import { join } from 'path'
+import { loadAndSanitizeHtml } from '@/lib/sanitize-html'
 
 export default function ContactPage() {
   const htmlPath = join(process.cwd(), 'site-vitrine', 'contact.html')
-  let htmlContent = ''
-  
-  try {
-    htmlContent = readFileSync(htmlPath, 'utf-8')
-  } catch (error) {
-    htmlContent = '<html><body><h1>Page en cours de chargement...</h1></body></html>'
-  }
+  const htmlContent = loadAndSanitizeHtml(htmlPath, 'Contact')
 
   return (
     <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
