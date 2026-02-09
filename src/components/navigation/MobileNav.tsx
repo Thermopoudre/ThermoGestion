@@ -8,29 +8,82 @@ interface MobileNavProps {
   userEmail: string
 }
 
-const navLinks = [
-  { href: '/app/dashboard', label: 'Dashboard' },
-  { href: '/app/clients', label: 'Clients' },
-  { href: '/app/projets', label: 'Projets' },
-  { href: '/app/kanban', label: 'Kanban' },
-  { href: '/app/devis', label: 'Devis' },
-  { href: '/app/poudres', label: 'Poudres' },
-  { href: '/app/series', label: 'Séries' },
-  { href: '/app/factures', label: 'Factures' },
-  { href: '/app/retouches', label: 'Retouches' },
-  { href: '/app/planning', label: 'Planning' },
-  { href: '/app/batching', label: 'Batching' },
-  { href: '/app/atelier', label: 'Mode Atelier' },
-  { href: '/app/photos', label: 'Photos' },
-  { href: '/app/chat', label: 'Messages' },
-  { href: '/app/ral', label: 'Nuancier RAL' },
-  { href: '/app/calculateur', label: 'Calculateur' },
-  { href: '/app/signature', label: 'Signatures' },
-  { href: '/app/fidelite', label: 'Fidélité' },
-  { href: '/app/stats', label: 'Statistiques' },
-  { href: '/app/equipe', label: 'Équipe' },
-  { href: '/app/activite', label: 'Activité' },
-  { href: '/app/parametres', label: 'Paramètres' },
+interface NavSection {
+  title: string
+  links: { href: string; label: string }[]
+}
+
+const navSections: NavSection[] = [
+  {
+    title: 'Principal',
+    links: [
+      { href: '/app/dashboard', label: 'Dashboard' },
+      { href: '/app/clients', label: 'Clients' },
+      { href: '/app/projets', label: 'Projets' },
+      { href: '/app/devis', label: 'Devis' },
+      { href: '/app/factures', label: 'Factures' },
+      { href: '/app/poudres', label: 'Poudres' },
+      { href: '/app/planning', label: 'Planning' },
+      { href: '/app/stats', label: 'Statistiques' },
+    ],
+  },
+  {
+    title: 'Production',
+    links: [
+      { href: '/app/kanban', label: 'Kanban' },
+      { href: '/app/batching', label: 'Batching' },
+      { href: '/app/atelier', label: 'Mode Atelier' },
+      { href: '/app/series', label: 'Séries' },
+      { href: '/app/retouches', label: 'Retouches' },
+      { href: '/app/planification-cuisson', label: 'Cuisson Four' },
+    ],
+  },
+  {
+    title: 'Métier',
+    links: [
+      { href: '/app/jantes', label: 'Jantes' },
+      { href: '/app/consommables', label: 'Consommables' },
+      { href: '/app/maintenance', label: 'Maintenance' },
+      { href: '/app/etiquettes', label: 'Étiquettes QR' },
+      { href: '/app/stock-intelligent', label: 'Stock avancé' },
+      { href: '/app/reapprovisionnement', label: 'Réappro' },
+      { href: '/app/marketplace', label: 'Marketplace' },
+    ],
+  },
+  {
+    title: 'Outils',
+    links: [
+      { href: '/app/ral', label: 'Nuancier RAL' },
+      { href: '/app/calculateur', label: 'Calculateur' },
+      { href: '/app/photos', label: 'Photos' },
+      { href: '/app/signature', label: 'Signatures' },
+    ],
+  },
+  {
+    title: 'Communication',
+    links: [
+      { href: '/app/chat', label: 'Messages' },
+      { href: '/app/relances', label: 'Relances' },
+      { href: '/app/fidelite', label: 'Fidélité' },
+      { href: '/app/equipe', label: 'Équipe' },
+      { href: '/app/activite', label: 'Activité' },
+    ],
+  },
+  {
+    title: 'Avancé',
+    links: [
+      { href: '/app/grille-tarifaire', label: 'Grille tarifaire' },
+      { href: '/app/tarifs-clients', label: 'Tarifs clients' },
+      { href: '/app/previsionnel', label: 'Prévisionnel' },
+      { href: '/app/objectifs', label: 'Objectifs' },
+      { href: '/app/ecran-atelier', label: 'Écran TV' },
+      { href: '/app/ia', label: 'IA Prédictive' },
+      { href: '/app/iot', label: 'IoT Machines' },
+      { href: '/app/multi-sites', label: 'Multi-sites' },
+      { href: '/app/feature-flags', label: 'Feature Flags' },
+      { href: '/app/parametres', label: 'Paramètres' },
+    ],
+  },
 ]
 
 export function MobileNav({ userEmail }: MobileNavProps) {
@@ -100,26 +153,31 @@ export function MobileNav({ userEmail }: MobileNavProps) {
 
         {/* Navigation */}
         <nav className="p-4 overflow-y-auto h-[calc(100%-180px)]">
-          <ul className="space-y-1">
-            {navLinks.map((link) => {
-              const active = isActive(link.href)
-              return (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    onClick={() => setIsOpen(false)}
-                    className={`block px-3 py-2.5 rounded-lg transition-colors ${
-                      active
-                        ? 'bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400 font-bold border-l-4 border-orange-500'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-orange-900/30 hover:text-orange-600 dark:hover:text-orange-400'
-                    }`}
-                  >
-                    <span className="font-medium">{link.label}</span>
-                  </Link>
-                </li>
-              )
-            })}
-          </ul>
+          {navSections.map((section) => (
+            <div key={section.title} className="mb-4">
+              <p className="px-3 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">{section.title}</p>
+              <ul className="space-y-0.5">
+                {section.links.map((link) => {
+                  const active = isActive(link.href)
+                  return (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        onClick={() => setIsOpen(false)}
+                        className={`block px-3 py-2 rounded-lg transition-colors ${
+                          active
+                            ? 'bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400 font-bold border-l-4 border-orange-500'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-orange-900/30 hover:text-orange-600 dark:hover:text-orange-400'
+                        }`}
+                      >
+                        <span className="font-medium text-sm">{link.label}</span>
+                      </Link>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          ))}
         </nav>
 
         {/* Footer du menu */}

@@ -82,11 +82,34 @@ export default async function AppLayout({
                     <NavLink href="/app/signature" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Signatures</NavLink>
                   </div>
                   <div className="border-t border-gray-100 dark:border-gray-700 py-2">
+                    <p className="px-4 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Métier</p>
+                    <NavLink href="/app/jantes" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Jantes</NavLink>
+                    <NavLink href="/app/consommables" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Consommables</NavLink>
+                    <NavLink href="/app/maintenance" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Maintenance</NavLink>
+                    <NavLink href="/app/etiquettes" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Étiquettes QR</NavLink>
+                    <NavLink href="/app/planification-cuisson" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Cuisson Four</NavLink>
+                    <NavLink href="/app/stock-intelligent" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Stock avancé</NavLink>
+                    <NavLink href="/app/marketplace" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Marketplace</NavLink>
+                  </div>
+                  <div className="border-t border-gray-100 dark:border-gray-700 py-2">
                     <p className="px-4 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Communication</p>
                     <NavLink href="/app/chat" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Messages</NavLink>
+                    <NavLink href="/app/relances" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Relances</NavLink>
                     <NavLink href="/app/fidelite" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Fidélité</NavLink>
                     <NavLink href="/app/equipe" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Équipe</NavLink>
                     <NavLink href="/app/activite" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Activité</NavLink>
+                  </div>
+                  <div className="border-t border-gray-100 dark:border-gray-700 py-2">
+                    <p className="px-4 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Avancé</p>
+                    <NavLink href="/app/grille-tarifaire" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Grille tarifaire</NavLink>
+                    <NavLink href="/app/tarifs-clients" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Tarifs clients</NavLink>
+                    <NavLink href="/app/previsionnel" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Prévisionnel</NavLink>
+                    <NavLink href="/app/objectifs" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Objectifs</NavLink>
+                    <NavLink href="/app/ecran-atelier" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Écran TV</NavLink>
+                    <NavLink href="/app/iot" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">IoT Machines</NavLink>
+                    <NavLink href="/app/ia" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">IA Prédictive</NavLink>
+                    <NavLink href="/app/multi-sites" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Multi-sites</NavLink>
+                    <NavLink href="/app/feature-flags" className="block px-4 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20">Feature Flags</NavLink>
                   </div>
                 </div>
               </div>

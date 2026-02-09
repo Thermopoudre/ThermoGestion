@@ -1520,4 +1520,73 @@ Migrations appliquées avec succès :
 - Toutes les nouvelles pages compilées et routées
 - 4 nouvelles pages app + 3 API routes + 4 librairies + 1 cron job
 
-**Dernière mise à jour :** 9 février 2026 — Vague 2 features métier + intégrations
+---
+
+### 9 février 2026 — Vague 3 : Module Jantes, IoT, Marketplace, IA, Multi-sites
+
+#### NOUVELLES PAGES APP
+
+- `src/app/app/jantes/page.tsx` : **Module Jantes complet**
+  - Gestion commandes jantes (réception → décapage → préparation → poudrage → cuisson → QC → livré)
+  - Tarification automatique par taille (14" à 23") + majorations finition (satiné +5€, métallisé +15€, carbone +30€)
+  - Fiche véhicule (marque, modèle, immatriculation)
+  - KPIs (total, en cours, prêts, CA mensuel jantes)
+  - Grille tarifaire de référence intégrée
+
+- `src/app/app/multi-sites/page.tsx` : **Gestion multi-ateliers**
+  - Vue consolidée CA + projets multi-sites
+  - Interface de préparation pour gestion multi-ateliers (transfert projets, stock partagé, équipes par site)
+  - Connexion aux données atelier actuelles
+
+- `src/app/app/iot/page.tsx` : **Supervision machines IoT**
+  - Dashboard temps réel des équipements (four, balance, cabine, compresseur, convoyeur)
+  - Mini-graphiques historiques 24h
+  - Statuts connecté/déconnecté/erreur avec alertes
+  - Configuration MQTT, API REST, Webhook
+
+- `src/app/app/marketplace/page.tsx` : **Marketplace poudres**
+  - Catalogue 6 fabricants (AkzoNobel, Tiger, Jotun, Axalta, Sherwin-Williams, PPG)
+  - Filtres par finition, stock fournisseur
+  - Panier d'achat avec calcul automatique
+  - Favoris, notes produits, certifications (QUALICOAT, GSB, QUALIMARINE)
+  - Infos livraison France
+
+- `src/app/app/ia/page.tsx` : **IA Prédictive (interface)**
+  - Détection d'anomalies en temps réel (stock, production, paiements)
+  - KPIs prédictifs (délai moyen, retards, CA pipeline, taux conversion)
+  - 4 modules IA présentés (délais, prix, risque client, anomalies)
+
+#### NOUVELLE LIBRAIRIE
+
+- `src/lib/ia/predictions.ts` : **Moteur IA prédictif**
+  - `predictDelai()` : Prédiction délais basée sur historique + complexité
+  - `detectAnomalies()` : Détection stocks bas, retards, impayés
+  - `recommendPrix()` : Suggestion prix basée sur devis acceptés + ajustements
+  - `scoreRisqueClient()` : Score 0-100 de risque impayé par client
+
+#### NAVIGATION
+
+- `src/app/app/layout.tsx` : Menu "Plus" enrichi avec 4 sous-sections
+  - **Métier** : Jantes, Consommables, Maintenance, Étiquettes QR, Cuisson Four, Stock avancé, Marketplace
+  - **Communication** : Messages, Relances, Fidélité, Équipe, Activité
+  - **Avancé** : Grille tarifaire, Tarifs clients, Prévisionnel, Objectifs, Écran TV, IA Prédictive, IoT, Multi-sites, Feature Flags
+
+- `src/components/navigation/MobileNav.tsx` : Navigation mobile réorganisée
+  - 6 sections avec titres (Principal, Production, Métier, Outils, Communication, Avancé)
+  - 40+ liens organisés pour navigation mobile fluide
+
+#### PWA
+
+- `public/manifest.json` : Raccourcis Jantes et Scanner QR ajoutés
+
+#### MIGRATION DATABASE
+
+- `add_projets_type_metadata` : Colonnes `type_projet` + `metadata` (JSONB) sur table `projets`
+
+#### BUILD
+
+- **Next.js build : EXIT 0** — Aucune erreur
+- 77 tests unitaires : TOUS PASSÉS
+- Déploiement Vercel production : OK
+
+**Dernière mise à jour :** 9 février 2026 — Vague 3 module Jantes + IoT + Marketplace + IA + Multi-sites

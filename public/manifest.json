@@ -97,6 +97,20 @@
       "description": "Voir le planning",
       "url": "/app/planning",
       "icons": [{ "src": "/icons/planning.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Module Jantes",
+      "short_name": "Jantes",
+      "description": "Gérer les commandes de jantes",
+      "url": "/app/jantes",
+      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Scanner QR",
+      "short_name": "Scanner",
+      "description": "Scanner un QR code projet",
+      "url": "/app/atelier",
+      "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }]
     }
   ],
   "share_target": {
