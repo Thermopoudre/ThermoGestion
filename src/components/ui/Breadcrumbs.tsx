@@ -7,16 +7,19 @@ export interface BreadcrumbItem {
 }
 
 interface BreadcrumbsProps {
-  items: BreadcrumbItem[]
+  items?: BreadcrumbItem[]
 }
 
-export function Breadcrumbs({ items }: BreadcrumbsProps) {
+export function Breadcrumbs({ items = [] }: BreadcrumbsProps) {
+  // Ne rien afficher si pas d'items (AppShell l'appelle sans props)
+  if (items.length === 0) return null
+
   return (
     <nav aria-label="Fil d'Ariane" className="mb-6">
       <ol className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 flex-wrap">
         <li>
           <Link
-            href="/client/dashboard"
+            href="/app/dashboard"
             className="flex items-center gap-1 hover:text-orange-500 transition-colors"
           >
             <Home className="w-4 h-4" />
