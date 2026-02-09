@@ -77,9 +77,18 @@ export default function LoginPage() {
           throw new Error('Session non établie après connexion')
         }
       }
-    } catch (err: unknown) {
-      // Message générique pour ne pas révéler si l'email existe
-      setError('Email ou mot de passe incorrect')
+    } catch (err: any) {
+      // Messages d'erreur plus précis pour aider l'utilisateur
+      const msg = err?.message || ''
+      if (msg.includes('Email not confirmed')) {
+        setError('Votre email n\'a pas été confirmé. Vérifiez votre boîte de réception (et spams).')
+      } else if (msg.includes('Invalid login credentials')) {
+        setError('Email ou mot de passe incorrect. Vérifiez vos identifiants ou créez un compte.')
+      } else if (msg.includes('Too many requests') || msg.includes('rate limit')) {
+        setError('Trop de tentatives. Réessayez dans quelques minutes.')
+      } else {
+        setError('Erreur de connexion. Vérifiez vos identifiants ou créez un compte.')
+      }
       setLoading(false)
     }
   }

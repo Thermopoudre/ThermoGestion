@@ -27,6 +27,6 @@ export default function Home() {
   }
 
   return (
-    <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+    <div className="bg-black text-white" dangerouslySetInnerHTML={{ __html: htmlContent }} />
   )
 }

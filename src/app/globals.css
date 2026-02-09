@@ -170,6 +170,27 @@
   100% { transform: rotate(360deg); }
 }
 
+/* Site vitrine animations */
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.4; }
+}
+.animate-pulse-slow { animation: pulse-slow 4s ease-in-out infinite; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+.animate-float { animation: float 4s ease-in-out infinite; }
+
+@keyframes heat {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.animate-heat { background-size: 200% 200%; animation: heat 3s ease infinite; }
+
+.workflow-line { background: linear-gradient(90deg, #3b82f6, #06b6d4, #10b981); }
+
 /* Animation classes */
 .animate-slide-in { animation: slide-in-right 0.3s ease-out; }
 .animate-slide-in-left { animation: slide-in-left 0.3s ease-out; }
