@@ -2,6 +2,12 @@ import { createServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Package, FileText, Receipt, Clock, CheckCircle2, AlertTriangle, ArrowRight, Send } from 'lucide-react'
+import { getProjetStatusLabel, getProjetStatusColor } from '@/lib/status-labels'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Tableau de bord - Espace Client',
+}
 
 export default async function ClientDashboardPage() {
   const supabase = await createServerClient()
@@ -92,23 +98,7 @@ export default async function ClientDashboardPage() {
   const facturesImpayees = factures.filter(f => f.payment_status === 'unpaid')
   const totalImpaye = facturesImpayees.reduce((sum, f) => sum + (f.total_ttc || 0), 0)
 
-  const statusLabels: Record<string, string> = {
-    devis: 'Devis',
-    en_cours: 'En production',
-    en_cuisson: 'Cuisson',
-    qc: 'Contrôle',
-    pret: 'Prêt à retirer',
-    livre: 'Livré',
-  }
-
-  const statusColors: Record<string, string> = {
-    devis: 'bg-gray-100 text-gray-700',
-    en_cours: 'bg-blue-100 text-blue-700',
-    en_cuisson: 'bg-orange-100 text-orange-700',
-    qc: 'bg-purple-100 text-purple-700',
-    pret: 'bg-green-100 text-green-700',
-    livre: 'bg-emerald-100 text-emerald-700',
-  }
+  // Utilisation de l'utilitaire partagé getProjetStatusLabel / getProjetStatusColor
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -227,8 +217,8 @@ export default async function ClientDashboardPage() {
                     <p className="font-medium text-gray-900">{projet.name}</p>
                     <p className="text-sm text-gray-500">#{projet.numero}</p>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusColors[projet.status] || 'bg-gray-100'}`}>
-                    {statusLabels[projet.status] || projet.status}
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getProjetStatusColor(projet.status)}`}>
+                    {getProjetStatusLabel(projet.status)}
                   </span>
                 </Link>
               ))

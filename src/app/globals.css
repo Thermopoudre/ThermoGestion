@@ -243,7 +243,7 @@ main {
   @apply transition-opacity duration-150;
 }
 
-/* Reduce motion for users who prefer it */
+/* Reduce motion for users who prefer it (RGAA 13.8) */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -252,6 +252,31 @@ main {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode support (RGAA 3.3) */
+@media (prefers-contrast: high) {
+  :root {
+    --focus-ring-width: 3px;
+  }
+  
+  :focus-visible {
+    outline: 3px solid currentColor !important;
+    outline-offset: 2px;
+  }
+  
+  a {
+    text-decoration: underline !important;
+  }
+}
+
+/* Forced colors (Windows high contrast) */
+@media (forced-colors: active) {
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger {
+    border: 2px solid ButtonText;
   }
 }
 

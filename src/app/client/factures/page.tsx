@@ -1,7 +1,14 @@
 import { createServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Receipt, Download, CreditCard, CheckCircle2, Clock, AlertTriangle } from 'lucide-react'
+import { Receipt, Download, CreditCard, CheckCircle2, Clock, AlertTriangle, Send } from 'lucide-react'
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Mes factures - Espace Client | ThermoGestion',
+  description: 'Consultez et payez vos factures en ligne',
+}
 
 export default async function ClientFacturesPage() {
   const supabase = await createServerClient()
@@ -43,9 +50,11 @@ export default async function ClientFacturesPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      <Breadcrumbs items={[{ label: 'Factures' }]} />
+
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Mes factures</h1>
-        <p className="text-gray-600">Consultez et payez vos factures en ligne</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Mes factures</h1>
+        <p className="text-gray-600 dark:text-gray-400">Consultez et payez vos factures en ligne</p>
       </div>
 
       {/* Résumé */}
@@ -88,7 +97,14 @@ export default async function ClientFacturesPage() {
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
                     <Receipt className="w-12 h-12 mx-auto mb-4 opacity-30" />
-                    <p>Aucune facture pour le moment</p>
+                    <p className="mb-4">Aucune facture pour le moment</p>
+                    <Link 
+                      href="/client/demande-devis"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                    >
+                      <Send className="w-4 h-4" />
+                      Demander un devis
+                    </Link>
                   </td>
                 </tr>
               ) : (
@@ -129,8 +145,15 @@ export default async function ClientFacturesPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
+                        <Link
+                          href={`/client/factures/${facture.id}`}
+                          className="p-2 text-gray-400 hover:text-orange-500 transition-colors"
+                          title="Voir le détail"
+                        >
+                          <Receipt className="w-5 h-5" />
+                        </Link>
                         <a
-                          href={`/app/factures/${facture.id}/pdf`}
+                          href={`/api/client/factures/${facture.id}/pdf`}
                           target="_blank"
                           className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
                           title="Télécharger PDF"

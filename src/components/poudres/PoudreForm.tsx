@@ -55,6 +55,10 @@ export function PoudreForm({ atelierId, poudreId, initialData }: PoudreFormProps
     duree_cuisson: initialData?.duree_cuisson?.toString() || '',
     source: initialData?.source || ('manual' as 'manual' | 'thermopoudre' | 'concurrent'),
     stock_initial_kg: initialData?.stock_initial_kg?.toString() || '0',
+    // Nouveaux champs traçabilité
+    date_peremption: (initialData as any)?.date_peremption || '',
+    numero_lot: (initialData as any)?.numero_lot || '',
+    fournisseur: (initialData as any)?.fournisseur || '',
   })
 
   // Calculer la consommation à partir du rendement
@@ -87,6 +91,10 @@ export function PoudreForm({ atelierId, poudreId, initialData }: PoudreFormProps
         temp_cuisson: formData.temp_cuisson ? parseInt(formData.temp_cuisson) : null,
         duree_cuisson: formData.duree_cuisson ? parseInt(formData.duree_cuisson) : null,
         source: formData.source,
+        // Traçabilité
+        date_peremption: formData.date_peremption || null,
+        numero_lot: formData.numero_lot || null,
+        fournisseur: formData.fournisseur || null,
       }
 
       let newPoudreId = poudreId
@@ -344,6 +352,48 @@ export function PoudreForm({ atelierId, poudreId, initialData }: PoudreFormProps
               onChange={(e) => setFormData({ ...formData, duree_cuisson: e.target.value })}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="15"
+            />
+          </div>
+
+          {/* Traçabilité */}
+          <div>
+            <label htmlFor="numero_lot" className="block text-sm font-medium text-gray-700 mb-2">
+              N° de lot fournisseur
+            </label>
+            <input
+              id="numero_lot"
+              type="text"
+              value={formData.numero_lot}
+              onChange={(e) => setFormData({ ...formData, numero_lot: e.target.value })}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="LOT-2026-001"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="date_peremption" className="block text-sm font-medium text-gray-700 mb-2">
+              Date de péremption
+            </label>
+            <input
+              id="date_peremption"
+              type="date"
+              value={formData.date_peremption}
+              onChange={(e) => setFormData({ ...formData, date_peremption: e.target.value })}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="fournisseur" className="block text-sm font-medium text-gray-700 mb-2">
+              Fournisseur
+            </label>
+            <input
+              id="fournisseur"
+              type="text"
+              value={formData.fournisseur}
+              onChange={(e) => setFormData({ ...formData, fournisseur: e.target.value })}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="IGP, Akzo Nobel, Axalta..."
             />
           </div>
 

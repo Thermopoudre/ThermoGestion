@@ -136,6 +136,62 @@ export const translations: Record<Locale, Record<string, string>> = {
     'success.saved': 'Enregistré avec succès',
     'success.deleted': 'Supprimé avec succès',
     'success.sent': 'Envoyé avec succès',
+    
+    // Nouvelles fonctionnalités
+    'nav.consommables': 'Consommables',
+    'nav.maintenance': 'Maintenance',
+    'nav.etiquettes': 'Étiquettes',
+    'nav.objectifs': 'Objectifs',
+    'nav.grille_tarifaire': 'Grille tarifaire',
+    'nav.previsionnel': 'Prévisionnel',
+    'nav.ecran_atelier': 'Écran atelier',
+    'nav.stock_intelligent': 'Stock intelligent',
+    'nav.relances': 'Relances',
+    'nav.tarifs_clients': 'Tarifs clients',
+    'nav.planification': 'Planif. cuisson',
+    'nav.reapprovisionnement': 'Réappro.',
+    
+    // Planning cuisson
+    'cuisson.title': 'Planification cuisson',
+    'cuisson.new': 'Nouvelle fournée',
+    'cuisson.temperature': 'Température',
+    'cuisson.weight': 'Poids',
+    'cuisson.start': 'Démarrer',
+    'cuisson.complete': 'Terminée',
+    'cuisson.slots_remaining': 'Créneaux restants',
+    
+    // Consommables
+    'consommable.title': 'Consommables',
+    'consommable.stock_low': 'Stock bas',
+    'consommable.movement': 'Mouvement',
+    'consommable.entry': 'Entrée',
+    'consommable.exit': 'Sortie',
+    
+    // Maintenance
+    'maintenance.title': 'Maintenance préventive',
+    'maintenance.overdue': 'En retard',
+    'maintenance.next': 'Prochaine',
+    'maintenance.complete': 'Effectuée',
+    
+    // Quality
+    'quality.thickness': 'Épaisseur',
+    'quality.thickness_unit': 'µm',
+    'quality.compliant': 'Conforme',
+    'quality.non_compliant': 'Non conforme',
+    'quality.qualicoat_range': '60-120 µm (norme QUALICOAT)',
+    
+    // Relances
+    'relance.title': 'Relances commerciales',
+    'relance.generate': 'Générer les relances',
+    'relance.to_send': 'À envoyer',
+    'relance.sent': 'Envoyée',
+    'relance.replied': 'Répondue',
+    
+    // Feature flags
+    'feature.enabled': 'Activé',
+    'feature.disabled': 'Désactivé',
+    'feature.lite_only': 'Plan Lite',
+    'feature.pro_only': 'Plan Pro',
   },
   
   en: {
@@ -262,6 +318,56 @@ export const translations: Record<Locale, Record<string, string>> = {
     'success.saved': 'Saved successfully',
     'success.deleted': 'Deleted successfully',
     'success.sent': 'Sent successfully',
+    
+    // New features
+    'nav.consommables': 'Consumables',
+    'nav.maintenance': 'Maintenance',
+    'nav.etiquettes': 'Labels',
+    'nav.objectifs': 'Objectives',
+    'nav.grille_tarifaire': 'Pricing grid',
+    'nav.previsionnel': 'Forecast',
+    'nav.ecran_atelier': 'Workshop screen',
+    'nav.stock_intelligent': 'Smart stock',
+    'nav.relances': 'Follow-ups',
+    'nav.tarifs_clients': 'Client pricing',
+    'nav.planification': 'Curing schedule',
+    'nav.reapprovisionnement': 'Restock',
+    
+    'cuisson.title': 'Curing schedule',
+    'cuisson.new': 'New batch',
+    'cuisson.temperature': 'Temperature',
+    'cuisson.weight': 'Weight',
+    'cuisson.start': 'Start',
+    'cuisson.complete': 'Complete',
+    'cuisson.slots_remaining': 'Slots remaining',
+    
+    'consommable.title': 'Consumables',
+    'consommable.stock_low': 'Low stock',
+    'consommable.movement': 'Movement',
+    'consommable.entry': 'Entry',
+    'consommable.exit': 'Exit',
+    
+    'maintenance.title': 'Preventive maintenance',
+    'maintenance.overdue': 'Overdue',
+    'maintenance.next': 'Next',
+    'maintenance.complete': 'Completed',
+    
+    'quality.thickness': 'Thickness',
+    'quality.thickness_unit': 'µm',
+    'quality.compliant': 'Compliant',
+    'quality.non_compliant': 'Non-compliant',
+    'quality.qualicoat_range': '60-120 µm (QUALICOAT standard)',
+    
+    'relance.title': 'Follow-ups',
+    'relance.generate': 'Generate follow-ups',
+    'relance.to_send': 'To send',
+    'relance.sent': 'Sent',
+    'relance.replied': 'Replied',
+    
+    'feature.enabled': 'Enabled',
+    'feature.disabled': 'Disabled',
+    'feature.lite_only': 'Lite plan',
+    'feature.pro_only': 'Pro plan',
   },
   
   es: {
@@ -388,6 +494,56 @@ export const translations: Record<Locale, Record<string, string>> = {
     'success.saved': 'Guardado correctamente',
     'success.deleted': 'Eliminado correctamente',
     'success.sent': 'Enviado correctamente',
+    
+    // Nuevas funcionalidades
+    'nav.consommables': 'Consumibles',
+    'nav.maintenance': 'Mantenimiento',
+    'nav.etiquettes': 'Etiquetas',
+    'nav.objectifs': 'Objetivos',
+    'nav.grille_tarifaire': 'Tarifas',
+    'nav.previsionnel': 'Previsión',
+    'nav.ecran_atelier': 'Pantalla taller',
+    'nav.stock_intelligent': 'Stock inteligente',
+    'nav.relances': 'Seguimientos',
+    'nav.tarifs_clients': 'Tarifas clientes',
+    'nav.planification': 'Planif. cocción',
+    'nav.reapprovisionnement': 'Reabastecimiento',
+    
+    'cuisson.title': 'Planificación de cocción',
+    'cuisson.new': 'Nuevo lote',
+    'cuisson.temperature': 'Temperatura',
+    'cuisson.weight': 'Peso',
+    'cuisson.start': 'Iniciar',
+    'cuisson.complete': 'Completado',
+    'cuisson.slots_remaining': 'Espacios restantes',
+    
+    'consommable.title': 'Consumibles',
+    'consommable.stock_low': 'Stock bajo',
+    'consommable.movement': 'Movimiento',
+    'consommable.entry': 'Entrada',
+    'consommable.exit': 'Salida',
+    
+    'maintenance.title': 'Mantenimiento preventivo',
+    'maintenance.overdue': 'Atrasado',
+    'maintenance.next': 'Próximo',
+    'maintenance.complete': 'Completado',
+    
+    'quality.thickness': 'Espesor',
+    'quality.thickness_unit': 'µm',
+    'quality.compliant': 'Conforme',
+    'quality.non_compliant': 'No conforme',
+    'quality.qualicoat_range': '60-120 µm (norma QUALICOAT)',
+    
+    'relance.title': 'Seguimientos',
+    'relance.generate': 'Generar seguimientos',
+    'relance.to_send': 'Por enviar',
+    'relance.sent': 'Enviado',
+    'relance.replied': 'Respondido',
+    
+    'feature.enabled': 'Activado',
+    'feature.disabled': 'Desactivado',
+    'feature.lite_only': 'Plan Lite',
+    'feature.pro_only': 'Plan Pro',
   },
   
   de: {
@@ -514,6 +670,56 @@ export const translations: Record<Locale, Record<string, string>> = {
     'success.saved': 'Erfolgreich gespeichert',
     'success.deleted': 'Erfolgreich gelöscht',
     'success.sent': 'Erfolgreich gesendet',
+    
+    // Neue Funktionen
+    'nav.consommables': 'Verbrauchsmaterial',
+    'nav.maintenance': 'Wartung',
+    'nav.etiquettes': 'Etiketten',
+    'nav.objectifs': 'Ziele',
+    'nav.grille_tarifaire': 'Preisraster',
+    'nav.previsionnel': 'Prognose',
+    'nav.ecran_atelier': 'Werkstatt-Display',
+    'nav.stock_intelligent': 'Smart Stock',
+    'nav.relances': 'Nachfassaktionen',
+    'nav.tarifs_clients': 'Kundenpreise',
+    'nav.planification': 'Einbrennplanung',
+    'nav.reapprovisionnement': 'Nachbestellung',
+    
+    'cuisson.title': 'Einbrennplanung',
+    'cuisson.new': 'Neue Charge',
+    'cuisson.temperature': 'Temperatur',
+    'cuisson.weight': 'Gewicht',
+    'cuisson.start': 'Starten',
+    'cuisson.complete': 'Abgeschlossen',
+    'cuisson.slots_remaining': 'Verfügbare Plätze',
+    
+    'consommable.title': 'Verbrauchsmaterial',
+    'consommable.stock_low': 'Niedriger Bestand',
+    'consommable.movement': 'Bewegung',
+    'consommable.entry': 'Eingang',
+    'consommable.exit': 'Ausgang',
+    
+    'maintenance.title': 'Vorbeugende Wartung',
+    'maintenance.overdue': 'Überfällig',
+    'maintenance.next': 'Nächste',
+    'maintenance.complete': 'Abgeschlossen',
+    
+    'quality.thickness': 'Schichtdicke',
+    'quality.thickness_unit': 'µm',
+    'quality.compliant': 'Konform',
+    'quality.non_compliant': 'Nicht konform',
+    'quality.qualicoat_range': '60-120 µm (QUALICOAT-Norm)',
+    
+    'relance.title': 'Nachfassaktionen',
+    'relance.generate': 'Nachfassaktionen generieren',
+    'relance.to_send': 'Zu senden',
+    'relance.sent': 'Gesendet',
+    'relance.replied': 'Beantwortet',
+    
+    'feature.enabled': 'Aktiviert',
+    'feature.disabled': 'Deaktiviert',
+    'feature.lite_only': 'Lite-Plan',
+    'feature.pro_only': 'Pro-Plan',
   },
 }
 

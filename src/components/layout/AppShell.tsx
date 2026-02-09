@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import CommandPalette from '@/components/ui/CommandPalette'
 import FloatingActionButton from '@/components/ui/FloatingActionButton'
-import Breadcrumbs from '@/components/ui/Breadcrumbs'
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
 import KeyboardShortcuts from '@/components/ui/KeyboardShortcuts'
 import { ToastProvider } from '@/components/ui/Toast'
 import { ConfirmProvider } from '@/components/ui/ConfirmDialog'

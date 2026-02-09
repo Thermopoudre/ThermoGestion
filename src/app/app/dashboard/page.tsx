@@ -1,10 +1,11 @@
 import { createServerClient, getAuthorizedUser } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { KPICards } from '@/components/dashboard/KPICards'
-import { ChartCA } from '@/components/dashboard/ChartCA'
+import dynamic from 'next/dynamic'
+const ChartCA = dynamic(() => import('@/components/dashboard/ChartCA').then(m => ({ default: m.ChartCA })), { ssr: false, loading: () => <div className="h-[300px] bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" /> })
 import { AlertsPanel } from '@/components/dashboard/AlertsPanel'
 import { ProjectsOverview } from '@/components/dashboard/ProjectsOverview'
-import { TopPoudres } from '@/components/dashboard/TopPoudres'
+const TopPoudres = dynamic(() => import('@/components/dashboard/TopPoudres').then(m => ({ default: m.TopPoudres })), { ssr: false, loading: () => <div className="h-[200px] bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" /> })
 import { ConversionStats } from '@/components/dashboard/ConversionStats'
 import { TopClients } from '@/components/dashboard/TopClients'
 import Link from 'next/link'

@@ -19,6 +19,22 @@
     {
       "path": "/api/email/queue/process",
       "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/api/cron/trial-reminder",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/data-retention",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/customer-success",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/stock-alerts",
+      "schedule": "0 7 * * *"
     }
   ],
   "headers": [

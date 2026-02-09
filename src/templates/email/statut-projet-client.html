@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin: 0; padding: 0; background: #f3f4f6; font-family: Arial, Helvetica, sans-serif;">
+  <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background: linear-gradient(135deg, #f97316, #dc2626); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
+      <h1 style="color: white; margin: 0; font-size: 22px;">Mise à jour de votre projet</h1>
+      <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0; font-size: 14px;">{{ATELIER_NAME}}</p>
+    </div>
+
+    <div style="background: white; padding: 30px; border: 1px solid #e5e7eb; border-top: none;">
+      <h2 style="color: #1f2937; margin-top: 0;">Bonjour {{CLIENT_NAME}},</h2>
+      
+      <p style="color: #4b5563; line-height: 1.7;">
+        Le statut de votre projet <strong>#{{PROJET_NUMERO}}</strong> a été mis à jour :
+      </p>
+
+      <!-- Status Card -->
+      <div style="background: {{STATUS_BG_COLOR}}; border: 1px solid {{STATUS_BORDER_COLOR}}; border-radius: 12px; padding: 20px; margin: 20px 0; text-align: center;">
+        <div style="font-size: 32px; margin-bottom: 8px;">{{STATUS_ICON}}</div>
+        <div style="font-size: 20px; font-weight: bold; color: {{STATUS_TEXT_COLOR}};">{{STATUS_LABEL}}</div>
+        <p style="color: #6b7280; margin: 8px 0 0; font-size: 14px;">{{STATUS_DESCRIPTION}}</p>
+      </div>
+
+      {{#if PROJET_DESCRIPTION}}
+      <div style="background: #f9fafb; border-radius: 8px; padding: 16px; margin: 16px 0;">
+        <p style="margin: 0; color: #4b5563; font-size: 14px;">
+          <strong>Projet :</strong> {{PROJET_DESCRIPTION}}
+        </p>
+        {{#if DATE_LIVRAISON}}
+        <p style="margin: 8px 0 0; color: #4b5563; font-size: 14px;">
+          <strong>Livraison prévue :</strong> {{DATE_LIVRAISON}}
+        </p>
+        {{/if}}
+      </div>
+      {{/if}}
+
+      <div style="text-align: center; margin: 24px 0;">
+        <a href="{{APP_URL}}/client/timeline/{{PROJET_ID}}" 
+           style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #f97316, #dc2626); color: white; text-decoration: none; border-radius: 10px; font-weight: bold;">
+          Suivre mon projet
+        </a>
+      </div>
+
+      <p style="color: #6b7280; font-size: 13px; text-align: center;">
+        {{ATELIER_NAME}} 
+        {{#if ATELIER_PHONE}} · <a href="tel:{{ATELIER_PHONE}}" style="color: #f97316;">{{ATELIER_PHONE}}</a>{{/if}}
+      </p>
+    </div>
+
+    <div style="background: #f9fafb; padding: 16px 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 16px 16px; text-align: center;">
+      <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+        Powered by ThermoGestion · <a href="{{APP_URL}}/unsubscribe?email={{EMAIL}}" style="color: #9ca3af;">Se désinscrire</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

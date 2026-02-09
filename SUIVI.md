@@ -1038,3 +1038,486 @@ Audit exhaustif du module sur 6 axes :
 | `src/app/api/account/delete/route.ts` | Fix | BASSE | Type narrowing |
 
 **Dernière mise à jour :** 8 février 2026 — Audit sécurité & intégrité (7 fixes critiques)
+
+---
+
+## 🔧 Audit UX Espace Client — 15 corrections (8 février 2026)
+
+### Critiques (C1-C4)
+| Fichier | Action | Priorité | Description |
+|---------|--------|----------|-------------|
+| `src/app/client/factures/[id]/page.tsx` | Créé | CRITIQUE | Page détail facture client (ownership vérifié) |
+| `src/app/client/factures/[id]/payer/page.tsx` | Créé | CRITIQUE | Page paiement (CB via Stripe + virement) |
+| `src/app/api/client/factures/[id]/pdf/route.ts` | Créé | CRITIQUE | Route PDF client avec vérification ownership |
+| `src/app/client/factures/page.tsx` | Fix | CRITIQUE | Liens PDF corrigés (/api/client/), lien détail ajouté, empty state amélioré |
+| `src/app/client/timeline/[id]/page.tsx` | Fix | CRITIQUE | Vérification ownership client (client_id + atelier_id) |
+
+### Hautes (H5-H8)
+| Fichier | Action | Priorité | Description |
+|---------|--------|----------|-------------|
+| Migration `add_client_messages_table` | Créé | HAUTE | Table client_messages avec RLS (client + atelier) |
+| `src/app/client/messages/page.tsx` | Réécrit | HAUTE | Messages connectés à Supabase + temps réel |
+| `src/app/client/layout.tsx` | Fix | HAUTE | Nav mobile complète (Devis, Messages ajoutés), dark mode |
+| `src/app/layout.tsx` | Fix | HAUTE | SEO metadata (OG, Twitter, favicons, viewport) |
+| `src/app/sitemap.ts` | Créé | HAUTE | Sitemap dynamique pages vitrine |
+| `src/app/robots.ts` | Créé | HAUTE | Robots.txt (bloque /app/, /client/, /api/) |
+
+### Moyennes (M9-M13)
+| Fichier | Action | Priorité | Description |
+|---------|--------|----------|-------------|
+| `src/app/client/loading.tsx` | Créé | MOYENNE | Skeleton loading dashboard |
+| `src/app/client/factures/loading.tsx` | Créé | MOYENNE | Skeleton loading factures |
+| `src/app/client/devis/loading.tsx` | Créé | MOYENNE | Skeleton loading devis |
+| `src/app/client/projets/loading.tsx` | Créé | MOYENNE | Skeleton loading projets |
+| `src/app/client/layout.tsx` | Fix | MOYENNE | Dark mode complet (header, footer, nav) |
+| Migration `add_notification_preferences` | Créé | MOYENNE | Colonnes notify_* dans client_users |
+| `src/app/client/compte/page.tsx` | Fix | MOYENNE | Notifications persistées en DB + breadcrumbs |
+| `src/components/ui/Breadcrumbs.tsx` | Créé | MOYENNE | Composant breadcrumbs réutilisable |
+| `src/app/client/devis/page.tsx` | Fix | MOYENNE | Breadcrumbs + metadata + dark mode |
+| `src/app/client/projets/[id]/page.tsx` | Fix | MOYENNE | Breadcrumbs + metadata + dark mode |
+
+### Basses (B14-B15)
+| Fichier | Action | Priorité | Description |
+|---------|--------|----------|-------------|
+| `site-vitrine/index.html` | Fix | BASSE | onclick → addEventListener + aria-expanded |
+| `src/lib/status-labels.ts` | Créé | BASSE | Utilitaire partagé labels statut (projets, devis, factures) |
+| `src/app/client/dashboard/page.tsx` | Fix | BASSE | Utilise status-labels partagé |
+
+---
+
+### 8 février 2026 (soir) — 5 Chantiers d'amélioration majeure
+
+**Objectif :** Mise aux normes françaises/européennes, fiabilité, conversion prospects, tests, performance.
+
+#### CHANTIER 1 — Conformité technique obligatoire
+| Fichier | Action | Description |
+|---------|--------|-------------|
+| `next.config.js` | Modifié | Headers sécurité OWASP complets (CSP, HSTS, X-Frame, Permissions-Policy) |
+| `src/lib/pdf-templates/modern.ts` | Modifié | IBAN/BIC affiché sur factures PDF |
+| `src/lib/pdf-templates/classic.ts` | Modifié | IBAN/BIC affiché sur factures PDF |
+| `src/lib/pdf-templates/industrial.ts` | Modifié | IBAN/BIC affiché sur factures PDF |
+| `src/lib/pdf-templates/premium.ts` | Modifié | IBAN/BIC affiché sur factures PDF |
+| `src/app/api/contact/route.ts` | Créé | API formulaire contact fonctionnel + accusé réception email |
+| `src/templates/email/bienvenue.html` | Créé | Template email bienvenue avec checklist démarrage |
+| `src/templates/email/rappel-fin-essai.html` | Créé | Template rappel fin essai (J-7, J-3, J-1) avec stats |
+| `src/templates/email/statut-projet-client.html` | Créé | Template notification changement statut projet client |
+| `src/app/api/cron/trial-reminder/route.ts` | Créé | Cron job rappels automatiques fin essai |
+| `vercel.json` | Modifié | Ajout cron trial-reminder |
+| `site-vitrine/index.html` | Modifié | Prix réels 29€/49€ au lieu de XX€ |
+| `site-vitrine/tarifs.html` | Modifié | Prix réels 29€/49€ HT au lieu de XX€ |
+
+#### CHANTIER 2 — Monitoring & Fiabilité
+| Fichier | Action | Description |
+|---------|--------|-------------|
+| `sentry.client.config.ts` | Créé | Config Sentry client (sampling, filtres, RGPD) |
+| `sentry.server.config.ts` | Créé | Config Sentry serveur (pas d'IP, pas de cookies) |
+| `sentry.edge.config.ts` | Créé | Config Sentry edge runtime |
+| `next.config.js` | Modifié | Intégration Sentry + Bundle Analyzer conditionnels |
+| `.github/workflows/ci.yml` | Créé | Pipeline CI (lint, type-check, build, tests, audit sécurité) |
+| `src/app/status/page.tsx` | Réécrit | Page statut dynamique avec vrai ping des services |
+| `src/app/api/health/route.ts` | Créé | Endpoint health check (edge runtime) |
+
+#### CHANTIER 3 — Conversion prospects
+| Fichier | Action | Description |
+|---------|--------|-------------|
+| Migration `add_atelier_sector_iban` | Créé | Colonnes sector, iban, bic dans ateliers |
+| `src/app/api/auth/signup/route.ts` | Modifié | Email de bienvenue auto à l'inscription |
+| `src/app/app/aide/page.tsx` | Créé | Centre d'aide complet (8 catégories, 20+ FAQs, recherche) |
+| `src/components/ui/ROICalculator.tsx` | Créé | Calculateur ROI interactif (heures, €, % ROI) |
+| `src/app/tarifs/page.tsx` | Modifié | Intégration calculateur ROI + metadata SEO |
+
+#### CHANTIER 4 — Tests automatisés
+| Fichier | Action | Description |
+|---------|--------|-------------|
+| `vitest.config.ts` | Créé | Config Vitest avec alias, jsdom, coverage |
+| `tests/setup.ts` | Créé | Setup testing-library/jest-dom |
+| `tests/unit/utils.test.ts` | Créé | 18 tests (formatCurrency, sanitize, validate, etc.) |
+| `tests/unit/status-labels.test.ts` | Créé | 14 tests labels statut |
+| `tests/unit/pdf-templates.test.ts` | Créé | 6 tests CGV/rétractation légales |
+| `tests/unit/billing.test.ts` | Créé | 5 tests plans SaaS |
+| `playwright.config.ts` | Créé | Config Playwright (Chromium + Mobile) |
+| `tests/e2e/public-pages.spec.ts` | Créé | Tests E2E pages publiques, auth, SEO, headers sécurité |
+| `package.json` | Modifié | Scripts test, test:watch, test:coverage, test:e2e, analyze |
+
+#### CHANTIER 5 — Accessibilité & Performance
+| Fichier | Action | Description |
+|---------|--------|-------------|
+| `src/app/layout.tsx` | Modifié | Skip-to-content link (RGAA), main#main-content |
+| `src/app/globals.css` | Modifié | High contrast mode, forced-colors, prefers-contrast |
+| `next.config.js` | Modifié | Bundle analyzer intégré, images AVIF/WebP, device sizes |
+| `src/app/app/dashboard/page.tsx` | Modifié | Lazy loading Recharts (ChartCA, TopPoudres) |
+| `src/components/layout/AppShell.tsx` | Fix | Import Breadcrumbs nommé au lieu de default |
+
+**Résultats :**
+- 51 tests unitaires VERTS (Vitest)
+- Build Next.js réussi sans erreur
+- Headers sécurité OWASP complets
+- Emails transactionnels complets (bienvenue, rappel, statut)
+- Pipeline CI/CD GitHub Actions fonctionnel
+- Monitoring Sentry prêt (activation via env var)
+
+**Dernière mise à jour :** 8 février 2026 — 5 chantiers d'amélioration majeure
+
+---
+
+### 8 février 2026 — Implémentation massive 52 améliorations
+
+**Objectif :** Implémenter toutes les fonctionnalités obligatoires, importantes et optionnelles pour un module complet dédié aux ateliers de thermolaquage.
+
+#### CONFORMITÉ LÉGALE FRANCE 2026
+
+**1. Factur-X / Facturation électronique (EN16931)**
+- `src/lib/facturx/generate.ts` : Générateur XML Factur-X conforme profil MINIMUM
+  - Norme EN16931, format ZUGFeRD/Factur-X 1.0
+  - Fonctions : `generateFacturXML()`, `buildFacturXData()`, `computeHash()`
+  - Émetteur, client, lignes, TVA, IBAN/BIC, totaux
+  - Escape XML sécurisé
+- `src/app/api/factures/[id]/facturx/route.ts` : API endpoint GET pour générer le XML
+  - Vérifie l'authentification et l'appartenance à l'atelier (anti-IDOR)
+  - Archive automatiquement la facture (archivage légal 10 ans)
+
+**2. Archivage légal 10 ans**
+- Table `factures_archive` : coffre-fort numérique (facture_id, hash SHA-256, xml_facturx, expire_at)
+- Hash SHA-256 calculé à chaque génération pour intégrité
+
+**3. Politique de rétention des données RGPD**
+- `src/app/api/cron/data-retention/route.ts` : Cron quotidien de suppression automatique
+  - Logs > 90 jours, devis refusés > 3 ans, rate_limits expirés, push_subscriptions > 6 mois
+  - Table `data_retention_logs` pour traçabilité RGPD
+- `vercel.json` : Ajout cron 3h00 quotidien
+
+**4. DPA (Data Processing Agreement)**
+- `src/app/dpa/page.tsx` : 10 articles conformes RGPD
+  - Responsable/sous-traitant, données traitées, finalités, durées
+  - Sous-traitants ultérieurs (Supabase, Vercel, Stripe, Resend, Sentry)
+  - Mesures sécurité, droits des personnes, notification violation
+  - Contact DPO
+
+#### MÉTIER THERMOLAQUAGE
+
+**5-7. Poudres : péremption + lots + fiche technique**
+- `src/components/poudres/PoudreForm.tsx` : Ajout champs date_peremption, numero_lot, fournisseur
+- Colonnes DB : date_peremption, numero_lot, fiche_technique_url, fds_url, fournisseur, date_reception, certifications, qualicoat_approved, qualimarine_approved
+
+**8-9. Cuisson réelle + épaisseur µm**
+- `src/components/projets/QualityChecklist.tsx` : 
+  - Ajout mesure épaisseur min/max/moyenne en µm
+  - Validation norme QUALICOAT (60-120 µm)
+  - Sauvegarde automatique sur le projet
+- Colonnes DB projets : temp_cuisson_reelle, duree_cuisson_reelle, ecart_temperature, epaisseur_mesuree_um
+
+**10. Configuration four**
+- `src/components/settings/AtelierSettingsForm.tsx` : Section config four (L×l×H cm, poids max, fournées/jour, temp max)
+- Colonnes DB ateliers : four_longueur_cm, four_largeur_cm, four_hauteur_cm, four_poids_max_kg
+
+**11. Étiquettes imprimables**
+- `src/app/app/etiquettes/page.tsx` : Générateur d'étiquettes avec QR code
+  - 3 formats : 100×50mm (standard four), 70×30mm (petit), A6
+  - Recherche, sélection multiple, impression directe
+  - QR code lié au scan projet
+
+**12. Consommation poudre prévue**
+- Intégré dans stock intelligent (suggestions basées sur projets planifiés)
+
+#### INFRASTRUCTURE & QUALITÉ
+
+**13. Tests multi-tenancy RLS**
+- `tests/unit/rls-multi-tenancy.test.ts` : 16 tests
+  - Data isolation checks (ownership, IDOR prevention)
+  - Feature flag isolation par plan
+  - Storage quota isolation
+
+**14. Tests E2E fonctionnels**
+- `tests/e2e/critical-flows.spec.ts` : Tests Playwright
+  - Pages publiques (accueil, tarifs, SLA, DPA, roadmap, blog, status)
+  - Formulaire devis public (3 étapes)
+  - API health check et documentation v1
+
+**15. Gestion quotas storage**
+- `src/app/api/storage/quota/route.ts` : API GET (usage) + POST (vérification avant upload)
+  - Alertes 80%, 90%, 100%
+  - Colonnes : storage_quota_gb, storage_used_bytes
+
+**17. SLA contractuel**
+- `src/app/sla/page.tsx` : Page publique avec engagements
+  - Uptime: 99.5% Lite, 99.9% Pro
+  - Temps de réponse, maintenance planifiée
+  - Compensation automatique (10%, 25%, 50%)
+  - Gestion incidents (Critique <30min, Majeur <2h, Mineur <24h)
+
+#### AMÉLIORATIONS MÉTIER
+
+**18. Stock intelligent avancé**
+- `src/app/app/stock-intelligent/page.tsx` : Page complète
+  - Suggestions pesées quotidiennes (5/jour, critères : écart >20%, pas de pesée, stock bas)
+  - Modal pesée (poids brut, tare, poids net)
+  - Tableau réconciliation théorique vs réel
+  - Score de fiabilité par poudre
+  - Alertes péremption
+- Tables : pesees_stock, suggestions_pesees
+
+**19. Grille tarifaire personnalisable**
+- `src/app/app/grille-tarifaire/page.tsx` : Interface complète
+  - Paliers par surface (0-0.5m², 0.5-2m², 2-5m², 5-10m², >10m²)
+  - Majorations par finition (métallisé +25%, texturé +15%, brillant +10%)
+  - Forfait minimum, prix au kg petites pièces
+  - Simulateur de prix intégré
+- Table : grilles_tarifaires_paliers
+
+**23. Certifications QUALICOAT / Qualimarine**
+- Section certifications dans AtelierSettingsForm
+- Badge + date expiration pour QUALICOAT et QUALIMARINE
+
+**24. Gestion consommables**
+- `src/app/app/consommables/page.tsx` : Module complet
+  - Catégories : filtres, EPI, produits chimiques, abrasifs, accrochage, emballage
+  - CRUD complet, alertes stock bas
+  - Mouvements entrée/sortie avec historique
+- Tables : consommables, consommables_mouvements
+
+**25. Maintenance préventive**
+- `src/app/app/maintenance/page.tsx` : Gestion maintenances
+  - Planification avec récurrence automatique
+  - Alertes maintenances en retard
+  - Historique des interventions
+  - Types : préventive, corrective, révision, nettoyage
+- Table : maintenance_equipements
+
+**26. Écran atelier (TV Dashboard)**
+- `src/app/app/ecran-atelier/page.tsx` : Dashboard grands écrans
+  - Mode kiosk (plein écran), dark theme par défaut
+  - 6 KPIs temps réel (en cours, cuisson, QC, prêts, livrés/jour, retards)
+  - Liste projets avec code couleur statut + alertes retard
+  - Refresh automatique 30s, horloge temps réel
+
+**27. Objectifs journaliers équipe**
+- `src/app/app/objectifs/page.tsx` : Dashboard objectifs
+  - m² traités, pièces, séries terminées, projets livrés
+  - Barres de progression avec pourcentage
+  - Badge accomplissement quand 100% atteint
+  - Historique 7 jours
+- Table : objectifs_journaliers
+
+#### COMMERCIAL & CONVERSION
+
+**29. Formulaire devis public automatique**
+- `src/app/devis-public/page.tsx` : Formulaire 3 étapes
+  - Type pièce (portail, garde-corps, volets, jantes, etc.)
+  - Options (finition, RAL, urgence +30%)
+  - Contact + estimation instantanée
+  - Crée un prospect CRM automatiquement
+- `src/app/api/devis-public/route.ts` : API backend + notification email
+
+**30. Feature flags par plan**
+- `src/app/app/feature-flags/page.tsx` : Interface admin
+  - Toggle par Plan Lite / Pro / Global
+  - 18 feature flags pré-configurés
+- Table : feature_flags avec defaults
+
+**33. Prévisionnel CA**
+- `src/app/app/previsionnel/page.tsx` : Dashboard complet
+  - 12 mois passés + 3 mois projection
+  - CA réel vs prévu basé sur taux conversion historique
+  - Graphique barres avec code couleur
+  - KPIs : CA prévu 3 mois, devis en attente, taux conversion global
+- Table : previsionnel_ca
+
+**34. Blog / Ressources SEO**
+- `src/app/blog/page.tsx` : Page blog avec 5 articles par défaut
+  - Articles thermolaquage, QUALICOAT, optimisation poudre, Factur-X, maintenance
+  - Chargement dynamique depuis Supabase si articles publiés
+  - Tags, dates, structure SEO
+- Table : blog_articles
+
+**35. Exit surveys**
+- `src/app/app/exit-survey/page.tsx` : Questionnaire désabonnement
+  - 9 raisons prédéfinies
+  - Note 1-5 étoiles, détails libres
+  - Offre win-back (-20% pendant 3 mois)
+- Table : exit_surveys
+
+**36. Roadmap publique**
+- `src/app/roadmap/page.tsx` : Page publique
+  - 4 sections : Disponible (13), En cours (5), Planifié (7), Futur (5)
+  - Call-to-action suggestion fonctionnalité
+
+#### INTÉGRATIONS
+
+**39. Export Sage / EBP / Ciel**
+- `src/app/api/exports/sage/route.ts` : Export CSV 3 formats
+  - Format Sage Compta (journal VE, comptes 706000, 445710, 411000)
+  - Format EBP
+  - Format Ciel
+  - Filtrage par période
+
+**40. API publique REST**
+- `src/app/api/v1/route.ts` : Documentation OpenAPI
+  - Endpoints : clients, projets, devis, factures, poudres, stock, webhooks
+  - Auth: Bearer token, rate limiting 1000 req/h
+  - Codes erreur standardisés
+
+**41. Webhooks**
+- `src/app/api/webhooks/trigger/route.ts` : Déclencheur interne
+  - Signature HMAC-SHA256
+  - 11 événements (devis.*, projet.*, facture.*, stock.*, paiement.*)
+  - Timeout 10s, retry auto
+- Table : webhooks_config
+
+#### MIGRATION DATABASE
+
+- `supabase/migrations/20260208_all_features.sql` : Migration complète
+  - 19 nouvelles tables créées
+  - Colonnes ajoutées à poudres, projets, ateliers
+  - RLS policies pour toutes les nouvelles tables
+  - Feature flags par défaut (18 entrées)
+  - Indexes pour performance
+
+#### TESTS
+
+- `tests/unit/facturx.test.ts` : 10 tests Factur-X
+- `tests/unit/rls-multi-tenancy.test.ts` : 16 tests isolation
+- `tests/e2e/critical-flows.spec.ts` : Tests Playwright parcours critiques
+
+**Résultats :**
+- 77 tests unitaires VERTS (Vitest) — +26 nouveaux
+- Build Next.js réussi (0 erreur)
+- 19+ nouvelles routes/pages créées
+- 19 nouvelles tables DB
+
+---
+
+### 9 février 2026 — Vague 2 : Features métier avancées + Intégrations tierces
+
+#### NOUVELLES PAGES APP
+
+**#20-21 Planification cuisson**
+- `src/app/app/planification-cuisson/page.tsx` : Page complète
+  - Timeline des fournées du jour avec statuts (planifié/en cours/terminé)
+  - Sélection des projets à cuire avec calcul de poids automatique
+  - Jauge de chargement four (% capacité)
+  - KPIs : fournées planifiées, créneaux restants, capacité/temp max
+  - Suggestions d'optimisation (sous-chargement, fusion fournées)
+  - Transition automatique des projets : en_cuisson -> qc à la fin
+  - Table DB : `planification_cuisson` avec RLS
+
+**#22 Réapprovisionnement intelligent**
+- `src/app/app/reapprovisionnement/page.tsx` : Page suggestion réappro
+  - Calcul automatique de consommation/mois basé sur projets réels
+  - Estimation des jours restants de stock par poudre
+  - Jauges visuelles de niveau de stock
+  - Export CSV bon de commande automatique
+  - Filtres : toutes / alertes stock / prévision < 14 jours
+  - Budget commande estimé
+
+**#31 Relances commerciales intelligentes**
+- `src/app/app/relances/page.tsx` : Page relances
+  - Détection automatique des devis expirant dans les 7 jours
+  - Génération automatique de relances par lot
+  - Workflow : À envoyer → Envoyée → Répondue / Annulée
+  - KPIs : devis en danger, à envoyer, envoyées, répondues
+  - Messages personnalisés par type de relance
+  - Table DB : `relances_commerciales` avec RLS
+
+**#32 Tarifs préférentiels par client**
+- `src/app/app/tarifs-clients/page.tsx` : Page tarifs préférentiels
+  - CRUD remises et prix/m² spéciaux par client
+  - Conditions de tarif (min commande, contrat annuel)
+  - Date d'expiration des tarifs avec indicateur visuel
+  - Statistiques : remise moyenne, clients VIP (≥10%)
+  - Recherche client
+  - Table DB : `tarifs_clients` avec RLS
+
+#### NOUVELLES LIBRAIRIES
+
+**#28 Watermark photos**
+- `src/lib/watermark.ts` : Utilitaire filigrane
+  - Application Canvas API côté client
+  - Positions : bottom-right, bottom-left, top-right, top-left, center
+  - Mode diagonal pour position center
+  - Ajout automatique de la date
+  - Configuration : opacité, taille police, couleur
+  - Fonctions : `applyWatermark()`, `isWatermarkEnabled()`, `getWatermarkConfig()`
+
+**#48 Notifications SMS (Twilio)**
+- `src/lib/sms/twilio.ts` : Service SMS
+  - Intégration Twilio API directe (fetch, sans SDK)
+  - Formatage automatique des numéros français
+  - 7 templates métier prédéfinis :
+    - projet_recu, projet_en_cours, projet_termine
+    - devis_envoye, facture_envoyee, rappel_paiement, relance_devis
+  - Fonction `sendClientSMS()` pour envoi simplifié
+  - Variables d'env : TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER
+
+**#49 Product Analytics (PostHog)**
+- `src/lib/analytics/posthog.ts` : Analytics métier
+  - Intégration PostHog EU (RGPD compatible)
+  - 20+ événements métier prédéfinis (ANALYTICS_EVENTS)
+  - Fonctions : `trackEvent()`, `identifyUser()`, `setUserAtelier()`
+  - Script injection pour <head>
+  - Support feature flags PostHog
+  - Variables d'env : NEXT_PUBLIC_POSTHOG_KEY, NEXT_PUBLIC_POSTHOG_HOST
+
+**#50 Customer Success Automation**
+- `src/lib/customer-success/automation.ts` : Moteur CS
+  - 12 types d'événements CS automatisés
+  - Détection d'inactivité : 7j, 14j, 30j
+  - Rappels trial : J-3, J-1
+  - Email de bienvenue, félicitations milestones
+  - Suggestion upgrade (high usage, feature limit)
+  - Health Score client (0-100) avec 5 facteurs
+  - Anti-spam : vérification envoi récent avant email
+- `src/app/api/cron/customer-success/route.ts` : Cron job quotidien 9h
+
+#### INTÉGRATIONS TIERCES
+
+**#37 Connexion Pennylane API**
+- `src/app/api/integrations/pennylane/route.ts` :
+  - GET : Vérification connexion + info société
+  - POST : Synchronisation des factures vers Pennylane
+  - Format Pennylane : customer + line_items + TVA FR_200
+  - Retour détaillé par facture (success/error)
+
+**#38 Paiement SEPA GoCardless**
+- `src/app/api/integrations/gocardless/route.ts` :
+  - GET : Statut connexion + info créancier
+  - POST create_mandate_link : Création lien mandat SEPA client
+  - POST create_payment : Prélèvement SEPA sur mandat existant
+  - Support sandbox et production
+  - Variables d'env : GOCARDLESS_SANDBOX
+
+#### i18n — Enrichissement traductions
+
+- `src/lib/i18n/translations.ts` : +50 clés par langue (FR, EN, ES, DE)
+  - Navigation nouvelles fonctionnalités
+  - Planification cuisson, consommables, maintenance
+  - Qualité / épaisseur, relances, feature flags
+
+#### CONFIGURATION
+
+- `vercel.json` : Ajout crons
+  - `/api/cron/customer-success` à 9h quotidien
+  - `/api/cron/stock-alerts` à 7h quotidien
+
+#### MIGRATIONS DATABASE (Supabase live)
+
+Migrations appliquées avec succès :
+- `add_poudres_columns` : 15 colonnes (péremption, lot, FDS, certifications, cuisson)
+- `add_projets_columns` : 9 colonnes (cuisson réelle, épaisseur, poids, dimensions, QC)
+- `add_ateliers_columns` : 18 colonnes (four, watermark, storage, certifications, objectifs)
+- `create_consommables_with_rls` : Tables consommables + mouvements + RLS
+- `create_maintenance_table` : Table maintenance_equipements + RLS
+- `create_feature_flags_table` : Table + 18 flags par défaut (Lite/Pro)
+- `create_remaining_tables` : 12 tables + RLS
+  - grilles_tarifaires_paliers, factures_archive, data_retention_logs
+  - objectifs_journaliers, webhooks_config, blog_articles
+  - exit_surveys, roadmap_items, previsionnel_ca
+  - api_keys, pesees_stock, relances_commerciales
+  - tarifs_clients, planification_cuisson, historique_connexions
+
+#### BUILD
+
+- **Next.js build : EXIT 0** — Aucune erreur
+- Toutes les nouvelles pages compilées et routées
+- 4 nouvelles pages app + 3 API routes + 4 librairies + 1 cron job
+
+**Dernière mise à jour :** 9 février 2026 — Vague 2 features métier + intégrations

@@ -77,6 +77,18 @@ export function QualityChecklist({ projetId, atelierId, existingCheck, onComplet
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
 
+  // Mesure épaisseur en µm (norme QUALICOAT: 60-120 µm)
+  const [epaisseurMin, setEpaisseurMin] = useState<string>('')
+  const [epaisseurMax, setEpaisseurMax] = useState<string>('')
+  const [epaisseurMoyenne, setEpaisseurMoyenne] = useState<string>('')
+  
+  const epaisseurConforme = () => {
+    const min = parseFloat(epaisseurMin)
+    const max = parseFloat(epaisseurMax)
+    if (isNaN(min) || isNaN(max)) return null
+    return min >= 60 && max <= 120
+  }
+
   const updateItem = (id: string, updates: Partial<QualityCheckItem>) => {
     setItems(prev => prev.map(item =>
       item.id === id ? { ...item, ...updates } : item
@@ -133,6 +145,18 @@ export function QualityChecklist({ projetId, atelierId, existingCheck, onComplet
           .insert(checkData)
 
         if (insertError) throw insertError
+      }
+
+      // Sauvegarder les mesures d'épaisseur sur le projet
+      if (epaisseurMin || epaisseurMax || epaisseurMoyenne) {
+        await supabase
+          .from('projets')
+          .update({
+            epaisseur_min_um: epaisseurMin ? parseFloat(epaisseurMin) : null,
+            epaisseur_max_um: epaisseurMax ? parseFloat(epaisseurMax) : null,
+            epaisseur_mesuree_um: epaisseurMoyenne ? parseFloat(epaisseurMoyenne) : null,
+          })
+          .eq('id', projetId)
       }
 
       // Si conforme, mettre à jour le statut du projet
@@ -286,6 +310,54 @@ export function QualityChecklist({ projetId, atelierId, existingCheck, onComplet
           </div>
         )
       })}
+
+      {/* Mesure épaisseur µm */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+        <h4 className="font-semibold text-sm uppercase tracking-wide text-gray-900 dark:text-white mb-3">
+          📏 Mesure épaisseur (µm) — Norme QUALICOAT: 60-120 µm
+        </h4>
+        <div className="grid grid-cols-3 gap-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Min (µm)</label>
+            <input
+              type="number"
+              value={epaisseurMin}
+              onChange={e => setEpaisseurMin(e.target.value)}
+              placeholder="60"
+              className={`w-full px-3 py-2 border rounded-lg text-sm dark:bg-gray-700 dark:border-gray-600 ${
+                epaisseurMin && parseFloat(epaisseurMin) < 60 ? 'border-red-500 bg-red-50' : ''
+              }`}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Max (µm)</label>
+            <input
+              type="number"
+              value={epaisseurMax}
+              onChange={e => setEpaisseurMax(e.target.value)}
+              placeholder="120"
+              className={`w-full px-3 py-2 border rounded-lg text-sm dark:bg-gray-700 dark:border-gray-600 ${
+                epaisseurMax && parseFloat(epaisseurMax) > 120 ? 'border-red-500 bg-red-50' : ''
+              }`}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Moyenne (µm)</label>
+            <input
+              type="number"
+              value={epaisseurMoyenne}
+              onChange={e => setEpaisseurMoyenne(e.target.value)}
+              placeholder="80"
+              className="w-full px-3 py-2 border rounded-lg text-sm dark:bg-gray-700 dark:border-gray-600"
+            />
+          </div>
+        </div>
+        {epaisseurConforme() !== null && (
+          <div className={`mt-2 text-sm font-medium ${epaisseurConforme() ? 'text-green-600' : 'text-red-600'}`}>
+            {epaisseurConforme() ? '✅ Épaisseur conforme QUALICOAT (60-120 µm)' : '❌ Épaisseur hors norme QUALICOAT'}
+          </div>
+        )}
+      </div>
 
       {/* Notes globales */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">

@@ -597,6 +597,8 @@ export function generatePremiumTemplate(data: TemplateData, customColors?: Custo
           ${data.atelier.tvaIntra ? `<span>TVA ${data.atelier.tvaIntra}</span>` : ''}
           ${data.atelier.tvaIntra && data.atelier.rcs ? `<span class="footer-divider">✦</span>` : ''}
           ${data.atelier.rcs ? `<span>RCS ${data.atelier.rcs}</span>` : ''}
+          ${!isDevis && data.atelier.iban ? `<br/><span style="margin-top:4px;display:inline-block">IBAN: ${data.atelier.iban}</span>` : ''}
+          ${!isDevis && data.atelier.bic ? `<span class="footer-divider">✦</span><span>BIC: ${data.atelier.bic}</span>` : ''}
         </div>
       </div>
     </div>

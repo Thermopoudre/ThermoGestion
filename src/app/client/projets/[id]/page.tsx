@@ -1,6 +1,12 @@
 import { createServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { ProjetClientDetail } from '@/components/client/ProjetClientDetail'
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Détail projet - Espace Client',
+}
 
 export default async function ClientProjetDetailPage({
   params,
@@ -66,8 +72,12 @@ export default async function ClientProjetDetailPage({
     .single()
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 py-8">
+        <Breadcrumbs items={[
+          { label: 'Projets', href: '/client/projets' },
+          { label: projet.numero || projet.name || 'Projet' },
+        ]} />
         <ProjetClientDetail projet={projet} atelier={atelier} />
       </div>
     </div>

@@ -4,14 +4,18 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@/lib/supabase/client'
 import { User, Mail, Phone, MapPin, Lock, Bell, Trash2 } from 'lucide-react'
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
 
 export default function ClientComptePage() {
   const router = useRouter()
+  const supabase = createBrowserClient()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [savingNotifs, setSavingNotifs] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
   const [clientData, setClientData] = useState<any>(null)
   const [clientUser, setClientUser] = useState<any>(null)
+  const [authUserId, setAuthUserId] = useState<string | null>(null)
   
   // Form states
   const [fullName, setFullName] = useState('')
@@ -25,7 +29,7 @@ export default function ClientComptePage() {
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   
-  // Notifications
+  // Notifications (persistées en DB)
   const [emailNotifications, setEmailNotifications] = useState(true)
   const [smsNotifications, setSmsNotifications] = useState(false)
   const [projectUpdates, setProjectUpdates] = useState(true)
@@ -35,17 +39,16 @@ export default function ClientComptePage() {
   }, [])
 
   async function loadData() {
-    const supabase = createBrowserClient()
-    
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       router.push('/client/auth/login')
       return
     }
+    setAuthUserId(user.id)
 
     const { data: clientUserData, error } = await supabase
       .from('client_users')
-      .select('client_id, atelier_id')
+      .select('client_id, atelier_id, notify_email, notify_sms, notify_project_updates')
       .eq('id', user.id)
       .single()
 
@@ -55,6 +58,11 @@ export default function ClientComptePage() {
     }
 
     setClientUser(clientUserData)
+    
+    // Charger les préférences de notification depuis la DB
+    setEmailNotifications(clientUserData.notify_email ?? true)
+    setSmsNotifications(clientUserData.notify_sms ?? false)
+    setProjectUpdates(clientUserData.notify_project_updates ?? true)
 
     // Get client info
     const { data: client } = await supabase
@@ -76,12 +84,35 @@ export default function ClientComptePage() {
     setLoading(false)
   }
 
+  async function handleSaveNotifications() {
+    if (!authUserId) return
+    setSavingNotifs(true)
+    setMessage(null)
+
+    try {
+      const { error } = await supabase
+        .from('client_users')
+        .update({
+          notify_email: emailNotifications,
+          notify_sms: smsNotifications,
+          notify_project_updates: projectUpdates,
+        })
+        .eq('id', authUserId)
+
+      if (error) throw error
+
+      setMessage({ type: 'success', text: 'Préférences de notification enregistrées !' })
+    } catch (error: any) {
+      setMessage({ type: 'error', text: error.message })
+    }
+
+    setSavingNotifs(false)
+  }
+
   async function handleSaveProfile(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
     setMessage(null)
-
-    const supabase = createBrowserClient()
 
     try {
       const { error } = await supabase
@@ -151,6 +182,8 @@ export default function ClientComptePage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
+      <Breadcrumbs items={[{ label: 'Mon compte' }]} />
+
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Mon Compte</h1>
@@ -315,6 +348,15 @@ export default function ClientComptePage() {
             />
           </label>
         </div>
+
+        <button
+          type="button"
+          onClick={handleSaveNotifications}
+          disabled={savingNotifs}
+          className="mt-4 px-6 py-2 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 disabled:opacity-50 transition-colors"
+        >
+          {savingNotifs ? 'Enregistrement...' : 'Enregistrer les préférences'}
+        </button>
       </div>
 
       {/* Password */}

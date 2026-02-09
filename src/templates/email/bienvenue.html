@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin: 0; padding: 0; background: #f3f4f6; font-family: Arial, Helvetica, sans-serif;">
+  <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+    <!-- Header -->
+    <div style="background: linear-gradient(135deg, #f97316, #dc2626); padding: 40px 30px; border-radius: 16px 16px 0 0; text-align: center;">
+      <h1 style="color: white; margin: 0 0 8px 0; font-size: 28px;">Bienvenue sur ThermoGestion !</h1>
+      <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 16px;">Votre gestion d'atelier, simplifiée.</p>
+    </div>
+
+    <!-- Body -->
+    <div style="background: white; padding: 30px; border: 1px solid #e5e7eb; border-top: none;">
+      <h2 style="color: #1f2937; margin-top: 0;">Bonjour {{ATELIER_NAME}},</h2>
+      
+      <p style="color: #4b5563; line-height: 1.7; font-size: 15px;">
+        Votre essai gratuit de <strong>30 jours</strong> vient de démarrer avec le <strong>Plan Pro</strong> complet. 
+        Profitez de toutes les fonctionnalités pour gérer votre atelier de thermolaquage.
+      </p>
+
+      <!-- Checklist -->
+      <div style="background: #fef3c7; border: 1px solid #fbbf24; border-radius: 12px; padding: 20px; margin: 24px 0;">
+        <h3 style="color: #92400e; margin: 0 0 12px 0; font-size: 16px;">Pour bien démarrer :</h3>
+        <div style="color: #78350f; font-size: 14px; line-height: 2;">
+          1. Configurez votre atelier (SIRET, logo, coordonnées)<br/>
+          2. Ajoutez vos poudres et couleurs RAL<br/>
+          3. Créez votre premier client<br/>
+          4. Générez votre premier devis<br/>
+          5. Personnalisez vos templates PDF
+        </div>
+      </div>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="{{APP_URL}}/app/onboarding" 
+           style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #f97316, #dc2626); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 16px;">
+          Commencer la configuration
+        </a>
+      </div>
+
+      <!-- Features -->
+      <div style="margin-top: 24px; border-top: 1px solid #e5e7eb; padding-top: 24px;">
+        <h3 style="color: #1f2937; margin: 0 0 16px 0;">Ce que vous pouvez faire :</h3>
+        <table style="width: 100%;">
+          <tr>
+            <td style="padding: 8px 12px; background: #f0f9ff; border-radius: 8px; width: 50%; vertical-align: top;">
+              <strong style="color: #0369a1;">Devis & Factures</strong><br/>
+              <span style="color: #6b7280; font-size: 13px;">Création en quelques clics, PDF pro, signature électronique</span>
+            </td>
+            <td style="width: 12px;"></td>
+            <td style="padding: 8px 12px; background: #f0fdf4; border-radius: 8px; width: 50%; vertical-align: top;">
+              <strong style="color: #15803d;">Suivi Projets</strong><br/>
+              <span style="color: #6b7280; font-size: 13px;">Timeline, photos, portail client en temps réel</span>
+            </td>
+          </tr>
+          <tr><td colspan="3" style="height: 8px;"></td></tr>
+          <tr>
+            <td style="padding: 8px 12px; background: #fefce8; border-radius: 8px; vertical-align: top;">
+              <strong style="color: #a16207;">Gestion Stock</strong><br/>
+              <span style="color: #6b7280; font-size: 13px;">Pesées, alertes, décrémentation auto</span>
+            </td>
+            <td style="width: 12px;"></td>
+            <td style="padding: 8px 12px; background: #fdf2f8; border-radius: 8px; vertical-align: top;">
+              <strong style="color: #be185d;">Planning</strong><br/>
+              <span style="color: #6b7280; font-size: 13px;">Calendrier, réservation fours, production</span>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="background: #f9fafb; padding: 20px 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 16px 16px; text-align: center;">
+      <p style="color: #6b7280; font-size: 13px; margin: 0 0 8px 0;">
+        Besoin d'aide ? Répondez directement à cet email ou consultez notre
+        <a href="{{APP_URL}}/aide" style="color: #f97316;">centre d'aide</a>.
+      </p>
+      <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+        ThermoGestion — Gestion professionnelle pour ateliers de thermolaquage
+      </p>
+    </div>
+  </div>
+</body>
+</html>

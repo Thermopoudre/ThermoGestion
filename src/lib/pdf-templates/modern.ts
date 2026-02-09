@@ -495,6 +495,14 @@ export function generateModernTemplate(data: TemplateData, customColors?: Custom
         <div class="footer-legal">
           ${data.cgv || getDefaultCGV(data.type)}
         </div>
+        ${!isDevis && (data.atelier.iban || data.atelier.bic) ? `
+          <div style="margin-top: 10px; padding: 10px 14px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; font-size: 9px; line-height: 1.5; color: #0369a1;">
+            <strong>Coordonnées bancaires :</strong><br/>
+            ${data.atelier.iban ? `IBAN : ${data.atelier.iban}` : ''}
+            ${data.atelier.iban && data.atelier.bic ? ' — ' : ''}
+            ${data.atelier.bic ? `BIC : ${data.atelier.bic}` : ''}
+          </div>
+        ` : ''}
         <div class="footer-badges">
           ${data.atelier.siret ? `<span class="footer-badge">SIRET ${data.atelier.siret}</span>` : ''}
           ${data.atelier.tvaIntra ? `<span class="footer-badge">TVA ${data.atelier.tvaIntra}</span>` : ''}

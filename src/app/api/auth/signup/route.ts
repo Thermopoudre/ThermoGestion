@@ -151,6 +151,37 @@ export async function POST(request: Request) {
       console.error('Erreur audit log (non bloquant):', auditError)
     }
 
+    // 5. Email de bienvenue (non-bloquant)
+    try {
+      const { Resend } = await import('resend')
+      const resendKey = process.env.RESEND_API_KEY
+      if (resendKey) {
+        const { readFileSync } = await import('fs')
+        const { join } = await import('path')
+        let template = ''
+        try {
+          template = readFileSync(join(process.cwd(), 'src/templates/email/bienvenue.html'), 'utf-8')
+        } catch { /* template non trouvé */ }
+
+        if (template) {
+          const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://thermogestion.vercel.app'
+          const html = template
+            .replace(/\{\{ATELIER_NAME\}\}/g, sanitizedAtelierName)
+            .replace(/\{\{APP_URL\}\}/g, appUrl)
+
+          const resend = new Resend(resendKey)
+          await resend.emails.send({
+            from: 'ThermoGestion <noreply@thermogestion.fr>',
+            to: email.trim().toLowerCase(),
+            subject: 'Bienvenue sur ThermoGestion — Votre essai de 30 jours est activé !',
+            html,
+          })
+        }
+      }
+    } catch (emailError) {
+      console.error('Erreur email bienvenue (non bloquant):', emailError)
+    }
+
     return NextResponse.json({
       success: true,
       message: 'Compte créé avec succès. Vérifiez votre email pour confirmer.',

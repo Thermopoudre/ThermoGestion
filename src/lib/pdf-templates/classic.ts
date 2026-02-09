@@ -468,6 +468,8 @@ export function generateClassicTemplate(data: TemplateData, customColors?: Custo
       ${data.atelier.siret ? `<span class="legal-item">SIRET: ${data.atelier.siret}</span>` : ''}
       ${data.atelier.tvaIntra ? `<span class="legal-item">TVA: ${data.atelier.tvaIntra}</span>` : ''}
       ${data.atelier.rcs ? `<span class="legal-item">RCS: ${data.atelier.rcs}</span>` : ''}
+      ${!isDevis && data.atelier.iban ? `<span class="legal-item">IBAN: ${data.atelier.iban}</span>` : ''}
+      ${!isDevis && data.atelier.bic ? `<span class="legal-item">BIC: ${data.atelier.bic}</span>` : ''}
     </div>
   </div>
 </body>

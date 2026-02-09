@@ -567,6 +567,8 @@ export function generateIndustrialTemplate(data: TemplateData, customColors?: Cu
             ${data.atelier.siret ? `<span class="footer-item"><span class="footer-icon">🏭</span> SIRET ${data.atelier.siret}</span>` : ''}
             ${data.atelier.tvaIntra ? `<span class="footer-item"><span class="footer-icon">🇪🇺</span> TVA ${data.atelier.tvaIntra}</span>` : ''}
             ${data.atelier.rcs ? `<span class="footer-item"><span class="footer-icon">⚖️</span> RCS ${data.atelier.rcs}</span>` : ''}
+            ${!isDevis && data.atelier.iban ? `<span class="footer-item"><span class="footer-icon">🏦</span> IBAN ${data.atelier.iban}</span>` : ''}
+            ${!isDevis && data.atelier.bic ? `<span class="footer-item"><span class="footer-icon">🔑</span> BIC ${data.atelier.bic}</span>` : ''}
           </div>
         </div>
       </div>

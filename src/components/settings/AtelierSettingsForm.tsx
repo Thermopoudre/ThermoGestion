@@ -627,6 +627,96 @@ export function AtelierSettingsForm({ atelier }: AtelierSettingsFormProps) {
         )}
       </div>
 
+      {/* Configuration Four */}
+      <div className={cardClasses}>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+          🔥 Configuration du four
+        </h2>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+          Dimensions de votre four pour le calcul de capacité et l&apos;optimisation du chargement.
+        </p>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <label className={labelClasses}>Longueur (cm)</label>
+            <input type="number" value={(atelier as any).four_longueur_cm || ''} className={inputClasses} placeholder="300" readOnly />
+          </div>
+          <div>
+            <label className={labelClasses}>Largeur (cm)</label>
+            <input type="number" value={(atelier as any).four_largeur_cm || ''} className={inputClasses} placeholder="150" readOnly />
+          </div>
+          <div>
+            <label className={labelClasses}>Hauteur (cm)</label>
+            <input type="number" value={(atelier as any).four_hauteur_cm || ''} className={inputClasses} placeholder="200" readOnly />
+          </div>
+          <div>
+            <label className={labelClasses}>Poids max (kg)</label>
+            <input type="number" value={(atelier as any).four_poids_max_kg || ''} className={inputClasses} placeholder="500" readOnly />
+          </div>
+          <div>
+            <label className={labelClasses}>Fournées / jour</label>
+            <input type="number" value={(atelier as any).four_fournees_jour || 8} className={inputClasses} readOnly />
+          </div>
+          <div>
+            <label className={labelClasses}>Temp. max (°C)</label>
+            <input type="number" value={(atelier as any).four_temp_max || 250} className={inputClasses} readOnly />
+          </div>
+        </div>
+        <p className="text-xs text-gray-400 mt-2">Ces champs seront éditables dans une prochaine mise à jour. Contactez le support pour les modifier.</p>
+      </div>
+
+      {/* Certifications */}
+      <div className={cardClasses}>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+          🏆 Certifications
+        </h2>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-2xl">🛡️</span>
+              <h3 className="font-bold">QUALICOAT</h3>
+            </div>
+            <p className="text-sm text-gray-500">
+              {(atelier as any).certification_qualicoat 
+                ? `Certifié — expire le ${(atelier as any).certification_qualicoat_expiry ? new Date((atelier as any).certification_qualicoat_expiry).toLocaleDateString('fr-FR') : 'N/A'}` 
+                : 'Non certifié'}
+            </p>
+          </div>
+          <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-2xl">🌊</span>
+              <h3 className="font-bold">QUALIMARINE</h3>
+            </div>
+            <p className="text-sm text-gray-500">
+              {(atelier as any).certification_qualimarine 
+                ? `Certifié — expire le ${(atelier as any).certification_qualimarine_expiry ? new Date((atelier as any).certification_qualimarine_expiry).toLocaleDateString('fr-FR') : 'N/A'}` 
+                : 'Non certifié'}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Objectifs journaliers */}
+      <div className={cardClasses}>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+          🎯 Objectifs journaliers
+        </h2>
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <label className={labelClasses}>m² / jour</label>
+            <input type="number" value={(atelier as any).objectif_m2_jour || ''} className={inputClasses} placeholder="50" readOnly />
+          </div>
+          <div>
+            <label className={labelClasses}>Pièces / jour</label>
+            <input type="number" value={(atelier as any).objectif_pieces_jour || ''} className={inputClasses} placeholder="30" readOnly />
+          </div>
+          <div>
+            <label className={labelClasses}>Séries / jour</label>
+            <input type="number" value={(atelier as any).objectif_series_jour || ''} className={inputClasses} placeholder="5" readOnly />
+          </div>
+        </div>
+      </div>
+
       {/* Bouton de soumission */}
       <div className="flex justify-end">
         <button

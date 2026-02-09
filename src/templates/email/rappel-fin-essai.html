@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin: 0; padding: 0; background: #f3f4f6; font-family: Arial, Helvetica, sans-serif;">
+  <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background: linear-gradient(135deg, #f97316, #dc2626); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
+      <h1 style="color: white; margin: 0; font-size: 24px;">Votre essai se termine dans {{DAYS_LEFT}} jours</h1>
+    </div>
+
+    <div style="background: white; padding: 30px; border: 1px solid #e5e7eb; border-top: none;">
+      <h2 style="color: #1f2937; margin-top: 0;">Bonjour {{ATELIER_NAME}},</h2>
+      
+      <p style="color: #4b5563; line-height: 1.7;">
+        Votre essai gratuit de ThermoGestion expire le <strong>{{TRIAL_END_DATE}}</strong>.
+      </p>
+
+      {{#if STATS_BLOCK}}
+      <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 12px; padding: 20px; margin: 20px 0;">
+        <h3 style="color: #0369a1; margin: 0 0 12px 0;">Ce que vous avez accompli :</h3>
+        <div style="display: flex; gap: 16px; text-align: center;">
+          <div style="flex: 1; padding: 8px; background: white; border-radius: 8px;">
+            <div style="font-size: 24px; font-weight: bold; color: #f97316;">{{NB_DEVIS}}</div>
+            <div style="font-size: 12px; color: #6b7280;">Devis créés</div>
+          </div>
+          <div style="flex: 1; padding: 8px; background: white; border-radius: 8px;">
+            <div style="font-size: 24px; font-weight: bold; color: #f97316;">{{NB_PROJETS}}</div>
+            <div style="font-size: 12px; color: #6b7280;">Projets</div>
+          </div>
+          <div style="flex: 1; padding: 8px; background: white; border-radius: 8px;">
+            <div style="font-size: 24px; font-weight: bold; color: #f97316;">{{NB_CLIENTS}}</div>
+            <div style="font-size: 12px; color: #6b7280;">Clients</div>
+          </div>
+        </div>
+      </div>
+      {{/if}}
+
+      <p style="color: #4b5563; line-height: 1.7;">
+        Pour continuer à utiliser ThermoGestion sans interruption, choisissez votre plan :
+      </p>
+
+      <table style="width: 100%; border-collapse: separate; border-spacing: 0 8px;">
+        <tr>
+          <td style="padding: 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; width: 50%; vertical-align: top;">
+            <strong style="color: #1f2937; font-size: 16px;">Plan Lite</strong>
+            <div style="font-size: 24px; font-weight: bold; color: #f97316; margin: 8px 0;">29€<span style="font-size: 14px; color: #6b7280;">/mois HT</span></div>
+            <div style="font-size: 13px; color: #6b7280; line-height: 1.6;">CRM, Devis, Factures, Suivi projets, Stock basique</div>
+          </td>
+          <td style="width: 12px;"></td>
+          <td style="padding: 16px; background: #fff7ed; border: 2px solid #f97316; border-radius: 10px; width: 50%; vertical-align: top;">
+            <strong style="color: #1f2937; font-size: 16px;">Plan Pro</strong>
+            <span style="background: #f97316; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 4px;">RECOMMANDÉ</span>
+            <div style="font-size: 24px; font-weight: bold; color: #f97316; margin: 8px 0;">49€<span style="font-size: 14px; color: #6b7280;">/mois HT</span></div>
+            <div style="font-size: 13px; color: #6b7280; line-height: 1.6;">Tout Lite + Séries, Stock intelligent, Reporting, Portail client</div>
+          </td>
+        </tr>
+      </table>
+
+      <div style="text-align: center; margin: 24px 0;">
+        <a href="{{APP_URL}}/app/parametres/abonnement" 
+           style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #f97316, #dc2626); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 16px;">
+          Choisir mon plan
+        </a>
+      </div>
+
+      <p style="color: #9ca3af; font-size: 13px; text-align: center;">
+        Sans action de votre part, votre compte basculera automatiquement sur le Plan Lite gratuit avec fonctionnalités limitées.
+      </p>
+    </div>
+
+    <div style="background: #f9fafb; padding: 16px 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 16px 16px; text-align: center;">
+      <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+        ThermoGestion — <a href="{{APP_URL}}/confidentialite" style="color: #9ca3af;">Confidentialité</a> · 
+        <a href="{{APP_URL}}/unsubscribe?email={{EMAIL}}" style="color: #9ca3af;">Se désinscrire</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

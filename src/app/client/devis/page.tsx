@@ -2,6 +2,13 @@ import { createServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { FileText, Eye, CheckCircle2, Clock, XCircle, Send } from 'lucide-react'
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Mes devis - Espace Client | ThermoGestion',
+  description: 'Consultez et signez vos devis en ligne',
+}
 
 export default async function ClientDevisPage() {
   const supabase = await createServerClient()
@@ -60,10 +67,12 @@ export default async function ClientDevisPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      <Breadcrumbs items={[{ label: 'Devis' }]} />
+
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Mes devis</h1>
-          <p className="text-gray-600">Consultez et signez vos devis en ligne</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Mes devis</h1>
+          <p className="text-gray-600 dark:text-gray-400">Consultez et signez vos devis en ligne</p>
         </div>
         <Link 
           href="/client/demande-devis"

@@ -54,7 +54,26 @@ export default function TimelinePage() {
 
   async function loadProjet() {
     const supabase = createBrowserClient()
-    
+
+    // Vérification ownership : on récupère le client_id de l'utilisateur connecté
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      router.push('/client/auth/login')
+      return
+    }
+
+    const { data: clientUser } = await supabase
+      .from('client_users')
+      .select('client_id, atelier_id')
+      .eq('id', user.id)
+      .single()
+
+    if (!clientUser) {
+      router.push('/client/auth/login')
+      return
+    }
+
+    // Ne charger que les projets appartenant à ce client
     const { data, error } = await supabase
       .from('projets')
       .select(`
@@ -64,10 +83,12 @@ export default function TimelinePage() {
         poudre:poudres(nom, code_ral)
       `)
       .eq('id', params.id)
+      .eq('client_id', clientUser.client_id)
+      .eq('atelier_id', clientUser.atelier_id)
       .single()
 
     if (error || !data) {
-      router.push('/client/dashboard')
+      router.push('/client/projets?error=not_found')
       return
     }
 
