@@ -20,6 +20,10 @@ export function sanitizeStaticHtml(html: string): string {
     sanitized = bodyMatch[1]
   }
 
+  // 0b. Supprimer les éléments <header> et <footer> existants (on les remplace par les nôtres)
+  sanitized = sanitized.replace(/<header\b[^>]*>[\s\S]*?<\/header>/gi, '')
+  sanitized = sanitized.replace(/<footer\b[^>]*>[\s\S]*?<\/footer>/gi, '')
+
   // 1. Supprimer les balises <script> externes (CDN, etc.) - sécurité
   sanitized = sanitized.replace(/<script\b[^>]*src\s*=\s*[^>]*>[\s\S]*?<\/script>/gi, '')
 

@@ -1590,3 +1590,38 @@ Migrations appliquées avec succès :
 - Déploiement Vercel production : OK
 
 **Dernière mise à jour :** 9 février 2026 — Vague 3 module Jantes + IoT + Marketplace + IA + Multi-sites
+
+---
+
+### 9 février 2026 — Correction UX critique : Cookie Banner
+
+**Objectif :** Le cookie banner bloquait ~1/3 du viewport sur toutes les pages (homepage, tarifs, dashboard, inscription, abonnement), rendant les plans, formulaires et alertes illisibles.
+
+**Problème identifié :**
+- Le CookieBanner utilisait un layout `fixed bottom-0` avec `max-w-4xl` et `p-6`, créant un bloc massif de ~200px de haut
+- Il masquait systématiquement les sections "Choisissez votre plan" (tarifs), la comparaison des plans (abonnement), le formulaire d'inscription (bouton submit + CGU), et les alertes du dashboard
+
+**Correction appliquée :**
+
+| Fichier | Action | Description |
+|---------|--------|-------------|
+| `src/components/ui/CookieBanner.tsx` | Rewrite | Redesign complet en 2 modes |
+
+**Nouveau design :**
+1. **Mode par défaut** : Barre fine compacte (~50px) collée en bas de l'écran
+   - Texte compact sur une ligne + boutons alignés horizontalement
+   - Boutons : Paramétrer, Refuser, Tout accepter
+   - Ne bloque plus le contenu de la page
+2. **Mode paramétrage** : Modale centrée avec backdrop
+   - S'ouvre uniquement au clic sur "Paramétrer"
+   - 3 catégories (essentiels, analytiques, marketing)
+   - Design compact et non-intrusif
+
+**Vérifications visuelles :**
+- ✅ Homepage : contenu 100% visible, barre cookie discrète en bas
+- ✅ Page Tarifs : "CHOISISSEZ VOTRE PLAN" + détails plans entièrement lisibles
+- ✅ Dashboard : KPIs, graphiques, alertes tous visibles
+- ✅ Abonnement : plans Lite/Pro comparatifs entièrement visibles
+- ✅ Inscription : formulaire complet + bouton "Créer mon compte" visible
+
+**Déploiement :** Vercel production https://thermogestion.vercel.app

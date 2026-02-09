@@ -1,16 +1,16 @@
 import Link from 'next/link'
-import { BookOpen, Calendar, ArrowRight, Tag } from 'lucide-react'
+import { BookOpen, Calendar, ArrowRight } from 'lucide-react'
 import type { Metadata } from 'next'
 import { createClient } from '@supabase/supabase-js'
+import { VitrineNav, VitrineFooter } from '@/components/layout/VitrineNav'
 
 export const metadata: Metadata = {
   title: 'Blog — Ressources thermolaquage — ThermoGestion',
   description: 'Articles, guides et actualités sur le thermolaquage, la gestion d\'atelier et les bonnes pratiques métier.',
 }
 
-export const revalidate = 3600 // Revalidate chaque heure
+export const revalidate = 3600
 
-// Articles statiques par défaut (avant que le blog DB soit alimenté)
 const DEFAULT_ARTICLES = [
   {
     slug: 'guide-complet-thermolaquage',
@@ -57,7 +57,6 @@ const DEFAULT_ARTICLES = [
 export default async function BlogPage() {
   let articles = DEFAULT_ARTICLES
 
-  // Tenter de charger depuis Supabase
   try {
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -76,38 +75,44 @@ export default async function BlogPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <section className="bg-gradient-to-br from-orange-500 to-red-600 text-white py-20 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <BookOpen className="w-16 h-16 mx-auto mb-6 text-orange-200" />
-          <h1 className="text-4xl font-black mb-4">Blog & Ressources</h1>
-          <p className="text-xl text-orange-100 max-w-2xl mx-auto">
+    <div className="min-h-screen bg-black text-white">
+      <VitrineNav />
+
+      {/* Hero */}
+      <section className="pt-32 pb-16 bg-gradient-to-br from-gray-900 via-black to-gray-800">
+        <div className="max-w-4xl mx-auto text-center px-4">
+          <div className="w-16 h-16 mx-auto mb-6 bg-orange-500/20 rounded-2xl flex items-center justify-center">
+            <BookOpen className="w-8 h-8 text-orange-400" />
+          </div>
+          <h1 className="text-4xl md:text-5xl font-black mb-4">Blog & <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">Ressources</span></h1>
+          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
             Articles, guides pratiques et actualités pour les professionnels du thermolaquage
           </p>
         </div>
       </section>
 
-      <div className="max-w-4xl mx-auto px-6 py-16">
-        <div className="space-y-8">
+      {/* Articles */}
+      <div className="max-w-4xl mx-auto px-4 py-16">
+        <div className="space-y-6">
           {articles.map(article => (
-            <article key={article.slug} className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow">
-              <div className="p-8">
-                <div className="flex items-center gap-3 mb-3">
-                  <Calendar className="w-4 h-4 text-gray-400" />
+            <article key={article.slug} className="bg-gray-900/80 rounded-2xl overflow-hidden border border-gray-800 hover:border-orange-500/30 transition-all hover:shadow-lg hover:shadow-orange-500/5">
+              <div className="p-6 md:p-8">
+                <div className="flex flex-wrap items-center gap-3 mb-3">
+                  <Calendar className="w-4 h-4 text-gray-500" />
                   <time className="text-sm text-gray-500">
                     {article.published_at ? new Date(article.published_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
                   </time>
                   {(article.tags as string[])?.map((tag: string) => (
-                    <span key={tag} className="px-2 py-0.5 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-full text-xs">
+                    <span key={tag} className="px-2 py-0.5 bg-orange-500/10 text-orange-400 rounded-full text-xs border border-orange-500/20">
                       {tag}
                     </span>
                   ))}
                 </div>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2 hover:text-orange-600 transition-colors">
+                <h2 className="text-xl font-bold text-white mb-2 hover:text-orange-400 transition-colors">
                   <Link href={`/blog/${article.slug}`}>{article.title}</Link>
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">{article.excerpt}</p>
-                <Link href={`/blog/${article.slug}`} className="inline-flex items-center gap-1 text-orange-600 hover:text-orange-700 font-medium text-sm">
+                <p className="text-gray-400 mb-4">{article.excerpt}</p>
+                <Link href={`/blog/${article.slug}`} className="inline-flex items-center gap-1 text-orange-500 hover:text-orange-400 font-medium text-sm">
                   Lire l&apos;article <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
@@ -115,6 +120,8 @@ export default async function BlogPage() {
           ))}
         </div>
       </div>
+
+      <VitrineFooter />
     </div>
   )
 }
