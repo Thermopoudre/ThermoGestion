@@ -2,63 +2,35 @@ import { Code, Key, Book, Zap, Lock, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
 const endpoints = [
-  {
-    method: 'GET',
-    path: '/api/v1/clients',
-    description: 'Liste tous vos clients',
-    auth: true,
-  },
-  {
-    method: 'POST',
-    path: '/api/v1/clients',
-    description: 'Créer un nouveau client',
-    auth: true,
-  },
-  {
-    method: 'GET',
-    path: '/api/v1/devis',
-    description: 'Liste tous vos devis',
-    auth: true,
-  },
-  {
-    method: 'POST',
-    path: '/api/v1/devis',
-    description: 'Créer un nouveau devis',
-    auth: true,
-  },
-  {
-    method: 'GET',
-    path: '/api/v1/projets',
-    description: 'Liste tous vos projets',
-    auth: true,
-  },
-  {
-    method: 'PATCH',
-    path: '/api/v1/projets/:id/status',
-    description: 'Mettre à jour le statut d\'un projet',
-    auth: true,
-  },
-  {
-    method: 'GET',
-    path: '/api/v1/factures',
-    description: 'Liste toutes vos factures',
-    auth: true,
-  },
-  {
-    method: 'GET',
-    path: '/api/v1/poudres',
-    description: 'Liste votre catalogue de poudres',
-    auth: true,
-  },
+  { method: 'GET', path: '/api/v1/clients', description: 'Liste tous vos clients (paginé)', auth: true },
+  { method: 'POST', path: '/api/v1/clients', description: 'Créer un nouveau client', auth: true },
+  { method: 'GET', path: '/api/v1/devis', description: 'Liste tous vos devis (paginé)', auth: true },
+  { method: 'POST', path: '/api/v1/devis', description: 'Créer un nouveau devis', auth: true },
+  { method: 'GET', path: '/api/v1/projets', description: 'Liste tous vos projets (paginé)', auth: true },
+  { method: 'PATCH', path: '/api/v1/projets/:id/status', description: 'Mettre à jour le statut d\'un projet', auth: true },
+  { method: 'GET', path: '/api/v1/factures', description: 'Liste toutes vos factures (paginé)', auth: true },
+  { method: 'GET', path: '/api/v1/poudres', description: 'Liste votre catalogue de poudres', auth: true },
+  { method: 'GET', path: '/api/fournisseurs', description: 'Liste des fournisseurs (paginé)', auth: true },
+  { method: 'POST', path: '/api/fournisseurs', description: 'Créer un fournisseur', auth: true },
+  { method: 'GET', path: '/api/certificats', description: 'Certificats de conformité (paginé)', auth: true },
+  { method: 'POST', path: '/api/certificats', description: 'Créer un certificat de conformité', auth: true },
+  { method: 'GET', path: '/api/exports/sage', description: 'Export comptable Sage/EBP/FEC/Cegid/CSV', auth: true },
+  { method: 'GET', path: '/api/webhooks/outgoing', description: 'Liste des webhooks configurés', auth: true },
+  { method: 'POST', path: '/api/webhooks/outgoing', description: 'Créer un webhook sortant', auth: true },
+  { method: 'GET', path: '/api/health', description: 'Health check (public)', auth: false },
 ]
 
 const webhookEvents = [
   { event: 'devis.created', description: 'Un nouveau devis a été créé' },
   { event: 'devis.signed', description: 'Un devis a été signé par le client' },
+  { event: 'devis.refused', description: 'Un devis a été refusé' },
+  { event: 'projet.created', description: 'Un nouveau projet a été créé' },
   { event: 'projet.status_changed', description: 'Le statut d\'un projet a changé' },
   { event: 'projet.completed', description: 'Un projet est terminé' },
   { event: 'facture.created', description: 'Une nouvelle facture a été créée' },
   { event: 'facture.paid', description: 'Une facture a été payée' },
+  { event: 'client.created', description: 'Un nouveau client a été créé' },
+  { event: 'stock.low_alert', description: 'Alerte stock poudre bas' },
 ]
 
 export default function ApiDocsPage() {

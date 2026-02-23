@@ -1625,3 +1625,45 @@ Migrations appliquées avec succès :
 - ✅ Inscription : formulaire complet + bouton "Créer mon compte" visible
 
 **Déploiement :** Vercel production https://thermogestion.vercel.app
+
+---
+
+### 9 février 2026 — Correction UX globale : cohérence design dark theme
+
+**Objectif :** Harmoniser le design de toutes les pages du site vitrine (dark theme unifié, navigation cohérente).
+
+**Problèmes identifiés via audit visuel complet (screenshots Playwright) :**
+1. Page Blog : gradient orange/blanc complètement différent du reste du site
+2. Page SLA : gradient bleu/indigo incohérent
+3. Page Roadmap : header slate/blanc incohérent, body blanc au lieu de dark
+4. Pages légales (CGU, CGV, confidentialité, mentions) : navigation minimale (seulement "Accueil" + "Essai gratuit")
+5. Page DPA : fond blanc `bg-white` au lieu de dark theme
+
+**Corrections appliquées :**
+
+| Fichier | Action | Description |
+|---------|--------|-------------|
+| `src/components/layout/VitrineNav.tsx` | **Création** | Composant réutilisable avec navigation complète (7 liens) + footer |
+| `src/app/blog/page.tsx` | Refonte | Dark theme, hero noir/gris, articles en cartes sombres, tags orange |
+| `src/app/sla/page.tsx` | Refonte | Dark theme, sections en cartes `bg-gray-900/80`, accents orange |
+| `src/app/roadmap/page.tsx` | Refonte | Dark theme, couleurs par statut (vert/bleu/orange/violet) |
+| `src/app/cgu/page.tsx` | Mise à jour | Wrapper VitrineNav + VitrineFooter |
+| `src/app/cgv/page.tsx` | Mise à jour | Wrapper VitrineNav + VitrineFooter |
+| `src/app/confidentialite/page.tsx` | Mise à jour | Wrapper VitrineNav + VitrineFooter |
+| `src/app/mentions-legales/page.tsx` | Mise à jour | Wrapper VitrineNav + VitrineFooter |
+| `src/app/cookies/page.tsx` | Mise à jour | Wrapper VitrineNav + VitrineFooter |
+| `src/app/dpa/page.tsx` | Refonte complète | Dark theme, sections en cartes, tables stylisées |
+| `src/lib/sanitize-html.ts` | Mise à jour | Suppression auto des `<header>/<footer>` des pages HTML statiques |
+
+**Résultat vérifié :**
+- ✅ Blog : dark theme cohérent, navigation complète
+- ✅ SLA : dark theme, cartes metrics, accents orange/vert
+- ✅ Roadmap : dark theme, cartes par statut, navigation complète
+- ✅ CGU : navigation complète (7 liens), fond noir
+- ✅ DPA : refonte dark theme avec sections en cartes
+- ✅ Tarifs : "CHOISISSEZ VOTRE PLAN" visible, pas de régression
+- ✅ Homepage : pas de régression
+
+**Déploiement :** Vercel production https://thermogestion.vercel.app
+
+**Dernière mise à jour :** 9 février 2026 — Audit UX global + cohérence dark theme toutes pages

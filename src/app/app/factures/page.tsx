@@ -4,16 +4,29 @@ import { FacturesList } from '@/components/factures/FacturesList'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-export default async function FacturesPage() {
+const PAGE_SIZE = 50
+
+export default async function FacturesPage({ searchParams }: { searchParams: { page?: string; status?: string } }) {
   const { atelierId } = await getAuthorizedUser()
   const supabase = await createServerClient()
 
-  // Get factures - isolation par atelier garantie
-  const { data: facturesData, error } = await supabase
+  const page = Math.max(1, parseInt(searchParams.page || '1', 10) || 1)
+  const from = (page - 1) * PAGE_SIZE
+  const to = from + PAGE_SIZE - 1
+
+  let query = supabase
     .from('factures')
-    .select('id, numero, client_id, projet_id, type, status, payment_status, total_ht, total_ttc, tva_rate, due_date, paid_at, items, notes, created_at')
+    .select('id, numero, client_id, projet_id, type, status, payment_status, total_ht, total_ttc, tva_rate, due_date, paid_at, items, notes, created_at', { count: 'exact' })
     .eq('atelier_id', atelierId)
     .order('created_at', { ascending: false })
+    .range(from, to)
+
+  if (searchParams.status) {
+    query = query.eq('payment_status', searchParams.status)
+  }
+
+  const { data: facturesData, count, error } = await query
+  const totalPages = Math.ceil((count || 0) / PAGE_SIZE)
 
   // Get clients separately
   let factures = facturesData || []
@@ -24,7 +37,7 @@ export default async function FacturesPage() {
         .from('clients')
         .select('id, full_name, email')
         .in('id', clientIds)
-      
+
       const clientsMap = new Map(clientsData?.map(c => [c.id, c]) || [])
       factures = factures.map(f => ({
         ...f,
@@ -43,6 +56,7 @@ export default async function FacturesPage() {
             </h1>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
               Gérez vos factures et paiements clients
+              {count !== null && <span className="ml-2 text-xs text-gray-400">({count} total)</span>}
             </p>
           </div>
           <a
@@ -60,6 +74,31 @@ export default async function FacturesPage() {
         )}
 
         <FacturesList factures={factures} />
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="mt-6 flex items-center justify-center gap-2">
+            {page > 1 && (
+              <a
+                href={`/app/factures?page=${page - 1}${searchParams.status ? `&status=${searchParams.status}` : ''}`}
+                className="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                Précédent
+              </a>
+            )}
+            <span className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400">
+              Page {page} / {totalPages}
+            </span>
+            {page < totalPages && (
+              <a
+                href={`/app/factures?page=${page + 1}${searchParams.status ? `&status=${searchParams.status}` : ''}`}
+                className="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                Suivant
+              </a>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
