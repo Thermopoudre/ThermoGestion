@@ -61,8 +61,8 @@ export async function GET(request: Request) {
           .eq('atelier_id', atelier.id).eq('payment_status', 'paid').gte('paid_at', weekAgo.toISOString()),
         supabase.from('factures').select('id, total_ttc', { count: 'exact' })
           .eq('atelier_id', atelier.id).eq('payment_status', 'unpaid'),
-        supabase.from('poudres').select('id', { count: 'exact', head: true })
-          .eq('atelier_id', atelier.id).lt('stock_reel_kg', 1),
+        supabase.from('stock_poudres').select('id', { count: 'exact', head: true })
+          .eq('atelier_id', atelier.id).not('stock_reel_kg', 'is', null).lt('stock_reel_kg', 1),
       ])
 
       const caPaid = (facturesPaid.data || []).reduce((sum, f) => sum + Number(f.total_ttc || 0), 0)

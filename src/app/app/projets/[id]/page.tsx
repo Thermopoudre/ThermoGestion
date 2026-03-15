@@ -58,33 +58,31 @@ export default async function ProjetDetailPage({ params }: { params: { id: strin
     notFound()
   }
 
-  // Charger les photos
-  const { data: photos } = await supabase
-    .from('photos')
-    .select('*')
-    .eq('projet_id', projet.id)
-    .order('created_at', { ascending: false })
-
-  // Charger les retouches du projet
-  const { data: retouches } = await supabase
-    .from('retouches')
-    .select(`
-      *,
-      defaut_types (
-        id,
-        name
-      )
-    `)
-    .eq('projet_id', projet.id)
-    .eq('atelier_id', userData.atelier_id)
-    .order('created_at', { ascending: false })
-
-  // Charger l'atelier pour quota
-  const { data: atelier } = await supabase
-    .from('ateliers')
-    .select('storage_quota_gb, storage_used_gb')
-    .eq('id', userData.atelier_id)
-    .single()
+  // Charger photos, retouches et atelier en parallèle
+  const [{ data: photos }, { data: retouches }, { data: atelier }] = await Promise.all([
+    supabase
+      .from('photos')
+      .select('*')
+      .eq('projet_id', projet.id)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('retouches')
+      .select(`
+        *,
+        defaut_types (
+          id,
+          name
+        )
+      `)
+      .eq('projet_id', projet.id)
+      .eq('atelier_id', userData.atelier_id)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('ateliers')
+      .select('storage_quota_gb, storage_used_gb')
+      .eq('id', userData.atelier_id)
+      .single(),
+  ])
 
   return (
     <div className="min-h-screen bg-gray-50">

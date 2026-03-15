@@ -40,12 +40,21 @@ export default function KanbanPage() {
 
   async function loadProjets() {
     const supabase = createBrowserClient()
-    
+
     const { data: userData } = await supabase.auth.getUser()
     if (!userData.user) {
       router.push('/auth/login')
       return
     }
+
+    // Récupérer l'atelier de l'utilisateur
+    const { data: userProfile } = await supabase
+      .from('users')
+      .select('atelier_id')
+      .eq('id', userData.user.id)
+      .single()
+
+    if (!userProfile?.atelier_id) return
 
     const { data } = await supabase
       .from('projets')
@@ -54,6 +63,7 @@ export default function KanbanPage() {
         client:clients(full_name),
         poudre:poudres(nom, code_ral)
       `)
+      .eq('atelier_id', userProfile.atelier_id)
       .order('date_reception', { ascending: false })
 
     if (data) {

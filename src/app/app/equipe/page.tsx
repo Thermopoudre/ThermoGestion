@@ -32,27 +32,25 @@ export default async function EquipePage() {
     redirect('/app/dashboard')
   }
 
-  // Charger les membres de l'équipe
-  const { data: teamMembers } = await supabase
-    .from('users')
-    .select('id, email, full_name, role, created_at, last_login_at')
-    .eq('atelier_id', userData.atelier_id)
-    .order('created_at', { ascending: true })
-
-  // Charger les invitations en attente
-  const { data: invitations } = await supabase
-    .from('team_invitations')
-    .select('*')
-    .eq('atelier_id', userData.atelier_id)
-    .eq('status', 'pending')
-    .order('created_at', { ascending: false })
-
-  // Charger l'atelier
-  const { data: atelier } = await supabase
-    .from('ateliers')
-    .select('id, name, plan')
-    .eq('id', userData.atelier_id)
-    .single()
+  // Charger membres, invitations et atelier en parallèle
+  const [{ data: teamMembers }, { data: invitations }, { data: atelier }] = await Promise.all([
+    supabase
+      .from('users')
+      .select('id, email, full_name, role, created_at, last_login_at')
+      .eq('atelier_id', userData.atelier_id)
+      .order('created_at', { ascending: true }),
+    supabase
+      .from('team_invitations')
+      .select('*')
+      .eq('atelier_id', userData.atelier_id)
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('ateliers')
+      .select('id, name, plan')
+      .eq('id', userData.atelier_id)
+      .single(),
+  ])
 
   // Limites selon le plan
   const planLimits: Record<string, number> = {

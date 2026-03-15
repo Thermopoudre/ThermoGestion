@@ -59,7 +59,7 @@ export function FactureDetail({ facture, atelier, paiements, atelierId }: Factur
     .filter((p) => p.status === 'completed')
     .reduce((sum, p) => sum + Number(p.amount), 0)
   const soldeRestant = totalTtc - totalPaye - acompte
-  const paymentLinkUrl = facture.payment_link || null
+  const paymentLinkUrl = (facture as any).payment_link || null
 
   const handleEnvoyer = async () => {
     if (!confirm('Envoyer cette facture au client par email ?')) return
@@ -199,21 +199,45 @@ export function FactureDetail({ facture, atelier, paiements, atelierId }: Factur
         )}
       </div>
 
-      {/* Client */}
-      {facture.clients && (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Client</h2>
-          <div className="space-y-2 text-gray-600 dark:text-gray-400">
-            <p className="font-semibold text-gray-900 dark:text-white">{facture.clients.full_name}</p>
-            {facture.clients.address && <p>{facture.clients.address}</p>}
-            {facture.clients.phone && <p>Tél: {facture.clients.phone}</p>}
-            {facture.clients.email && <p>Email: {facture.clients.email}</p>}
-            {facture.clients.type === 'professionnel' && facture.clients.siret && (
-              <p>SIRET: {facture.clients.siret}</p>
-            )}
+      {/* Émetteur & Client (CGI Art. 242 nonies I) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Émetteur (vendeur) */}
+        {atelier && (
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Émetteur</h2>
+            <div className="space-y-2 text-gray-600 dark:text-gray-400">
+              <p className="font-semibold text-gray-900 dark:text-white">{atelier.name}</p>
+              {atelier.address && <p>{atelier.address}</p>}
+              {atelier.phone && <p>Tél : {atelier.phone}</p>}
+              {atelier.email && <p>Email : {atelier.email}</p>}
+              {atelier.siret && <p>SIRET : {atelier.siret}</p>}
+              {atelier.tva_intra && <p>TVA Intracom. : {atelier.tva_intra}</p>}
+              {atelier.forme_juridique && <p>{atelier.forme_juridique}{atelier.capital_social ? ` — Capital : ${atelier.capital_social} €` : ''}</p>}
+              {atelier.rcs && <p>RCS : {atelier.rcs}</p>}
+              {atelier.numero_rm && <p>RM : {atelier.numero_rm}</p>}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* Client (acheteur) */}
+        {facture.clients && (
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Client</h2>
+            <div className="space-y-2 text-gray-600 dark:text-gray-400">
+              <p className="font-semibold text-gray-900 dark:text-white">{facture.clients.full_name}</p>
+              {facture.clients.address && <p>{facture.clients.address}</p>}
+              {facture.clients.phone && <p>Tél : {facture.clients.phone}</p>}
+              {facture.clients.email && <p>Email : {facture.clients.email}</p>}
+              {facture.clients.type === 'professionnel' && facture.clients.siret && (
+                <p>SIRET : {facture.clients.siret}</p>
+              )}
+              {(facture.clients as any).tva_intra && (
+                <p>TVA Intracom. : {(facture.clients as any).tva_intra}</p>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Items */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
@@ -437,6 +461,58 @@ export function FactureDetail({ facture, atelier, paiements, atelierId }: Factur
           >
             📁 Exporter FEC
           </a>
+        </div>
+      </div>
+
+      {/* Mentions légales obligatoires (CGI Art. 242 nonies I) */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+        <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Mentions légales</h2>
+        <div className="space-y-2 text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+          {/* Nature de l'opération (Décret 2022-1299) */}
+          {facture.categorie_operation && (
+            <p>
+              <span className="font-semibold">Nature :</span>{' '}
+              {facture.categorie_operation === 'services' ? 'Prestation de services' : facture.categorie_operation === 'biens' ? 'Livraison de biens' : 'Livraison de biens et prestation de services'}
+            </p>
+          )}
+
+          {/* Conditions de paiement */}
+          <p>
+            <span className="font-semibold">Conditions de règlement :</span>{' '}
+            {facture.due_date
+              ? `Paiement à réception, échéance le ${format(new Date(facture.due_date), 'dd/MM/yyyy')}.`
+              : 'Paiement comptant à réception de facture.'}
+            {' '}Aucun escompte accordé pour paiement anticipé.
+          </p>
+
+          {/* Pénalités de retard (obligatoire depuis loi LME 2008) */}
+          <p>
+            <span className="font-semibold">Pénalités de retard :</span>{' '}
+            En cas de retard de paiement, des pénalités de retard seront exigibles au taux annuel de 11,62 %
+            (3 fois le taux d&apos;intérêt légal en vigueur, conformément à l&apos;article L.441-10 du Code de commerce).
+          </p>
+
+          {/* Indemnité forfaitaire de recouvrement (obligatoire depuis 2013) */}
+          <p>
+            <span className="font-semibold">Indemnité de recouvrement :</span>{' '}
+            En cas de retard de paiement, une indemnité forfaitaire de 40 € sera due de plein droit
+            (art. L.441-10 et D.441-5 du Code de commerce).
+          </p>
+
+          {/* Mention TVA non applicable (micro-entreprises) */}
+          {atelier && atelier.assujetti_tva === false && (
+            <p className="font-semibold text-orange-600 dark:text-orange-400">
+              TVA non applicable, art. 293 B du CGI.
+            </p>
+          )}
+
+          {/* Coordonnées bancaires */}
+          {atelier?.iban && (
+            <p>
+              <span className="font-semibold">Coordonnées bancaires :</span>{' '}
+              IBAN : {atelier.iban}{atelier.bic ? ` — BIC : ${atelier.bic}` : ''}
+            </p>
+          )}
         </div>
       </div>
 

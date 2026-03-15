@@ -1,6 +1,7 @@
 import { createServerClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { changeProjetStatus } from '@/lib/automatisations/projet-status'
+import { StatusChangeSchema, VALID_STATUS_TRANSITIONS, validateBody } from '@/lib/validations'
 
 export async function PATCH(
   request: Request,
@@ -19,7 +20,7 @@ export async function PATCH(
 
     const { data: userData } = await supabase
       .from('users')
-      .select('atelier_id')
+      .select('atelier_id, role')
       .eq('id', authUser.id)
       .single()
 
@@ -27,10 +28,16 @@ export async function PATCH(
       return NextResponse.json({ error: 'Utilisateur non trouvé' }, { status: 404 })
     }
 
-    // Vérifier que le projet appartient à l'atelier
+    // Validate UUID format for project ID
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    if (!uuidRegex.test(params.id)) {
+      return NextResponse.json({ error: 'ID projet invalide' }, { status: 400 })
+    }
+
+    // Verify project belongs to atelier
     const { data: projet } = await supabase
       .from('projets')
-      .select('id, atelier_id')
+      .select('id, atelier_id, status')
       .eq('id', params.id)
       .eq('atelier_id', userData.atelier_id)
       .single()
@@ -40,13 +47,36 @@ export async function PATCH(
     }
 
     const body = await request.json()
-    const { status: newStatus } = body
 
-    if (!newStatus) {
-      return NextResponse.json({ error: 'Statut requis' }, { status: 400 })
+    // Validate input with Zod
+    const validation = validateBody(StatusChangeSchema, body)
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Statut invalide', details: validation.errors },
+        { status: 400 }
+      )
     }
 
-    // Appeler le service d'automatisation avec la clé de service
+    const { status: newStatus } = validation.data
+
+    // Validate status transition
+    const allowedTransitions = VALID_STATUS_TRANSITIONS[projet.status] || []
+    if (!allowedTransitions.includes(newStatus)) {
+      return NextResponse.json(
+        { error: `Transition invalide: ${projet.status} → ${newStatus}. Transitions autorisées: ${allowedTransitions.join(', ')}` },
+        { status: 422 }
+      )
+    }
+
+    // Check role-based permission for certain transitions
+    if (newStatus === 'annule' && !['owner', 'admin'].includes(userData.role)) {
+      return NextResponse.json(
+        { error: 'Seul un administrateur peut annuler un projet' },
+        { status: 403 }
+      )
+    }
+
+    // Call automation service
     const result = await changeProjetStatus(
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -67,8 +97,11 @@ export async function PATCH(
       stockUpdated: result.stockUpdated,
     })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Erreur changement statut projet:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Erreur interne du serveur' },
+      { status: 500 }
+    )
   }
 }

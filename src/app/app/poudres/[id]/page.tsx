@@ -59,7 +59,7 @@ export default async function PoudreDetailPage({ params }: { params: { id: strin
                 {poudre.marque} {poudre.reference}
               </h1>
               <p className="text-gray-600">
-                {poudre.finition} {poudre.ral && `• RAL ${poudre.ral}`}
+                {poudre.finition} {poudre.ral && `• ${poudre.ral.toUpperCase().startsWith('RAL') ? poudre.ral : `RAL ${poudre.ral}`}`}
               </p>
             </div>
             <div className="flex gap-4">

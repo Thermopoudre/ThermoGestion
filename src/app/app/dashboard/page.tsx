@@ -1,4 +1,4 @@
-import { createServerClient, getAuthorizedUser } from '@/lib/supabase/server'
+import { createServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { KPICards } from '@/components/dashboard/KPICards'
 import dynamic from 'next/dynamic'
@@ -9,8 +9,8 @@ const TopPoudres = dynamic(() => import('@/components/dashboard/TopPoudres').the
 import { ConversionStats } from '@/components/dashboard/ConversionStats'
 import { TopClients } from '@/components/dashboard/TopClients'
 import Link from 'next/link'
+import { Suspense } from 'react'
 
-// Page d'erreur pour afficher quand le profil est incomplet
 function ProfileIncompleteError({ email, reason }: { email: string; reason: string }) {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4">
@@ -36,16 +36,19 @@ function ProfileIncompleteError({ email, reason }: { email: string; reason: stri
   )
 }
 
+function SectionSkeleton() {
+  return <div className="h-[200px] bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" />
+}
+
 export default async function DashboardPage() {
   const supabase = await createServerClient()
-  
+
   const { data: { user: authUser } } = await supabase.auth.getUser()
 
   if (!authUser) {
     redirect('/auth/login')
   }
 
-  // Charger les données utilisateur avec l'atelier
   const { data: userData, error: userError } = await supabase
     .from('users')
     .select(`*, ateliers (*)`)
@@ -54,8 +57,8 @@ export default async function DashboardPage() {
 
   if (userError || !userData) {
     return (
-      <ProfileIncompleteError 
-        email={authUser.email || ''} 
+      <ProfileIncompleteError
+        email={authUser.email || ''}
         reason="Votre compte d'authentification existe mais votre profil utilisateur n'a pas été créé."
       />
     )
@@ -74,69 +77,43 @@ export default async function DashboardPage() {
 
   if (!atelier || !atelier.id) {
     return (
-      <ProfileIncompleteError 
-        email={authUser.email || ''} 
+      <ProfileIncompleteError
+        email={authUser.email || ''}
         reason="Aucun atelier n'est associé à votre compte."
       />
     )
   }
 
-  // Dates pour les calculs
   const now = new Date()
+  const today = now.toISOString().split('T')[0]
+
+  // ── Tentative d'utiliser la vue matérialisée pour les KPIs ──
+  // Fallback sur les requêtes directes si la vue n'existe pas encore
+  let metricsFromView: any = null
+  const { data: mvData } = await supabase
+    .from('mv_dashboard_metrics')
+    .select('*')
+    .eq('atelier_id', atelier.id)
+    .single()
+
+  if (mvData) {
+    metricsFromView = mvData
+  }
+
+  // ── Charger les données détaillées en parallèle (réduit à 6 requêtes) ──
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
   const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
   const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0)
-  const today = now.toISOString().split('T')[0]
 
-  // Charger toutes les données en parallèle
   const [
-    facturesThisMonth,
-    facturesLastMonth,
-    facturesImpayees,
-    projetsEnCours,
     projetsEnRetard,
     projetsAVenir,
-    devisEnAttente,
-    devisTotal,
-    devisConverted,
-    topPoudres,
     caByMonth,
-    devisRefuses,
     devisSignes,
     facturesParClient,
+    stockBas,
   ] = await Promise.all([
-    // CA du mois
-    supabase
-      .from('factures')
-      .select('total_ttc')
-      .eq('atelier_id', atelier.id)
-      .eq('payment_status', 'paid')
-      .gte('paid_at', startOfMonth.toISOString()),
-    
-    // CA du mois dernier
-    supabase
-      .from('factures')
-      .select('total_ttc')
-      .eq('atelier_id', atelier.id)
-      .eq('payment_status', 'paid')
-      .gte('paid_at', startOfLastMonth.toISOString())
-      .lte('paid_at', endOfLastMonth.toISOString()),
-    
-    // Factures impayées
-    supabase
-      .from('factures')
-      .select('id, total_ttc')
-      .eq('atelier_id', atelier.id)
-      .eq('payment_status', 'unpaid'),
-    
-    // Projets en cours
-    supabase
-      .from('projets')
-      .select('id')
-      .eq('atelier_id', atelier.id)
-      .in('status', ['en_cours', 'en_cuisson', 'qc']),
-    
-    // Projets en retard
+    // Projets en retard (détail pour la liste)
     supabase
       .from('projets')
       .select('id, numero, name, status, date_promise, clients(full_name)')
@@ -146,8 +123,8 @@ export default async function DashboardPage() {
       .not('date_promise', 'is', null)
       .order('date_promise', { ascending: true })
       .limit(10),
-    
-    // Projets à venir (7 prochains jours)
+
+    // Projets à venir (7 jours)
     supabase
       .from('projets')
       .select('id, numero, name, status, date_promise, clients(full_name)')
@@ -157,35 +134,8 @@ export default async function DashboardPage() {
       .lte('date_promise', new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
       .order('date_promise', { ascending: true })
       .limit(10),
-    
-    // Devis en attente
-    supabase
-      .from('devis')
-      .select('id')
-      .eq('atelier_id', atelier.id)
-      .in('status', ['brouillon', 'envoye']),
-    
-    // Total devis pour taux de conversion
-    supabase
-      .from('devis')
-      .select('id', { count: 'exact', head: true })
-      .eq('atelier_id', atelier.id),
-    
-    // Devis convertis
-    supabase
-      .from('devis')
-      .select('id', { count: 'exact', head: true })
-      .eq('atelier_id', atelier.id)
-      .in('status', ['accepte', 'converted']),
-    
-    // Top poudres utilisées
-    supabase
-      .from('projets')
-      .select('poudre_id, poudres(reference, nom)')
-      .eq('atelier_id', atelier.id)
-      .not('poudre_id', 'is', null),
-    
-    // CA par mois (12 derniers mois)
+
+    // CA par mois (12 derniers mois) pour le graphique
     supabase
       .from('factures')
       .select('total_ttc, paid_at')
@@ -193,43 +143,72 @@ export default async function DashboardPage() {
       .eq('payment_status', 'paid')
       .gte('paid_at', new Date(now.getFullYear() - 1, now.getMonth(), 1).toISOString())
       .order('paid_at', { ascending: true }),
-    
-    // Devis refusés
-    supabase
-      .from('devis')
-      .select('id', { count: 'exact', head: true })
-      .eq('atelier_id', atelier.id)
-      .eq('status', 'refuse'),
-    
-    // Devis avec date de signature pour calcul temps moyen
+
+    // Devis signés pour temps moyen de signature
     supabase
       .from('devis')
       .select('created_at, signed_at, total_ht')
       .eq('atelier_id', atelier.id)
       .not('signed_at', 'is', null),
-    
-    // Top clients par CA (factures payées)
+
+    // Top clients par CA
     supabase
       .from('factures')
       .select('client_id, total_ttc, clients(id, full_name)')
       .eq('atelier_id', atelier.id)
       .eq('payment_status', 'paid'),
+
+    // Stock bas (vérifier dans stock_poudres, la source canonique du stock)
+    supabase
+      .from('stock_poudres')
+      .select('id')
+      .eq('atelier_id', atelier.id)
+      .not('stock_reel_kg', 'is', null)
+      .lt('stock_reel_kg', 1),
   ])
 
-  // Calculer les KPIs
-  const caMonth = (facturesThisMonth.data || []).reduce((sum, f) => sum + Number(f.total_ttc || 0), 0)
-  const caLastMonth = (facturesLastMonth.data || []).reduce((sum, f) => sum + Number(f.total_ttc || 0), 0)
-  const nbFacturesImpayees = facturesImpayees.data?.length || 0
-  const montantImpaye = (facturesImpayees.data || []).reduce((sum, f) => sum + Number(f.total_ttc || 0), 0)
-  const nbProjetsEnCours = projetsEnCours.data?.length || 0
+  // ── Si pas de vue matérialisée, calculer les KPIs classiquement ──
+  let caMonth: number, caLastMonth: number, nbFacturesImpayees: number, montantImpaye: number
+  let nbProjetsEnCours: number, nbDevisEnAttente: number, totalDevis: number
+  let convertedDevis: number, refusedDevis: number
+
+  if (metricsFromView) {
+    caMonth = Number(metricsFromView.ca_month || 0)
+    caLastMonth = Number(metricsFromView.ca_last_month || 0)
+    nbFacturesImpayees = Number(metricsFromView.factures_impayees_count || 0)
+    montantImpaye = Number(metricsFromView.factures_impayees_total || 0)
+    nbProjetsEnCours = Number(metricsFromView.projets_en_cours || 0)
+    nbDevisEnAttente = Number(metricsFromView.devis_en_attente || 0)
+    totalDevis = Number(metricsFromView.devis_total || 0)
+    convertedDevis = Number(metricsFromView.devis_converted || 0)
+    refusedDevis = Number(metricsFromView.devis_refused || 0)
+  } else {
+    // Fallback: requêtes directes (pour ateliers sans la vue)
+    const [ftm, flm, fi, pec, dea, dt, dc, dr] = await Promise.all([
+      supabase.from('factures').select('total_ttc').eq('atelier_id', atelier.id).eq('payment_status', 'paid').gte('paid_at', startOfMonth.toISOString()),
+      supabase.from('factures').select('total_ttc').eq('atelier_id', atelier.id).eq('payment_status', 'paid').gte('paid_at', startOfLastMonth.toISOString()).lte('paid_at', endOfLastMonth.toISOString()),
+      supabase.from('factures').select('id, total_ttc').eq('atelier_id', atelier.id).eq('payment_status', 'unpaid'),
+      supabase.from('projets').select('id').eq('atelier_id', atelier.id).in('status', ['en_cours', 'en_cuisson', 'qc']),
+      supabase.from('devis').select('id').eq('atelier_id', atelier.id).in('status', ['brouillon', 'envoye']),
+      supabase.from('devis').select('id', { count: 'exact', head: true }).eq('atelier_id', atelier.id),
+      supabase.from('devis').select('id', { count: 'exact', head: true }).eq('atelier_id', atelier.id).in('status', ['accepte', 'converted']),
+      supabase.from('devis').select('id', { count: 'exact', head: true }).eq('atelier_id', atelier.id).eq('status', 'refuse'),
+    ])
+    caMonth = (ftm.data || []).reduce((sum, f) => sum + Number(f.total_ttc || 0), 0)
+    caLastMonth = (flm.data || []).reduce((sum, f) => sum + Number(f.total_ttc || 0), 0)
+    nbFacturesImpayees = fi.data?.length || 0
+    montantImpaye = (fi.data || []).reduce((sum, f) => sum + Number(f.total_ttc || 0), 0)
+    nbProjetsEnCours = pec.data?.length || 0
+    nbDevisEnAttente = dea.data?.length || 0
+    totalDevis = dt.count || 0
+    convertedDevis = dc.count || 0
+    refusedDevis = dr.count || 0
+  }
+
   const nbProjetsEnRetard = projetsEnRetard.data?.length || 0
-  const nbDevisEnAttente = devisEnAttente.data?.length || 0
-  const totalDevis = devisTotal.count || 0
-  const convertedDevis = devisConverted.count || 0
-  const refusedDevis = devisRefuses.count || 0
   const tauxConversion = totalDevis > 0 ? (convertedDevis / totalDevis) * 100 : 0
 
-  // Calculer temps moyen de signature
+  // Temps moyen de signature
   let tempsSignatureMoyen = 0
   let montantMoyenDevis = 0
   if (devisSignes.data && devisSignes.data.length > 0) {
@@ -242,7 +221,7 @@ export default async function DashboardPage() {
     montantMoyenDevis = devisSignes.data.reduce((sum, d) => sum + Number(d.total_ht || 0), 0) / devisSignes.data.length
   }
 
-  // Calculer top clients par CA
+  // Top clients
   const clientCAMap: Record<string, { id: string; name: string; ca: number; projets: number }> = {}
   for (const f of facturesParClient.data || []) {
     const client = f.clients as any
@@ -253,56 +232,50 @@ export default async function DashboardPage() {
     clientCAMap[client.id].ca += Number(f.total_ttc || 0)
     clientCAMap[client.id].projets++
   }
-  const topClientsData = Object.values(clientCAMap)
-    .sort((a, b) => b.ca - a.ca)
-    .slice(0, 5)
+  const topClientsData = Object.values(clientCAMap).sort((a, b) => b.ca - a.ca).slice(0, 5)
 
-  // Formater les projets en retard
+  // Projets formatés
   const formattedProjetsEnRetard = (projetsEnRetard.data || []).map((p: any) => ({
-    id: p.id,
-    numero: p.numero,
-    name: p.name,
-    status: p.status,
-    date_promise: p.date_promise,
-    client_name: p.clients?.full_name || 'Client inconnu',
-    isLate: true,
+    id: p.id, numero: p.numero, name: p.name, status: p.status,
+    date_promise: p.date_promise, client_name: p.clients?.full_name || 'Client inconnu', isLate: true,
   }))
-
-  // Formater les projets à venir
   const formattedProjetsAVenir = (projetsAVenir.data || []).map((p: any) => ({
-    id: p.id,
-    numero: p.numero,
-    name: p.name,
-    status: p.status,
-    date_promise: p.date_promise,
-    client_name: p.clients?.full_name || 'Client inconnu',
-    isLate: false,
+    id: p.id, numero: p.numero, name: p.name, status: p.status,
+    date_promise: p.date_promise, client_name: p.clients?.full_name || 'Client inconnu', isLate: false,
   }))
 
-  // Calculer les top poudres
-  const poudreCount: Record<string, { reference: string; count: number }> = {}
-  for (const p of topPoudres.data || []) {
-    const ref = (p.poudres as any)?.reference || 'Inconnue'
-    if (!poudreCount[ref]) {
-      poudreCount[ref] = { reference: ref, count: 0 }
+  // Top poudres (from metricsFromView or computed)
+  let topPoudresData: Array<{ name: string; reference: string; count: number; color: string }> = []
+  if (metricsFromView?.top_poudres) {
+    topPoudresData = (metricsFromView.top_poudres as any[]).map((p: any) => ({
+      name: p.reference || p.name, reference: p.reference || p.name, count: p.count, color: '',
+    }))
+  } else {
+    const { data: topPoudresRaw } = await supabase
+      .from('projets')
+      .select('poudre_id, poudres(reference, nom)')
+      .eq('atelier_id', atelier.id)
+      .not('poudre_id', 'is', null)
+    const poudreCount: Record<string, { reference: string; count: number }> = {}
+    for (const p of topPoudresRaw || []) {
+      const ref = (p.poudres as any)?.reference || 'Inconnue'
+      if (!poudreCount[ref]) poudreCount[ref] = { reference: ref, count: 0 }
+      poudreCount[ref].count++
     }
-    poudreCount[ref].count++
+    topPoudresData = Object.values(poudreCount)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 6)
+      .map((p) => ({ name: p.reference, reference: p.reference, count: p.count, color: '' }))
   }
-  const topPoudresData = Object.values(poudreCount)
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 6)
-    .map((p) => ({ name: p.reference, reference: p.reference, count: p.count, color: '' }))
 
-  // Calculer le CA par mois
+  // CA par mois (graphique)
   const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
   const caByMonthMap: Record<string, number> = {}
-  
   for (let i = 11; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
     caByMonthMap[key] = 0
   }
-  
   for (const f of caByMonth.data || []) {
     if (f.paid_at) {
       const d = new Date(f.paid_at)
@@ -312,56 +285,35 @@ export default async function DashboardPage() {
       }
     }
   }
-  
   const chartData = Object.entries(caByMonthMap).map(([key, ca]) => {
     const [year, month] = key.split('-')
-    return {
-      month: `${monthNames[parseInt(month) - 1]} ${year.slice(2)}`,
-      ca,
-      factures: 0,
-    }
+    return { month: `${monthNames[parseInt(month) - 1]} ${year.slice(2)}`, ca, factures: 0 }
   })
 
-  // Générer les alertes
+  // Alertes
   const alerts: Array<{ id: string; type: 'warning' | 'danger' | 'info'; title: string; message: string; link?: string; linkText?: string }> = []
-  
   if (nbFacturesImpayees > 0) {
     alerts.push({
-      id: 'factures-impayees',
-      type: 'danger',
+      id: 'factures-impayees', type: 'danger',
       title: `${nbFacturesImpayees} facture(s) impayée(s)`,
       message: `Montant total: ${montantImpaye.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}`,
-      link: '/app/factures',
-      linkText: 'Voir les factures',
+      link: '/app/factures', linkText: 'Voir les factures',
     })
   }
-  
   if (nbProjetsEnRetard > 0) {
     alerts.push({
-      id: 'projets-retard',
-      type: 'warning',
+      id: 'projets-retard', type: 'warning',
       title: `${nbProjetsEnRetard} projet(s) en retard`,
       message: 'Dates de livraison dépassées',
-      link: '/app/projets',
-      linkText: 'Voir les projets',
+      link: '/app/projets', linkText: 'Voir les projets',
     })
   }
-  
-  // Alerte stock bas (simplifié - à améliorer avec vraie logique)
-  const { data: stockBas } = await supabase
-    .from('poudres')
-    .select('id')
-    .eq('atelier_id', atelier.id)
-    .lt('stock_reel_kg', 1)
-    
-  if (stockBas && stockBas.length > 0) {
+  if (stockBas.data && stockBas.data.length > 0) {
     alerts.push({
-      id: 'stock-bas',
-      type: 'warning',
-      title: `${stockBas.length} poudre(s) en rupture`,
+      id: 'stock-bas', type: 'warning',
+      title: `${stockBas.data.length} poudre(s) en rupture`,
       message: 'Stock inférieur à 1 kg',
-      link: '/app/poudres',
-      linkText: 'Voir les poudres',
+      link: '/app/poudres', linkText: 'Voir les poudres',
     })
   }
 
@@ -377,7 +329,7 @@ export default async function DashboardPage() {
           {atelier.trial_ends_at && new Date(atelier.trial_ends_at) > new Date() && (
             <div className="mt-3 sm:mt-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3 sm:p-4">
               <p className="text-xs sm:text-sm text-blue-800 dark:text-blue-300">
-                🎉 <strong>Essai gratuit actif</strong> jusqu'au {new Date(atelier.trial_ends_at).toLocaleDateString('fr-FR')}
+                🎉 <strong>Essai gratuit actif</strong> jusqu&apos;au {new Date(atelier.trial_ends_at).toLocaleDateString('fr-FR')}
               </p>
             </div>
           )}
@@ -398,7 +350,9 @@ export default async function DashboardPage() {
         {/* Graphique CA + Alertes */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mt-6 sm:mt-8">
           <div className="lg:col-span-2 order-2 lg:order-1">
-            <ChartCA data={chartData} />
+            <Suspense fallback={<SectionSkeleton />}>
+              <ChartCA data={chartData} />
+            </Suspense>
           </div>
           <div className="order-1 lg:order-2">
             <AlertsPanel alerts={alerts} />
@@ -428,9 +382,10 @@ export default async function DashboardPage() {
 
         {/* Top Poudres + Actions rapides */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mt-6 sm:mt-8">
-          <TopPoudres data={topPoudresData} />
-          
-          {/* Actions rapides - Style thermolaquage */}
+          <Suspense fallback={<SectionSkeleton />}>
+            <TopPoudres data={topPoudresData} />
+          </Suspense>
+
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">🔥 Actions rapides</h3>
             <div className="grid grid-cols-2 gap-2 sm:gap-3">
