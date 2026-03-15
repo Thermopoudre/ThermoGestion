@@ -1,6 +1,7 @@
 import { join } from 'path'
 import { loadAndSanitizeHtml } from '@/lib/sanitize-html'
 import { ROICalculator } from '@/components/ui/ROICalculator'
+import { VitrineNav, VitrineFooter } from '@/components/layout/VitrineNav'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -13,7 +14,8 @@ export default function TarifsPage() {
   const htmlContent = loadAndSanitizeHtml(htmlPath, 'Tarifs')
 
   return (
-    <>
+    <div className="min-h-screen bg-black text-white">
+      <VitrineNav />
       <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
       {/* Calculateur ROI intégré */}
       <section className="bg-gray-900 py-16 px-4">
@@ -29,6 +31,7 @@ export default function TarifsPage() {
           <ROICalculator />
         </div>
       </section>
-    </>
+      <VitrineFooter />
+    </div>
   )
 }

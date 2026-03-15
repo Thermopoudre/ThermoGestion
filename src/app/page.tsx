@@ -1,11 +1,12 @@
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import { sanitizeStaticHtml } from '@/lib/sanitize-html'
+import { VitrineNav, VitrineFooter } from '@/components/layout/VitrineNav'
 
 export default function Home() {
   const htmlPath = join(process.cwd(), 'site-vitrine', 'index.html')
   let htmlContent = ''
-  
+
   try {
     htmlContent = sanitizeStaticHtml(readFileSync(htmlPath, 'utf-8'))
   } catch (error) {
@@ -27,6 +28,10 @@ export default function Home() {
   }
 
   return (
-    <div className="bg-black text-white" dangerouslySetInnerHTML={{ __html: htmlContent }} />
+    <div className="min-h-screen bg-black text-white">
+      <VitrineNav />
+      <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+      <VitrineFooter />
+    </div>
   )
 }

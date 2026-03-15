@@ -20,7 +20,7 @@ export function sanitizeStaticHtml(html: string): string {
     sanitized = bodyMatch[1]
   }
 
-  // 0b. Supprimer les éléments <header> et <footer> existants (on les remplace par les nôtres)
+  // 0b. Supprimer les éléments <header> et <footer> existants (remplacés par les composants React)
   sanitized = sanitized.replace(/<header\b[^>]*>[\s\S]*?<\/header>/gi, '')
   sanitized = sanitized.replace(/<footer\b[^>]*>[\s\S]*?<\/footer>/gi, '')
 
