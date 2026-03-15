@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { email, password, atelierName } = body
+    const { email, password, atelierName, fullName } = body
 
     if (!email || !password || !atelierName) {
       return NextResponse.json(
@@ -118,7 +118,7 @@ export async function POST(request: Request) {
         atelier_id: atelier.id,
         email: email.trim().toLowerCase(),
         role: 'owner', // Premier utilisateur = owner
-        full_name: null,
+        full_name: fullName ? sanitizeHtml(fullName.trim()) : null,
       })
 
     if (userError) {

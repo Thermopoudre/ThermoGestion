@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function InscriptionPage() {
+  const [fullName, setFullName] = useState('')
   const [atelierName, setAtelierName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -40,6 +41,7 @@ export default function InscriptionPage() {
           email,
           password,
           atelierName,
+          fullName,
         }),
       })
 
@@ -85,6 +87,21 @@ export default function InscriptionPage() {
                 {error}
               </div>
             )}
+
+            <div>
+              <label htmlFor="fullName" className="block text-sm font-medium text-gray-300 mb-2">
+                Nom complet *
+              </label>
+              <input
+                id="fullName"
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required
+                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                placeholder="Prénom Nom"
+              />
+            </div>
 
             <div>
               <label htmlFor="atelierName" className="block text-sm font-medium text-gray-300 mb-2">
