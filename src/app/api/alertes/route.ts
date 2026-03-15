@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
       .from('users')
       .select('atelier_id')
       .eq('id', authUser.id)
-      .single()
+      .single<{ atelier_id: string }>()
 
     if (!userData) {
       return NextResponse.json({ error: 'Utilisateur non trouvé' }, { status: 404 })
@@ -69,7 +69,7 @@ export async function PATCH(request: NextRequest) {
       .from('users')
       .select('atelier_id')
       .eq('id', authUser.id)
-      .single()
+      .single<{ atelier_id: string }>()
 
     if (!userData) {
       return NextResponse.json({ error: 'Utilisateur non trouvé' }, { status: 404 })

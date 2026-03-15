@@ -112,7 +112,6 @@ export async function POST(request: Request) {
 
     for (const table of tablesToClean) {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await (adminSupabase as any)
           .from(table)
           .delete()

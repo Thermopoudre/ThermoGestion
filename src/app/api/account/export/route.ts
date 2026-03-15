@@ -23,9 +23,9 @@ export async function GET() {
       .from('users')
       .select('atelier_id, role')
       .eq('id', user.id)
-      .single()
+      .single<{ atelier_id: string; role: string }>()
 
-    if (!userData?.atelier_id) {
+    if (!userData || !userData.atelier_id) {
       return NextResponse.json({ error: 'Atelier non trouvé' }, { status: 404 })
     }
 
@@ -67,17 +67,17 @@ export async function GET() {
       supabase.from('projets').select('*').eq('atelier_id', atelierId),
       supabase.from('devis').select('*').eq('atelier_id', atelierId),
       supabase.from('factures').select('*').eq('atelier_id', atelierId),
-      supabase.from('avoirs').select('*').eq('atelier_id', atelierId).catch(() => ({ data: [] })),
-      supabase.from('paiements').select('*').eq('atelier_id', atelierId).catch(() => ({ data: [] })),
+      supabase.from('avoirs').select('*').eq('atelier_id', atelierId),
+      supabase.from('paiements').select('*').eq('atelier_id', atelierId),
       supabase.from('poudres').select('*').eq('atelier_id', atelierId),
       supabase.from('series').select('*').eq('atelier_id', atelierId),
-      supabase.from('photos').select('id, projet_id, url, type, description, created_at').eq('atelier_id', atelierId).catch(() => ({ data: [] })),
-      supabase.from('email_queue').select('id, recipient, subject, status, created_at, sent_at, error').eq('atelier_id', atelierId).order('created_at', { ascending: false }).limit(500).catch(() => ({ data: [] })),
-      supabase.from('alertes').select('*').eq('atelier_id', atelierId).order('created_at', { ascending: false }).limit(500).catch(() => ({ data: [] })),
-      supabase.from('push_subscriptions').select('id, user_id, created_at').eq('atelier_id', atelierId).catch(() => ({ data: [] })),
-      supabase.from('retouches').select('*').eq('atelier_id', atelierId).catch(() => ({ data: [] })),
-      supabase.from('bons_livraison').select('*').eq('atelier_id', atelierId).catch(() => ({ data: [] })),
-      supabase.from('client_users').select('id, email, client_id, created_at').eq('atelier_id', atelierId).catch(() => ({ data: [] })),
+      supabase.from('photos').select('id, projet_id, url, type, description, created_at').eq('atelier_id', atelierId),
+      supabase.from('email_queue').select('id, recipient, subject, status, created_at, sent_at, error').eq('atelier_id', atelierId).order('created_at', { ascending: false }).limit(500),
+      supabase.from('alertes').select('*').eq('atelier_id', atelierId).order('created_at', { ascending: false }).limit(500),
+      supabase.from('push_subscriptions').select('id, user_id, created_at').eq('atelier_id', atelierId),
+      supabase.from('retouches').select('*').eq('atelier_id', atelierId),
+      supabase.from('bons_livraison').select('*').eq('atelier_id', atelierId),
+      supabase.from('client_users').select('id, email, client_id, created_at').eq('atelier_id', atelierId),
       supabase.from('audit_logs').select('*').eq('atelier_id', atelierId).order('created_at', { ascending: false }).limit(1000),
     ])
 
