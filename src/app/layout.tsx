@@ -62,9 +62,9 @@ export default function RootLayout({
           >
             Aller au contenu principal
           </a>
-          <main id="main-content">
+          <div id="main-content">
             {children}
-          </main>
+          </div>
           <CookieBanner />
         </ThemeProvider>
       </body>
