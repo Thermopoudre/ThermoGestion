@@ -71,6 +71,7 @@ export function ROICalculator() {
             value={inputs.devisParMois}
             onChange={(e) => handleChange('devisParMois', Number(e.target.value))}
             className="w-full accent-orange-500"
+            aria-label="Nombre de devis créés par mois"
           />
           <div className="flex justify-between text-xs text-gray-500">
             <span>5</span>
@@ -91,6 +92,7 @@ export function ROICalculator() {
             value={inputs.tempsDevisMinutes}
             onChange={(e) => handleChange('tempsDevisMinutes', Number(e.target.value))}
             className="w-full accent-orange-500"
+            aria-label="Temps actuel par devis en minutes"
           />
           <div className="flex justify-between text-xs text-gray-500">
             <span>15 min</span>
@@ -111,6 +113,7 @@ export function ROICalculator() {
             value={inputs.tauxHoraire}
             onChange={(e) => handleChange('tauxHoraire', Number(e.target.value))}
             className="w-full accent-orange-500"
+            aria-label="Taux horaire en euros par heure"
           />
           <div className="flex justify-between text-xs text-gray-500">
             <span>20€</span>
@@ -130,6 +133,7 @@ export function ROICalculator() {
             value={inputs.relancesParMois}
             onChange={(e) => handleChange('relancesParMois', Number(e.target.value))}
             className="w-full accent-orange-500"
+            aria-label="Nombre de relances manuelles par mois"
           />
           <div className="flex justify-between text-xs text-gray-500">
             <span>0</span>

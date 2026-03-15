@@ -28,6 +28,18 @@ export function CookieBanner() {
     }
   }, [])
 
+  // Ajouter padding-bottom au body quand la barre est visible (évite qu'elle couvre le contenu)
+  useEffect(() => {
+    if (show && !showSettings) {
+      document.body.style.paddingBottom = '80px'
+    } else {
+      document.body.style.paddingBottom = ''
+    }
+    return () => {
+      document.body.style.paddingBottom = ''
+    }
+  }, [show, showSettings])
+
   function acceptAll() {
     const allConsent: CookiePreferences = {
       necessary: true,
