@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
 
+function esc(str: string | number | undefined | null): string {
+  if (str === null || str === undefined) return ''
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;')
+}
+
 // Génération du certificat de conformité en HTML (convertible en PDF)
 export async function GET(
   request: NextRequest,
@@ -50,7 +55,7 @@ export async function GET(
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Certificat de Conformité - ${numeroCertificat}</title>
+  <title>Certificat de Conformité - ${esc(numeroCertificat)}</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { 
@@ -185,14 +190,14 @@ export async function GET(
     <div>
       <div class="logo"><span>🔥</span> ThermoGestion</div>
       <div style="margin-top: 10px; font-size: 10pt; color: #666;">
-        ${(projet.ateliers as any)?.name || ''}<br>
-        ${(projet.ateliers as any)?.address || ''}<br>
-        ${(projet.ateliers as any)?.phone || ''}<br>
-        ${(projet.ateliers as any)?.siret ? `SIRET: ${(projet.ateliers as any).siret}` : ''}
+        ${esc((projet.ateliers as any)?.name)}<br>
+        ${esc((projet.ateliers as any)?.address)}<br>
+        ${esc((projet.ateliers as any)?.phone)}<br>
+        ${(projet.ateliers as any)?.siret ? `SIRET: ${esc((projet.ateliers as any).siret)}` : ''}
       </div>
     </div>
     <div class="cert-info">
-      <div class="cert-number">${numeroCertificat}</div>
+      <div class="cert-number">${esc(numeroCertificat)}</div>
       <div style="font-size: 10pt; color: #666; margin-top: 5px;">
         Date d'émission: ${dateEmission}
       </div>
@@ -206,15 +211,15 @@ export async function GET(
     <div class="grid">
       <div class="field">
         <div class="field-label">Numéro de projet</div>
-        <div class="field-value">${projet.numero}</div>
+        <div class="field-value">${esc(projet.numero)}</div>
       </div>
       <div class="field">
         <div class="field-label">Désignation</div>
-        <div class="field-value">${projet.name}</div>
+        <div class="field-value">${esc(projet.name)}</div>
       </div>
       <div class="field">
         <div class="field-label">Client</div>
-        <div class="field-value">${(projet.clients as any)?.full_name || '-'}</div>
+        <div class="field-value">${esc((projet.clients as any)?.full_name) || '-'}</div>
       </div>
       <div class="field">
         <div class="field-label">Date de réalisation</div>
@@ -228,23 +233,23 @@ export async function GET(
     <div class="grid">
       <div class="field">
         <div class="field-label">Référence poudre</div>
-        <div class="field-value">${(projet.poudres as any)?.reference || '-'}</div>
+        <div class="field-value">${esc((projet.poudres as any)?.reference) || '-'}</div>
       </div>
       <div class="field">
         <div class="field-label">Fabricant</div>
-        <div class="field-value">${(projet.poudres as any)?.marque || '-'}</div>
+        <div class="field-value">${esc((projet.poudres as any)?.marque) || '-'}</div>
       </div>
       <div class="field">
         <div class="field-label">Teinte RAL</div>
-        <div class="field-value">${(projet.poudres as any)?.ral ? `RAL ${(projet.poudres as any).ral}` : '-'}</div>
+        <div class="field-value">${(projet.poudres as any)?.ral ? `RAL ${esc((projet.poudres as any).ral)}` : '-'}</div>
       </div>
       <div class="field">
         <div class="field-label">Finition</div>
-        <div class="field-value">${(projet.poudres as any)?.finition || '-'}</div>
+        <div class="field-value">${esc((projet.poudres as any)?.finition) || '-'}</div>
       </div>
       <div class="field">
         <div class="field-label">Numéro de lot</div>
-        <div class="field-value">${(projet.poudres as any)?.numero_lot || '-'}</div>
+        <div class="field-value">${esc((projet.poudres as any)?.numero_lot) || '-'}</div>
       </div>
       <div class="field">
         <div class="field-label">Nombre de couches</div>
@@ -279,7 +284,7 @@ export async function GET(
       <div>
         <div class="conformity-box">
           <div class="check">${controle?.epaisseur_conforme !== false ? '✓' : '✗'}</div>
-          <span>Épaisseur conforme ${controle?.epaisseur_mesuree ? `(${controle.epaisseur_mesuree} µm)` : ''}</span>
+          <span>Épaisseur conforme ${controle?.epaisseur_mesuree ? `(${esc(controle.epaisseur_mesuree)} µm)` : ''}</span>
         </div>
         <div class="conformity-box">
           <div class="check">${controle?.adherence_conforme !== false ? '✓' : '✗'}</div>
@@ -304,7 +309,7 @@ export async function GET(
     ${controle?.observations ? `
     <div class="field" style="margin-top: 15px;">
       <div class="field-label">Observations</div>
-      <div class="field-value">${controle.observations}</div>
+      <div class="field-value">${esc(controle.observations)}</div>
     </div>
     ` : ''}
   </div>

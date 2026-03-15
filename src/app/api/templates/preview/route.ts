@@ -63,14 +63,19 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const templateName = (searchParams.get('template') || 'classic') as TemplateName
-    const primaryColor = searchParams.get('primaryColor') || undefined
-    const accentColor = searchParams.get('accentColor') || undefined
+    const rawPrimary = searchParams.get('primaryColor') || undefined
+    const rawAccent = searchParams.get('accentColor') || undefined
 
     // Valider le nom du template
     const validTemplates: TemplateName[] = ['classic', 'modern', 'industrial', 'premium']
     if (!validTemplates.includes(templateName)) {
       return NextResponse.json({ error: 'Template invalide' }, { status: 400 })
     }
+
+    // Valider les couleurs (hex uniquement, pas d'injection CSS)
+    const hexColorRegex = /^#?[0-9a-fA-F]{3,8}$/
+    const primaryColor = rawPrimary && hexColorRegex.test(rawPrimary) ? rawPrimary : undefined
+    const accentColor = rawAccent && hexColorRegex.test(rawAccent) ? rawAccent : undefined
 
     // Options de personnalisation
     const customColors = primaryColor || accentColor ? {

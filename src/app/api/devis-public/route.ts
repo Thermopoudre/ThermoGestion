@@ -6,6 +6,11 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
+function escapeHtml(str: string | undefined | null): string {
+  if (!str) return ''
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;')
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json()
@@ -58,19 +63,19 @@ export async function POST(request: Request) {
             subject: `[Devis public] ${nom} - ${type_piece} x${quantite}`,
             html: `
               <h2>Nouvelle demande de devis public</h2>
-              <p><strong>Nom:</strong> ${nom}</p>
-              <p><strong>Email:</strong> ${email}</p>
-              ${telephone ? `<p><strong>Téléphone:</strong> ${telephone}</p>` : ''}
-              ${entreprise ? `<p><strong>Entreprise:</strong> ${entreprise}</p>` : ''}
+              <p><strong>Nom:</strong> ${escapeHtml(nom)}</p>
+              <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+              ${telephone ? `<p><strong>Téléphone:</strong> ${escapeHtml(telephone)}</p>` : ''}
+              ${entreprise ? `<p><strong>Entreprise:</strong> ${escapeHtml(entreprise)}</p>` : ''}
               <hr>
-              <p><strong>Type de pièce:</strong> ${type_piece}</p>
-              <p><strong>Quantité:</strong> ${quantite}</p>
-              <p><strong>Surface estimée:</strong> ${surface_m2 || surface_estimee} m²</p>
-              <p><strong>Finition:</strong> ${finition}</p>
-              ${couleur_ral ? `<p><strong>RAL:</strong> ${couleur_ral}</p>` : ''}
+              <p><strong>Type de pièce:</strong> ${escapeHtml(type_piece)}</p>
+              <p><strong>Quantité:</strong> ${escapeHtml(String(quantite))}</p>
+              <p><strong>Surface estimée:</strong> ${escapeHtml(String(surface_m2 || surface_estimee))} m²</p>
+              <p><strong>Finition:</strong> ${escapeHtml(finition)}</p>
+              ${couleur_ral ? `<p><strong>RAL:</strong> ${escapeHtml(couleur_ral)}</p>` : ''}
               ${urgence ? `<p style="color:red;"><strong>URGENCE</strong></p>` : ''}
-              <p><strong>Estimation auto:</strong> ${estimation} € HT</p>
-              ${message ? `<p><strong>Message:</strong> ${message}</p>` : ''}
+              <p><strong>Estimation auto:</strong> ${escapeHtml(String(estimation))} € HT</p>
+              ${message ? `<p><strong>Message:</strong> ${escapeHtml(message)}</p>` : ''}
             `,
           }),
         })
@@ -83,6 +88,6 @@ export async function POST(request: Request) {
 
   } catch (error: any) {
     console.error('Devis public error:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: 'Erreur lors de la soumission du devis' }, { status: 500 })
   }
 }

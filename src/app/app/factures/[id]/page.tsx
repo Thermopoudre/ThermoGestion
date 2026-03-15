@@ -46,7 +46,7 @@ export default async function FactureDetailPage({
   if (factureData.client_id) {
     const { data: clientData } = await supabase
       .from('clients')
-      .select('id, full_name, email, phone, address, type, siret')
+      .select('id, full_name, email, phone, address, type, siret, tva_intra')
       .eq('id', factureData.client_id)
       .single()
     client = clientData

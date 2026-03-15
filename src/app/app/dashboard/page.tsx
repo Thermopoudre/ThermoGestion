@@ -158,11 +158,12 @@ export default async function DashboardPage() {
       .eq('atelier_id', atelier.id)
       .eq('payment_status', 'paid'),
 
-    // Stock bas
+    // Stock bas (vérifier dans stock_poudres, la source canonique du stock)
     supabase
-      .from('poudres')
+      .from('stock_poudres')
       .select('id')
       .eq('atelier_id', atelier.id)
+      .not('stock_reel_kg', 'is', null)
       .lt('stock_reel_kg', 1),
   ])
 
