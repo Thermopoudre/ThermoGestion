@@ -8,8 +8,8 @@ export const maxDuration = 60
 export async function GET(request: Request) {
   const authHeader = request.headers.get('authorization')
   const expectedSecret = process.env.CRON_SECRET || process.env.EMAIL_QUEUE_SECRET_KEY
-  
-  if (expectedSecret && authHeader !== `Bearer ${expectedSecret}`) {
+
+  if (!expectedSecret || authHeader !== `Bearer ${expectedSecret}`) {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
   }
 

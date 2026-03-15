@@ -25,6 +25,16 @@ const nextConfig = {
     ],
   },
 
+  // ── Redirects routes auth legacy ─────────────────────────────
+  async redirects() {
+    return [
+      { source: '/login', destination: '/auth/login', permanent: true },
+      { source: '/connexion', destination: '/auth/login', permanent: true },
+      { source: '/inscription', destination: '/auth/inscription', permanent: true },
+      { source: '/register', destination: '/auth/inscription', permanent: true },
+    ]
+  },
+
   // ── Headers de securite (OWASP / conformite EU) ──────────────
   async headers() {
     return [
