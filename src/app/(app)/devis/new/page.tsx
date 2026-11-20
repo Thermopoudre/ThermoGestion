@@ -81,8 +81,15 @@ export default function NewDevisPage() {
     <div>
       <PageTitle>Nouveau devis</PageTitle>
 
-      <Card className="mb-4 flex flex-col gap-2 md:max-w-md">
-        <div className="text-sm font-semibold">Reprendre un devis existant</div>
+      {/* Audit design du 20/11/2026 : ouvert, ce bloc poussait l'éditeur sous la ligne de flottaison
+          au téléphone, alors que la reprise sert une fois sur dix. Replié par défaut, le titre
+          reste visible et s'ouvre d'un geste. */}
+      <details className="group mb-4 md:max-w-md">
+      <summary className="flex min-h-[44px] cursor-pointer list-none items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand [&::-webkit-details-marker]:hidden">
+        <Copy size={16} aria-hidden /> <span className="flex-1">Reprendre un devis existant</span>
+        <ChevronRight size={16} aria-hidden className="transition group-open:rotate-90" />
+      </summary>
+      <Card className="mt-2 flex flex-col gap-2">
         <Select label="Client" value={clientId} onChange={(e) => setClientId(e.target.value)}>
           <option value="">— Choisir un client —</option>
           {clients.map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
@@ -105,6 +112,7 @@ export default function NewDevisPage() {
           <ChevronRight size={12} aria-hidden /> Reprendre crée une copie en brouillon, avec les mêmes lignes et la même remise — pratique pour le client qui recommande la même chose.
         </p>
       </Card>
+      </details>
 
       <DevisEditor />
     </div>

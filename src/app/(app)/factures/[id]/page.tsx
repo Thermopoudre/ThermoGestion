@@ -168,24 +168,17 @@ export default function FacturePage({ params }: { params: Promise<{ id: string }
     // Le champ peut porter le pré-remplissage français (« 374,4 », espaces fines de milliers) ou
     // la saisie de `ChampDecimal` (déjà en point, voir D6 ci-dessus) : les deux se relisent ici.
     const montant = Number(montantManuel.replace(/\s/g, "").replace(",", "."));
-    const { error } = await supabase.from("paiements").insert({
-      atelier_id: facture!.atelier_id, facture_id: id, montant, moyen: moyenManuel,
+    // Migration 79 (20/11/2026) : l'encaissement et le passage en « payée » partent dans une
+    // seule transaction, et le solde est calculé en base sur la facture verrouillée. Avant, un
+    // insert puis un update séparés : un réseau coupé entre les deux laissait une facture réglée
+    // au statut « émise », qui repartait en relance chez un client qui avait payé.
+    const { data, error } = await supabase.rpc("enregistrer_paiement_manuel", {
+      p_facture: id, p_montant: montant, p_moyen: moyenManuel,
     });
-    // Un acompte encaissé ne solde pas la facture. La marquer « payée » sur un versement partiel
-    // la sort de la file de relance et du compteur d'impayés : le reste dû n'est plus jamais
-    // réclamé. Le passage en « payée » n'a lieu qu'au centime près.
-    const dejaEncaisse = paiements.reduce((s, p) => s + Number(p.montant || 0), 0);
-    const soldee = round2(dejaEncaisse + montant) >= round2(Number(facture!.total_ttc));
-    if (error) { setBusy(false); toast(errorFr(error), "error"); return; }
-    // Le passage en « payée » échouait en silence : le paiement était enregistré, la facture
-    // restait « émise », et elle repartait en relance chez un client qui a déjà réglé.
-    if (soldee && !(await ecrire(supabase.from("factures").update({ status: "payee" }).eq("id", id), toast))) {
-      setBusy(false);
-      await reload();
-      return;
-    }
     setBusy(false);
-    toast(soldee ? "Paiement enregistré — facture soldée" : `Paiement partiel enregistré — reste dû ${eur(round2(Number(facture!.total_ttc) - dejaEncaisse - montant))}`);
+    if (error) { toast(errorFr(error), "error"); await reload(); return; }
+    const r = data as { soldee: boolean; reste_du: number };
+    toast(r.soldee ? "Paiement enregistré — facture soldée" : `Paiement partiel enregistré — reste dû ${eur(Number(r.reste_du))}`);
     await reload();
   }
 

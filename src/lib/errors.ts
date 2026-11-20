@@ -59,6 +59,9 @@ const MAP: [RegExp, string][] = [
   // le message générique : l'atelier voyait « une erreur est survenue » là où la base lui disait
   // précisément quoi faire.
   // Migration 77 (20/11/2026) : refus des RPC d'émission atomique.
+  [/FACTURE_NON_ENCAISSABLE/i, "Cette facture n'attend plus de règlement (déjà soldée, annulée ou encore en brouillon) : rechargez la page."],
+  [/PAIEMENT_SUR_AVOIR/i, "Un avoir ne s'encaisse pas : c'est vous qui remboursez le client."],
+  [/PAIEMENT_MOYEN_MANQUANT/i, "Choisissez le moyen de paiement."],
   [/(FACTURE|DEVIS|BL)_DEJA_(EMISE?|EMIS|FINALISE)/i, "Ce document est déjà émis : rechargez la page."],
   [/(FACTURE|DEVIS|BL)_INTROUVABLE/i, "Document introuvable : il a peut-être été supprimé, ou il appartient à un autre atelier."],
   [/DOCUMENT_FIGE/i, "Ce document est figé : un devis signé et une facture émise ne se modifient plus. Créez une nouvelle version du devis, ou émettez un avoir sur la facture."],

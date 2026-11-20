@@ -368,10 +368,13 @@ export default function FacturesListPage() {
               <Link key={f.id} href={`/factures/${f.id}`}>
                 <Card className={`flex items-center justify-between gap-3 ${echue ? "border-danger" : ""}`}>
                   <div className="min-w-0">
+                    {/* Audit design du 20/11/2026 : numéro et client sur une seule ligne tronquée
+                        coupaient le nom du client au téléphone, alors que c'est lui qu'on cherche. */}
                     <div className="truncate font-medium">
-                      {f.numero ?? "Brouillon"} · {f.clients?.nom}
+                      {f.numero ?? "Brouillon"}
                       {f.recapitulative && <Badge tone="info" className="ml-2">Récap</Badge>}
                     </div>
+                    <div className="truncate text-sm text-gray-700">{f.clients?.nom}</div>
                     <div className={`text-xs ${echue ? "font-medium text-danger-dark" : "text-gray-500"}`}>
                       {f.recapitulative && f.periode_debut
                         ? `${dateFr(f.periode_debut)} → ${dateFr(f.periode_fin)}`

@@ -19,6 +19,29 @@ const COLS = [
 ] as const;
 
 /**
+ * Vue « Par poste » (audit design du 20/11/2026) : l'astuce de l'écran promettait « chaque colonne
+ * est un poste réel », mais les colonnes étaient des statuts — trois cases pour sept à treize
+ * étapes. Le chef d'atelier veut voir la charge de chaque poste (combien de pièces attendent la
+ * cabine, combien le four). Les colonnes viennent des étapes des projets eux-mêmes, dans leur
+ * ordre : un atelier de jantes voit Dévoilage et Diamantage, un atelier industriel non. Rien n'est
+ * inventé, un poste sans pièce n'apparaît pas.
+ */
+function colonnesParPoste(projets: Projet[]) {
+  const ordre: { code: string; libelle: string }[] = [];
+  const vus = new Set<string>();
+  for (const p of projets) {
+    for (const e of p.etapes ?? []) {
+      if (e.code === "livre" || vus.has(e.code)) continue;
+      vus.add(e.code);
+      ordre.push({ code: e.code, libelle: e.libelle });
+    }
+  }
+  return ordre
+    .map((c) => ({ ...c, items: projets.filter((p) => (p.etape_courante ?? "reception") === c.code) }))
+    .filter((c) => c.items.length > 0);
+}
+
+/**
  * Un projet « à facturer » au sens de Pilotage → Rentabilité (`client_rentabilite.projets_non_
  * factures`) : ni facture émise/payée de type solde ou libre sur son devis ou lui-même, ni bon de
  * livraison déjà rattaché à une facture. Peu importe sa colonne de production — un chantier encore
@@ -41,7 +64,7 @@ export default function ProjetsPage() {
   // ouvrait `/bl?filtre=livre`, vide pour les chantiers qui n'ont jamais eu de bon de livraison
   // (certains encore en production). `?filtre=a_facturer` bascule cet écran sur une liste plate de
   // ces projets, interrogée directement plutôt que déduite d'un statut de production.
-  const [filtre, setFiltre] = useEtatUrl<"kanban" | "a_facturer">("filtre", "kanban", ["kanban", "a_facturer"]);
+  const [filtre, setFiltre] = useEtatUrl<"kanban" | "postes" | "a_facturer">("filtre", "kanban", ["kanban", "postes", "a_facturer"]);
   const [clientFiltre, setClientFiltre] = useState<string | null>(null);
   const [nomClientFiltre, setNomClientFiltre] = useState<string | null>(null);
   const [aFacturer, setAFacturer] = useState<ProjetAFacturer[] | null>(null);
@@ -226,6 +249,46 @@ export default function ProjetsPage() {
             </div>
           )}
         </div>
+      )}
+
+      {filtre !== "a_facturer" && projets.length > 0 && (
+        <div role="group" aria-label="Regrouper les projets" className="flex w-full max-w-sm rounded-lg border border-gray-300 bg-white p-1">
+          {([["kanban", "Par statut"], ["postes", "Par poste"]] as const).map(([v, l]) => (
+            <button
+              key={v}
+              type="button"
+              aria-pressed={filtre === v}
+              onClick={() => setFiltre(v)}
+              className={`min-h-[44px] flex-1 rounded-md px-3 text-sm font-medium transition duration-150 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${filtre === v ? "bg-brand text-white" : "text-gray-700 hover:bg-gray-50"}`}
+            >
+              {l}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {filtre === "postes" && (
+        <>
+          <div className="flex snap-x gap-3 overflow-x-auto pb-2">
+            {colonnesParPoste(projets).map((col) => (
+              <div key={col.code} className="w-[85vw] max-w-[280px] flex-shrink-0 snap-start">
+                <div className="mb-2 text-sm font-semibold text-gray-600">{col.libelle} <span className="text-gray-500">({col.items.length})</span></div>
+                <div className="flex flex-col gap-2">
+                  {col.items.map((p) => (
+                    <Link key={p.id} href={`/projets/${p.id}`}>
+                      <Card className={p.date_promise && p.date_promise < today ? "border-danger-200" : ""}>
+                        <div className="min-w-0 truncate font-medium">{p.numero}</div>
+                        <div className="break-words text-xs text-gray-500">{p.clients?.nom} · {p.nom}</div>
+                        {p.date_promise && <div className={`mt-1 text-xs ${p.date_promise < today ? "font-semibold text-danger" : "text-gray-500"}`}>Promis le {dateFr(p.date_promise)}</div>}
+                      </Card>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          <Link href="/projets/histo" className="rounded py-2 text-center text-sm text-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">Voir les projets livrés →</Link>
+        </>
       )}
 
       {filtre === "kanban" && (

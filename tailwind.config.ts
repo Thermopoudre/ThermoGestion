@@ -34,7 +34,9 @@ export default {
       // 11 px : la taille réellement employée par la barre de navigation basse et les maquettes de
       // la vitrine, écrite jusqu'ici en `text-[11px]` — une échelle typographique parallèle, hors
       // du thème, donc impossible à faire évoluer d'un seul geste.
-      fontSize: { "2xs": ["0.6875rem", { lineHeight: "1rem" }] },
+      // Audit design du 20/11/2026 : 11 px se lisait mal en plein atelier (barre du bas, raccourcis,
+      // historique). Plancher à 12 px partout ; la classe reste pour ne pas toucher quatorze écrans.
+      fontSize: { "2xs": ["0.75rem", { lineHeight: "1rem" }] },
       letterSpacing: { kicker: "0.14em" },
     },
   },
