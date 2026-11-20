@@ -178,7 +178,9 @@ export const devisSansReponse: OutilAssistant = {
     // être signé (`DEVIS_EXPIRE`). Cette définition existe déjà (`devisPerime`, src/lib/devis.ts,
     // miroir de `devis_perime()` en base) : on la réutilise, on n'en invente pas une seconde —
     // c'est exactement ce que promet déjà la `description` de cet outil (« non expirés »).
-    const lignes = brut.filter((l) => !devisPerime(l));
+    // Même horloge que le reste de l'outil (20/11/2026) : sans `maintenant`, la péremption se
+    // jugeait à la date réelle et le reste à la date de la question — deux « aujourd'hui ».
+    const lignes = brut.filter((l) => !devisPerime(l, maintenant));
     const exclusParExpiration = brut.length - lignes.length;
     // `count` porte le total exact de la requête brute (sans le filtre d'expiration, que PostgREST
     // ne sait pas appliquer côté serveur ici) ; `tronque` reste calculé sur ce total brut, comme

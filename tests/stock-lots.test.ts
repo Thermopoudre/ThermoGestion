@@ -3,6 +3,14 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { clientConnecte, contexte, nb } from "./helpers/contexte";
 import { WORKFLOW_DEFAUT } from "./helpers/devis";
 
+// DLU relatives à aujourd'hui (20/11/2026) : écrites en dur (« 2026-09-30 »), elles ont expiré
+// et le lot « proche » est sorti de l'imputation — trois tests rouges sans qu'aucun code ne change.
+function dansJours(n: number): string {
+  return new Date(Date.now() + n * 86_400_000).toISOString().slice(0, 10);
+}
+const DLU_PROCHE = dansJours(60);
+const DLU_LOINTAINE = dansJours(400);
+
 /**
  * Deux régressions se croisent ici :
  *  — le stock global et les lots divergeaient dès qu'un opérateur oubliait de rattacher son lot ;
@@ -32,14 +40,14 @@ beforeAll(async () => {
   // DLU la plus lointaine reçue en premier : le décompte doit malgré tout attaquer la plus proche.
   const lointain = await sb.rpc("receptionner_lot", {
     p_poudre_id: ctx.seed.poudreId, p_numero: "LOT-2027", p_fournisseur: "TestPowder",
-    p_quantite_kg: 5, p_prix_kg: 15.9, p_dlu: "2027-09-01",
+    p_quantite_kg: 5, p_prix_kg: 15.9, p_dlu: DLU_LOINTAINE,
   });
   if (lointain.error) throw new Error(`receptionner_lot : ${lointain.error.message}`);
   lotAncienId = lointain.data as string;
 
   const proche = await sb.rpc("receptionner_lot", {
     p_poudre_id: ctx.seed.poudreId, p_numero: "LOT-PROCHE", p_fournisseur: "TestPowder",
-    p_quantite_kg: 3, p_prix_kg: 15.9, p_dlu: "2026-09-30",
+    p_quantite_kg: 3, p_prix_kg: 15.9, p_dlu: DLU_PROCHE,
   });
   if (proche.error) throw new Error(`receptionner_lot : ${proche.error.message}`);
   lotRecentId = proche.data as string;
@@ -107,7 +115,7 @@ describe("décompte automatique à la cuisson", () => {
     expect(nb(mvt!.delta_kg)).toBe(-1);
     expect(mvt!.lot_id).toBe(lotRecentId);
     expect(mvt!.lot_numero).toBe("LOT-PROCHE");
-    expect(mvt!.dlu).toBe("2026-09-30");
+    expect(mvt!.dlu).toBe(DLU_PROCHE);
   });
 
   it("ne décompte pas deux fois le même projet", async () => {
