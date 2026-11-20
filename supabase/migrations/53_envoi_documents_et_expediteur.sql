@@ -477,7 +477,7 @@ begin
       url := 'https://thermopoudre.fr/tg-mailer.php',
       headers := '{"Content-Type":"application/json"}'::jsonb,
       body := jsonb_build_object(
-        'token', '7da9f0e3053c481c97f8f45da983748ab2a7cca849dc9767',
+        'token', '<jeton retiré — rotation 20/11/2026, voir migration 80>',
         'to', r.destinataire_email,
         'subject', v_subject,
         'html', v_html,

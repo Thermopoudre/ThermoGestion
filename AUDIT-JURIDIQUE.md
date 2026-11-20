@@ -428,7 +428,7 @@ Rien de tout cela n'apparaît dans la politique de confidentialité. Aucune dur�
 
 | Point | Constat | Fondement |
 |---|---|---|
-| **Secret en clair** | Le token du mailer est écrit en dur dans le corps de la fonction SQL `process_notifications()` : `'token', '7da9f0e3053c481c97f8f45da983748ab2a7cca849dc9767'`. Lisible par quiconque a un `SELECT` sur `pg_proc` — y compris une connexion MCP en lecture. `supabase_vault` est installé et **inutilisé**. | art. 32 RGPD |
+| **Secret en clair** | Le token du mailer est écrit en dur dans le corps de la fonction SQL `process_notifications()` : `'token', '<jeton retiré — rotation 20/11/2026, voir migration 80>'`. Lisible par quiconque a un `SELECT` sur `pg_proc` — y compris une connexion MCP en lecture. `supabase_vault` est installé et **inutilisé**. | art. 32 RGPD |
 | **Pas de MFA** | `select count(*) from auth.mfa_factors` → **0**. Aucun facteur enrôlé, aucun code MFA dans l'application, aucun AAL2 exigé. | art. 32 RGPD ; recommandations CNIL |
 | **Politique de mot de passe** | 8 caractères, contrôlés **uniquement côté client** (`signup/page.tsx:56`, `reinitialiser/page.tsx:56`). Aucune exigence de complexité. | délibération CNIL n° 2022-100 : 12 caractères, ou 8 avec mesures complémentaires (blocage après échecs, détection des mots de passe compromis) |
 | **Droits résiduels** | `signer_bl` exécutable par le pseudo-rôle `PUBLIC` ; `pg_net` installé dans le schéma `public` ; `tva_intra_depuis_siren` sans `search_path` figé ; 4 policies attachées à `{public}` au lieu de `{authenticated}` | art. 32 RGPD ; advisors Supabase |
