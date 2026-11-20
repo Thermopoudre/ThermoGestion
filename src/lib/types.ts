@@ -271,6 +271,10 @@ export type Poudre = {
   seuil_alerte_kg: number | null;
   temp_cuisson: number | null;
   duree_cuisson_min: number | null;
+  epaisseur_um_min?: number | null;
+  epaisseur_um_max?: number | null;
+  fiche_technique_url?: string | null;
+  fds_url?: string | null;
   tp_product_id: number | null;
   actif: boolean;
 };

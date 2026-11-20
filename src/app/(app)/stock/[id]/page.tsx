@@ -162,6 +162,35 @@ export default function PoudrePage({ params }: { params: Promise<{ id: string }>
         </div>
       </Card>
 
+      {/* Audit du 20/11/2026 : la cuisson, l'épaisseur et les fiches n'existaient qu'à l'intérieur
+          du formulaire replié « Modifier ». Or c'est ce que l'opérateur vient chercher devant le
+          four, téléphone à la main. Une ligne sans valeur ne s'affiche pas : rien n'est supposé. */}
+      <Card className="flex flex-col gap-2">
+        <div className="text-sm font-semibold">Fiche technique</div>
+        <dl className="grid grid-cols-2 gap-x-3 gap-y-2 text-sm">
+          {[
+            ["Marque", poudre.marque],
+            ["Teinte", poudre.ral],
+            ["Finition", [poudre.finition, poudre.type].filter(Boolean).join(" · ") || null],
+            ["Cuisson", poudre.temp_cuisson != null ? `${poudre.temp_cuisson} °C${poudre.duree_cuisson_min != null ? ` · ${poudre.duree_cuisson_min} min` : ""}` : null],
+            ["Épaisseur", poudre.epaisseur_um_min != null || poudre.epaisseur_um_max != null ? `${poudre.epaisseur_um_min ?? "?"} à ${poudre.epaisseur_um_max ?? "?"} µm` : null],
+            ["Rendement", poudre.rendement_m2_kg != null ? `${nombreFr(Number(poudre.rendement_m2_kg), 1)} m²/kg` : null],
+          ].filter(([, v]) => v).map(([k, v]) => (
+            <div key={k as string} className="min-w-0">
+              <dt className="text-xs text-gray-500">{k}</dt>
+              <dd className="break-words font-medium">{v}</dd>
+            </div>
+          ))}
+        </dl>
+        {(poudre.fiche_technique_url || poudre.fds_url) && (
+          <div className="flex flex-wrap gap-2">
+            {poudre.fiche_technique_url && <a href={poudre.fiche_technique_url} target="_blank" rel="noreferrer" className="flex min-h-[44px] items-center rounded-lg border border-gray-300 px-3 text-sm font-medium hover:bg-gray-50">Fiche technique →</a>}
+            {poudre.fds_url && <a href={poudre.fds_url} target="_blank" rel="noreferrer" className="flex min-h-[44px] items-center rounded-lg border border-gray-300 px-3 text-sm font-medium hover:bg-gray-50">Fiche de sécurité (FDS) →</a>}
+          </div>
+        )}
+        {!poudre.fds_url && <p className="text-xs text-gray-500">Pas de fiche de sécurité liée : le Code du travail impose qu&apos;elle soit accessible au poste. Ajoutez son lien dans « Modifier la fiche poudre ».</p>}
+      </Card>
+
       {tauxPerte != null ? (
         <Card>
           <div className="mb-1 text-sm font-semibold">Rendement réel vs théorique</div>
