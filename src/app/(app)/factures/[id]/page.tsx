@@ -88,16 +88,12 @@ export default function FacturePage({ params }: { params: Promise<{ id: string }
 
   async function emettre() {
     setBusy(true);
-    let numero = facture!.numero;
-    if (!numero) {
-      // Un avoir prend la série AV-, jamais la série des factures : deux documents de sens
-      // comptable opposé dans la même séquence, c'est un rejet à l'export FEC.
-      const { data, error } = await supabase.rpc("next_numero", { p_type: facture!.type === "avoir" ? "avoir" : "facture" });
-      if (error) { toast(errorFr(error), "error"); setBusy(false); return; }
-      numero = data as string;
-    }
+    // Migration 77 (20/11/2026) : numéro et passage en « émise » dans une seule transaction.
+    // Avant, next_numero() puis l'update partaient en deux appels : un update refusé (réseau,
+    // plafond d'avoir, remise bornée…) laissait le numéro consommé, donc un trou dans la série
+    // FA-/AV-, interdit par la numérotation continue. La RPC choisit aussi la série AV- pour un avoir.
     const ok = await ecrire(
-      supabase.from("factures").update({ status: "emise", numero, emise_at: new Date().toISOString() }).eq("id", id),
+      supabase.rpc("emettre_facture", { p_id: id }),
       toast,
       facture!.type === "avoir" ? "Avoir émis — lien client prêt" : "Facture émise — lien client prêt",
     );

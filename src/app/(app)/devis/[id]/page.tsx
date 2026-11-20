@@ -200,14 +200,10 @@ export default function DevisPage({ params }: { params: Promise<{ id: string }> 
 
   async function envoyer() {
     setBusy(true);
-    let numero = devis!.numero;
-    if (!numero) {
-      const { data, error } = await supabase.rpc("next_numero", { p_type: "devis" });
-      if (error) { toast(errorFr(error), "error"); setBusy(false); return; }
-      numero = data as string;
-    }
+    // Migration 77 (20/11/2026) : numéro et passage en « envoyé » dans une seule transaction,
+    // pour qu'un refus n'emporte pas un numéro DV- avec lui.
     const ok = await ecrire(
-      supabase.from("devis").update({ status: "envoye", numero, envoye_at: new Date().toISOString() }).eq("id", id),
+      supabase.rpc("finaliser_devis", { p_id: id }),
       toast,
       "Devis finalisé — lien client prêt",
     );

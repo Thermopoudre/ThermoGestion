@@ -45,12 +45,9 @@ export default function BlPage({ params }: { params: Promise<{ id: string }> }) 
 
   async function emettre() {
     setBusy(true);
-    let numero = bl!.numero;
-    if (!numero) {
-      const { data } = await supabase.rpc("next_numero", { p_type: "bl" });
-      numero = data as string;
-    }
-    const { error } = await supabase.from("bons_livraison").update({ status: "emis", numero }).eq("id", id);
+    // Migration 77 (20/11/2026) : numéro et passage en « émis » dans une seule transaction.
+    // L'ancien code ignorait même l'erreur de next_numero et pouvait émettre un BL sans numéro.
+    const { error } = await supabase.rpc("emettre_bl", { p_id: id });
     setBusy(false);
     if (error) { toast(errorFr(error), "error"); return; }
     toast("Bon de livraison émis — lien client prêt");

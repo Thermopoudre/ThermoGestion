@@ -58,6 +58,9 @@ const MAP: [RegExp, string][] = [
   // Levée par le trigger `figer_document`. Elle existait depuis le lot 4 et tombait jusqu'ici dans
   // le message générique : l'atelier voyait « une erreur est survenue » là où la base lui disait
   // précisément quoi faire.
+  // Migration 77 (20/11/2026) : refus des RPC d'émission atomique.
+  [/(FACTURE|DEVIS|BL)_DEJA_(EMISE?|EMIS|FINALISE)/i, "Ce document est déjà émis : rechargez la page."],
+  [/(FACTURE|DEVIS|BL)_INTROUVABLE/i, "Document introuvable : il a peut-être été supprimé, ou il appartient à un autre atelier."],
   [/DOCUMENT_FIGE/i, "Ce document est figé : un devis signé et une facture émise ne se modifient plus. Créez une nouvelle version du devis, ou émettez un avoir sur la facture."],
   // Levées par les contraintes de longueur des conditions générales de vente (migration 76,
   // `ateliers.cgv`, `clients.cgv`, `devis.cgv_texte`, `factures.cgv_texte`) : même borne partout,
