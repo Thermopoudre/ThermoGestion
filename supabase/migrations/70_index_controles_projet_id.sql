@@ -1,0 +1,16 @@
+-- La migration 67 a posé `controles(atelier_id, projet_id)` en croyant couvrir aussi la cascade de
+-- suppression depuis `projets`. Elle ne la couvre pas : un index btree ne sert une recherche que si
+-- elle porte sur son préfixe gauche, et le `DELETE FROM controles WHERE projet_id = ...` déclenché
+-- par la contrainte de clé étrangère ne filtre pas sur `atelier_id`. `purger_corbeille()` tourne
+-- toutes les nuits sur les projets mis à la corbeille : sans cet index, chaque suppression relit
+-- toute la table des contrôles.
+--
+-- La 67 avait fait le bon geste pour `jeux_jantes.client_id` et `vehicules.client_id` — un index
+-- dédié à la seule colonne portée par la clé étrangère. On l'applique ici à `controles.projet_id`,
+-- qui avait été traité différemment par inadvertance.
+--
+-- `CREATE INDEX` simple et non `CONCURRENTLY` : `apply_migration` ouvre une transaction, ce qui
+-- l'interdit. Sans conséquence à la volumétrie actuelle (quelques dizaines de lignes) ; le jour où
+-- un vrai parc d'ateliers sera en production, un index posé après coup devra l'être en concurrent,
+-- hors migration.
+create index if not exists controles_projet_id_idx on public.controles (projet_id);

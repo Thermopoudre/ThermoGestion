@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-gray-50 text-gray-900;
+}
+
+/**
+ * Anneau de focus par défaut de tout ce qui s'actionne.
+ *
+ * POURQUOI une règle CSS plutôt que 67 `className`. L'audit a compté 67 boutons natifs sans
+ * `focus-visible`, répartis sur 47 fichiers : un opérateur au clavier — ou avec une souris et un
+ * écran d'atelier mal orienté — perdait purement et simplement la trace de sa position (WCAG
+ * 2.4.7 Focus Visible, niveau AA). Recopier la même chaîne de quatre utilitaires soixante-sept
+ * fois aurait reproduit exactement le problème que ce lot corrige ailleurs : la même décision
+ * écrite à soixante-sept endroits, donc oubliée au soixante-huitième.
+ *
+ * `:where()` met la spécificité à zéro : tout `focus-visible:outline-*` de Tailwind posé sur un
+ * composant précis (le `Button` du design system, une puce de sélection) l'emporte sans effort.
+ * `:focus-visible` et non `:focus` : le navigateur ne montre l'anneau qu'au clavier, jamais après
+ * un appui au doigt sur la tablette de l'atelier.
+ *
+ * `<summary>` et `[role="button"]` sont couverts pour la même raison : ce sont des commandes.
+ */
+:where(button, summary, [role="button"], [role="tab"]):focus-visible {
+  outline: 2px solid theme(colors.brand.DEFAULT);
+  outline-offset: 2px;
+  border-radius: 0.375rem;
+}
+
+/**
+ * Durée et courbe par défaut de toutes les transitions.
+ *
+ * `transition` était employée seule une quarantaine de fois : Tailwind pose alors 150 ms et
+ * `cubic-bezier(.4,0,.2,1)`, mais rien ne le garantissait à la lecture et chaque écran pouvait
+ * dériver. Surtout, aucune règle ne respectait `prefers-reduced-motion` — obligatoire au titre
+ * de WCAG 2.3.3, et concret pour un opérateur sujet au mal des transports.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/**
+ * Impression des pages publiques.
+ *
+ * Le client imprime son devis, sa facture ou son bon de livraison depuis le bouton « Imprimer /
+ * PDF » — c'est souvent la version qu'il classe. Sans ces règles : fond gris si l'impression des
+ * arrière-plans est activée, et surtout un bloc de totaux ou une ligne de tableau coupés en deux
+ * par un saut de page, ce qui rend le document incontrôlable.
+ */
+@media print {
+  body {
+    background: #fff;
+  }
+  /* Le conteneur des tableaux est en défilement horizontal à l'écran : à l'impression, il n'y a
+     pas de défilement, la largeur minimale ferait déborder la page. */
+  .overflow-x-auto {
+    overflow: visible !important;
+  }
+  table {
+    min-width: 0 !important;
+  }
+  tr,
+  img {
+    break-inside: avoid;
+  }
+  main > div:last-of-type,
+  main > dl {
+    break-inside: avoid;
+  }
+}
