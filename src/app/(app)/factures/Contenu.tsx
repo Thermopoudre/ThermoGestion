@@ -395,8 +395,11 @@ export default function FacturesListPage() {
       {totaux && (
         <Card className="grid grid-cols-3 gap-3 border-gray-300 bg-gray-50 text-center">
           <div>
-            <div className="text-lg font-bold">{eur(totaux.facture_ht)}</div>
-            <div className="text-xs text-gray-500">Facturé HT (filtre courant)</div>
+            {/* Audit du 21/11/2026 : « Facturé HT » à côté d'un encaissé et d'un reste dû TTC
+                faisait une addition fausse à l'œil (1 527 € HT ≠ 0 € + 1 832 €). Les trois
+                montants sont en TTC ; le HT reste écrit dessous pour le chiffre d'affaires. */}
+            <div className="text-lg font-bold">{eur(totaux.facture_ttc)}</div>
+            <div className="text-xs text-gray-500">Facturé TTC · {eur(totaux.facture_ht)} HT</div>
           </div>
           <div>
             <div className="text-lg font-bold text-green-700">{eur(totaux.encaisse)}</div>
