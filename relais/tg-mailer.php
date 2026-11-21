@@ -32,10 +32,43 @@ $nom = trim(preg_replace('/[\r\n"<>]+/', ' ', (string) ($d['sender_name'] ?? '')
 if ($nom === '') $nom = 'Thermogestion';
 $reponse = filter_var(trim((string) ($d['reply_to'] ?? '')), FILTER_VALIDATE_EMAIL) ?: 'contact@thermopoudre.fr';
 function tg_enc($s) { return '=?UTF-8?B?' . base64_encode($s) . '?='; }
-$headers = 'From: ' . tg_enc($nom . ' via Thermogestion') . " <thermogestion@thermopoudre.fr>\r\n"
-         . "Reply-To: $reponse\r\n"
-         . "MIME-Version: 1.0\r\n"
-         . "Content-Type: text/html; charset=UTF-8\r\n";
-$ok = mail($to, tg_enc($subject), $html, $headers, '-fthermogestion@thermopoudre.fr');
-file_put_contents(__DIR__ . '/../tg-mailer.log', date('c') . " to=$to subject=$subject ok=" . ($ok ? '1' : '0') . "\n", FILE_APPEND);
-echo json_encode(['ok' => $ok]);
+
+// 21/11/2026 : envoi par Brevo quand la clé est posée sur le serveur. Le domaine thermopoudre.fr
+// est authentifié chez Brevo (DKIM brevo1/brevo2, SPF include:spf.brevo.com) ; un mail() part de
+// l'IP du serveur, absente du SPF en -all, sans signature : indésirables ou refus probables.
+// Clé : /home/thermopoudre/tp_secrets/brevo_tg.json = {"api_key":"xkeysib-…"}, posée par Alexis,
+// jamais dans ce fichier. Sans clé, ou si Brevo refuse, repli sur mail() comme avant.
+$voie = 'mail';
+$ok = false;
+$cle = (string) (json_decode((string) @file_get_contents('/home/thermopoudre/tp_secrets/brevo_tg.json'), true)['api_key'] ?? '');
+if ($cle !== '' && function_exists('curl_init')) {
+    $corps = json_encode([
+        'sender' => ['name' => $nom . ' via Thermogestion', 'email' => 'thermogestion@thermopoudre.fr'],
+        'to' => [['email' => $to]],
+        'replyTo' => ['email' => $reponse],
+        'subject' => $subject,
+        'htmlContent' => $html,
+    ]);
+    $c = curl_init('https://api.brevo.com/v3/smtp/email');
+    curl_setopt_array($c, [
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => $corps,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 15,
+        CURLOPT_HTTPHEADER => ['api-key: ' . $cle, 'Content-Type: application/json', 'Accept: application/json'],
+    ]);
+    $rep = curl_exec($c);
+    $code = (int) curl_getinfo($c, CURLINFO_HTTP_CODE);
+    curl_close($c);
+    if ($code >= 200 && $code < 300) { $ok = true; $voie = 'brevo'; }
+    else { $voie = 'mail (brevo ' . $code . ')'; }
+}
+if (!$ok) {
+    $headers = 'From: ' . tg_enc($nom . ' via Thermogestion') . " <thermogestion@thermopoudre.fr>\r\n"
+             . "Reply-To: $reponse\r\n"
+             . "MIME-Version: 1.0\r\n"
+             . "Content-Type: text/html; charset=UTF-8\r\n";
+    $ok = mail($to, tg_enc($subject), $html, $headers, '-fthermogestion@thermopoudre.fr');
+}
+file_put_contents(__DIR__ . '/../tg-mailer.log', date('c') . " to=$to subject=$subject voie=$voie ok=" . ($ok ? '1' : '0') . "\n", FILE_APPEND);
+echo json_encode(['ok' => $ok, 'voie' => $voie === 'brevo' ? 'brevo' : 'mail']);
